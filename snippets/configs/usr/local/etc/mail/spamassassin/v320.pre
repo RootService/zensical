@@ -1,0 +1,16 @@
+loadplugin Mail::SpamAssassin::Plugin::Check
+loadplugin Mail::SpamAssassin::Plugin::HTTPSMismatch
+loadplugin Mail::SpamAssassin::Plugin::URIDetail
+loadplugin Mail::SpamAssassin::Plugin::Shortcircuit
+loadplugin Mail::SpamAssassin::Plugin::Bayes
+loadplugin Mail::SpamAssassin::Plugin::BodyEval
+loadplugin Mail::SpamAssassin::Plugin::DNSEval
+loadplugin Mail::SpamAssassin::Plugin::HTMLEval
+loadplugin Mail::SpamAssassin::Plugin::HeaderEval
+loadplugin Mail::SpamAssassin::Plugin::MIMEEval
+loadplugin Mail::SpamAssassin::Plugin::RelayEval
+loadplugin Mail::SpamAssassin::Plugin::URIEval
+loadplugin Mail::SpamAssassin::Plugin::WLBLEval
+loadplugin Mail::SpamAssassin::Plugin::VBounce
+loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody
+loadplugin Mail::SpamAssassin::Plugin::ImageInfo

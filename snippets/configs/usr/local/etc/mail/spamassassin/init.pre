@@ -1,0 +1,3 @@
+enable_compat welcomelist_blocklist
+loadplugin Mail::SpamAssassin::Plugin::URIDNSBL
+loadplugin Mail::SpamAssassin::Plugin::SPF

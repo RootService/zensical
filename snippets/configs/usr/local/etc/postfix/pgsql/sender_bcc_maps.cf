@@ -1,0 +1,5 @@
+hosts       = 127.0.0.1:5432
+user        = postfix
+password    = __PASSWORD_POSTFIX__
+dbname      = postfixadmin
+query       =

@@ -1,0 +1,21 @@
+<div class="md-copyright">
+  <div class="md-copyright__highlight">
+    {% if config.extra.site_license.url and config.extra.site_license.name %}
+    <a href="{{ config.extra.site_license.url | url }}" target="_blank" rel="noopener">
+    {{ config.extra.site_license.name }}
+    </a>
+    {% endif %}
+    <br />
+    {% if config.copyright %}
+    <strong>
+    {{ config.copyright }}
+    </strong>
+    {% endif %}
+    <br />
+    <a href="#__consent">Cookie Settings</a>
+  </div>
+  {% if not config.extra.generator == false %}
+  <br />
+  Made with <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener"> Material for MkDocs </a>
+  {% endif %}
+</div>

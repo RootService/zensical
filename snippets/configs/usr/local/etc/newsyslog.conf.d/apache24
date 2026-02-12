@@ -1,0 +1,2 @@
+/var/log/httpd-*.log                    644  13    *    $W6D0 JCG   /var/run/httpd.pid
+/data/www/vhosts/*/logs/apache_*_log    644  24    *    $M1D0 JCG   /var/run/httpd.pid

@@ -1,0 +1,4 @@
+Contact: mailto:security@rootservice.org
+Policy: https://www.rootservice.org/about/security/
+Preferred-Languages: de, en
+Expires: 2026-12-31T00:00:00Z

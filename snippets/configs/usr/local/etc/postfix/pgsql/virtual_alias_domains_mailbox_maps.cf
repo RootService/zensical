@@ -1,0 +1,5 @@
+hosts       = 127.0.0.1:5432
+user        = postfix
+password    = __PASSWORD_POSTFIX__
+dbname      = postfixadmin
+query       = SELECT maildir FROM mailbox, alias_domain WHERE alias_domain.alias_domain = '%d' AND mailbox.username = '%u' || '@' || alias_domain.target_domain AND (('%s' = 'smtp' AND mailbox.smtp_active = true) OR ('%s' <> 'smtp' AND mailbox.active = true)) AND ('%s' <> 'smtp' AND alias_domain.active = true)

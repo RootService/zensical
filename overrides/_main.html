@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+
+      {% block site_meta %}
+        <meta charset="utf-8" />
+      {% block dnsprefetch %}
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous" />
+      {% if config.repo_url and config.repo_show %}
+        <link rel="preconnect" href="https://api.github.com" crossorigin="anonymous" />
+      {% endif %}
+      {% endblock %}
+      {% if page.meta and page.meta.description %}
+        <meta name="description" content="{{ page.meta.description }}" />
+      {% elif config.site_description %}
+        <meta name="description" content="{{ config.site_description }}" />
+      {% endif %}
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+      {% if page and page.meta and page.meta.robots %}
+        <meta name="CCBot" content="nofollow" />
+        <meta name="robots" content="noai, noimageai, notrain, noarchive, noimageindex, max-snippet:-1, max-image-preview:-1, max-video-preview:-1, {{ page.meta.robots }}" />
+      {% else %}
+        <meta name="CCBot" content="nofollow" />
+        <meta name="robots" content="noai, noimageai, notrain, noarchive, noimageindex, max-snippet:-1, max-image-preview:-1, max-video-preview:-1" />
+      {% endif %}
+        <meta name="tdm-reservation" content="1" />
+        <meta name="format-detection" content="telephone=no" />
+      {% if page.meta and page.meta.author.name %}
+        <meta name="author" content="{{ page.meta.author.name }}" />
+      {% elif config.extra.site_author.name %}
+        <meta name="author" content="{{ config.extra.site_author.name }}" />
+      {% endif %}
+      {% if config.extra.site_publisher.name %}
+        <meta name="publisher" content="{{ config.extra.site_publisher.name }}" />
+      {% endif %}
+      {% if page.meta and page.meta.lastmod %}
+        <meta name="date" content="{{ page.meta.lastmod }}T12:00:00+02:00" />
+      {% elif page.meta and page.meta.date %}
+        <meta name="date" content="{{ page.meta.date }}T12:00:00+02:00" />
+      {% else %}
+        <meta name="date" content="{{ build_date_utc() }}T12:00:00+02:00" />
+      {% endif %}
+        <link rel="license" href="{{ config.extra.site_license.url | url }}" />
+      {% if page.canonical_url %}
+        <link rel="canonical" href="{{ page.canonical_url }}" />
+      {% endif %}
+      {% if page.previous_page %}
+        <link rel="prev" href="{{ page.previous_page.url | url }}" />
+      {% endif %}
+      {% if page.next_page %}
+        <link rel="next" href="{{ page.next_page.url | url }}" />
+      {% endif %}
+      {% if page.meta and page.meta.author.url %}
+        <link rel="me" href="{{ page.meta.author.url }}" />
+      {% elif config.extra.site_author.url %}
+        <link rel="me" href="{{ config.extra.site_author.url }}" />
+      {% endif %}
+        <link rel="copyright" href="/about/copyright/" />
+        <link rel="icon" href="/assets/favicons/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png" />
+        <link rel="icon" type="image/vnd.microsoft.icon" href="/assets/favicons/favicon.ico" />
+        <link rel="mask-icon" href="/assets/favicons/safari-pinned-tab.svg" color="#ff00a8" />
+        <link rel="manifest" href="/assets/favicons/manifest.json" type="application/manifest+json" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0013" />
+      {% if "rss" in config.plugins %}
+        <link rel="alternate" type="application/rss+xml" title="{{ lang.t('rss.created') }}" href="{{ 'feed_rss_created.xml' | url }}" />
+        <link rel="alternate" type="application/rss+xml" title="{{ lang.t('rss.updated') }}" href="{{ 'feed_rss_updated.xml' | url }}" />
+      {% endif %}
+        <meta property="article:content_tier" content="free" />
+        <meta property="article:opinion" content="false" />
+      {% endblock %}
+
+
+      {% block htmltitle %}
+      {% if page.meta and page.meta.title %}
+        <title>{{ page.meta.title }} - {{ config.site_name }}</title>
+      {% elif page.title and not page.is_homepage %}
+        <title>{{ page.title | striptags }} - {{ config.site_name }}</title>
+      {% else %}
+        <title>{{ config.site_name }}</title>
+      {% endif %}
+      {% endblock %}
+
+
+      {% block styles %}
+<!--
+        <link rel="preload" as="style" href="{{ 'assets/stylesheets/main.484c7ddc.min.css' | url }}" onload="this.onload=null;this.rel='stylesheet'" />
+        <noscript><link rel="stylesheet" href="{{ 'assets/stylesheets/main.484c7ddc.min.css' | url }}" /></noscript>
+-->
+        <link rel="preload" as="style" href="{{ 'assets/stylesheets/main.202509142335.css' | url }}" onload="this.onload=null;this.rel='stylesheet'" />
+        <noscript><link rel="stylesheet" href="{{ 'assets/stylesheets/main.202509142335.css' | url }}" /></noscript>
+      {% if config.theme.palette %}
+        {% set palette = config.theme.palette %}
+<!--
+        <link rel="preload" as="style" href="{{ 'assets/stylesheets/palette.ab4e12ef.min.css' | url }}" onload="this.onload=null;this.rel='stylesheet'" />
+        <noscript><link rel="stylesheet" href="{{ 'assets/stylesheets/palette.ab4e12ef.min.css' | url }}" /></noscript>
+-->
+        <link rel="preload" as="style" href="{{ 'assets/stylesheets/palette.202509142335.css' | url }}" onload="this.onload=null;this.rel='stylesheet'" />
+        <noscript><link rel="stylesheet" href="{{ 'assets/stylesheets/palette.202509142335.css' | url }}" /></noscript>
+        <link rel="preload" as="style" href="{{ 'assets/stylesheets/github.202509142335.css' | url }}" onload="this.onload=null;this.rel='stylesheet'" />
+        <noscript><link rel="stylesheet" href="{{ 'assets/stylesheets/github.202509142335.css' | url }}" /></noscript>
+      {% endif %}
+      {% include "partials/icons.html" %}
+      {% for path in config.extra_css %}
+        <link rel="preload" as="style" href="{{ path | url }}" onload="this.onload=null;this.rel='stylesheet'" />
+        <noscript><link rel="stylesheet" href="{{ path | url }}" /></noscript>
+      {% endfor %}
+      {% endblock %}
+
+
+      {% block libs %}
+      {% for script in config.extra.polyfills %}
+        {{ script | script_tag }}
+      {% endfor %}
+      {% endblock %}
+
+
+      {% block fonts %}
+      {% if config.theme.font != false %}
+        {% set text = config.theme.font.text | d("Roboto Flex", true) %}
+        {% set code = config.theme.font.code | d("Roboto Mono", true) %}
+        <link rel="preload" as="style" type="text/css" href="https://fonts.googleapis.com/css2?family={{
+          text | replace(' ', '+') + ':opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&' +
+          code | replace(' ', '+') + ':ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&'
+        }}display=swap" onload="this.onload=null;this.rel='stylesheet'" crossorigin="anonymous" />
+        <noscript>
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family={{
+          text | replace(' ', '+') + ':opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&' +
+          code | replace(' ', '+') + ':ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&'
+        }}display=swap" crossorigin="anonymous" />
+        </noscript>
+        <style>
+          :root {
+            --md-text-font: '{{ text }}';
+            --md-code-font: '{{ code }}';
+          }
+        </style>
+      {% endif %}
+      {% endblock %}
+
+
+      {% block analytics %}
+        {% include "partials/integrations/analytics.html" %}
+      {% endblock %}
+
+
+      {% block extrahead %}
+      {% if page.meta %}
+        <script type="application/ld+json">
+          {
+            "@context": "https://schema.org",
+            "@type": "TechArticle",
+            "@id": "{{ page.canonical_url }}",
+            "url": "{{ page.canonical_url }}",
+            "name": "{{ config.site_name }}",
+            {% if page.meta.title %}
+            "headline": "{{ page.meta.title }}",
+            {% elif page.title and not page.is_homepage %}
+            "headline": "{{ page.title | striptags }}",
+            {% else %}
+            "headline": "{{ config.site_name }}",
+            {% endif %}
+            "inLanguage": "{{ lang.t('language') }}",
+            "author": {
+              "@type": "Person",
+            {% if page.meta.author.name and page.meta.author.url %}
+              "name": "{{ page.meta.author.name }}",
+              "url": "{{ page.meta.author.url }}"
+            {% elif page.meta.author.name %}
+              "name": "{{ page.meta.author.name }}"
+            {% elif config.extra.site_author.name and config.extra.site_author.url %}
+              "name": "{{ config.extra.site_author.name }}",
+              "url": "{{ config.extra.site_author.url }}"
+            {% elif config.extra.site_author.name %}
+              "name": "{{ config.extra.site_author.name }}"
+            {% endif %}
+            },
+            {% if config.extra.site_publisher.name and config.extra.site_publisher.url %}
+            "publisher": {
+              "@type": "Organization",
+              "name": "{{ config.extra.site_publisher.name }}",
+              "url": "{{ config.extra.site_publisher.url }}",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "{{ config.site_url + config.theme.icon.logo + '.svg' }}"
+              }
+            },
+            {% endif %}
+            {% if page.meta.date %}
+            "datePublished": "{{ page.meta.date }}T12:00:00+02:00",
+            {% else %}
+            "datePublished": "{{ build_date_utc.date() }}T12:00:00+02:00",
+            {% endif %}
+            {% if page.meta.lastmod %}
+            "dateModified": "{{ page.meta.lastmod }}T12:00:00+02:00",
+            {% else %}
+            "dateModified": "{{ build_date_utc.date() }}T12:00:00+02:00",
+            {% endif %}
+            {% if page.meta.license.url %}
+            "license": "{{ page.meta.license.url }}",
+            {% elif config.extra.site_license.url %}
+            "license": "{{ config.extra.site_license.url }}",
+            {% endif %}
+            "image": "{{ config.site_url + config.theme.icon.logo + '.svg' }}"
+          }
+        </script>
+      {% endif %}
+      {% endblock %}
+
+
+      {% block announce %}
+      {% endblock %}
+
+
+      {% block outdated %}
+      {% endblock %}
+
+
+      {% block header %}
+      {% include "partials/header.html" %}
+      {% endblock %}
+
+
+      {% block hero %}{% endblock %}
+
+
+
+      {% block tabs %}
+        {% if "navigation.tabs.sticky" not in features %}
+          {% if "navigation.tabs" in features %}
+            {% include "partials/tabs.html" %}
+          {% endif %}
+        {% endif %}
+      {% endblock %}
+
+
+      {% block site_nav %}
+            {% if nav %}
+              {% if page.meta and page.meta.hide %}
+                {% set hidden = "hidden" if "navigation" in page.meta.hide %}
+              {% endif %}
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" {{ hidden }}>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    {% include "partials/nav.html" %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            {% if "toc.integrate" not in features %}
+              {% if page.meta and page.meta.hide %}
+                {% set hidden = "hidden" if "toc" in page.meta.hide %}
+              {% endif %}
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" {{ hidden }}>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    {% include "partials/toc.html" %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+      {% endblock %}
+
+
+      {% block container %}
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                {% block content %}
+                <a class="skip-link" href="#main-content">{{ lang.t('top') }}</a>
+                <main id="main-content" role="main" tabindex="-1">
+                  {% include "partials/content.html" %}
+                </main>
+                {% endblock %}
+              </article>
+            </div>
+      {% endblock %}
+
+
+      {% block footer %}
+            <footer role="contentinfo">
+              {% include "partials/footer.html" %}
+            </footer>
+      {% endblock %}
+
+
+      {% block config %}
+      {% set _ = namespace() %}
+      {% set _.tags = config.extra.tags %}
+      {%- if config.extra.version -%}
+        {%- set mike = config.plugins.mike -%}
+        {%- if not mike or mike.config.version_selector -%}
+          {%- set _.version = config.extra.version -%}
+        {%- endif -%}
+      {%- endif -%}
+        <script id="__config" type="application/json">
+          {{- {
+            "base": base_url,
+            "features": features,
+            "translations": {
+              "clipboard.copy": lang.t("clipboard.copy"),
+              "clipboard.copied": lang.t("clipboard.copied"),
+              "search.result.placeholder": lang.t("search.result.placeholder"),
+              "search.result.none": lang.t("search.result.none"),
+              "search.result.one": lang.t("search.result.one"),
+              "search.result.other": lang.t("search.result.other"),
+              "search.result.more.one": lang.t("search.result.more.one"),
+              "search.result.more.other": lang.t("search.result.more.other"),
+              "search.result.term.missing": lang.t("search.result.term.missing"),
+              "select.version": lang.t("select.version")
+            },
+            "search": "assets/javascripts/workers/search.2c215733.min.js" | url,
+            "tags": _.tags or none,
+            "version": _.version or none
+          } | tojson -}}
+        </script>
+      {% endblock %}
+
+
+      {% block scripts %}
+        <script>
+          ((__md_scope = new URL('.', location)),
+            (__md_hash = (e) => [...e].reduce((e, _) => (e << 5) - e + _.charCodeAt(0), 0)),
+            (__md_get = (e, _ = localStorage, t = __md_scope) => JSON.parse(_.getItem(t.pathname + '.' + e))),
+            (__md_set = (e, _, t = localStorage, a = __md_scope) => {
+              try {
+                t.setItem(a.pathname + '.' + e, JSON.stringify(_));
+              } catch (e) {}
+            }));
+        </script>
+        <script defer="defer" src="{{ 'assets/javascripts/bundle.79ae519e.min.js' | url }}"></script>
+        {% for script in config.extra_javascript %}
+        {% if script.path %}
+        {{ script | script_tag }}
+        {% else %}
+        <script defer="defer" src="{{ script | url }}"></script>
+        {% endif %}
+        {% endfor %}
+      {% endblock %}

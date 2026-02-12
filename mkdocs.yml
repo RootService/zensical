@@ -1,0 +1,313 @@
+site_name: RootService
+site_url: https://www.rootservice.org/
+site_description: Wir bieten Service, Support, HowTos und andere nützliche Informationen rund um die Administration von FreeBSD und Linux basierten Servern
+site_author: RootService Team
+strict: false
+
+repo_name: RootService/MKDocs
+repo_url: https://github.com/RootService/MKDocs
+edit_uri: edit/main/docs/
+
+copyright: Copyright © 2002-2026 RootService Team
+
+theme:
+  name: material
+  custom_dir: overrides
+  language: de
+  palette:
+    - media: '(prefers-color-scheme)'
+      scheme: slate
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+      primary: deep_purple
+      accent: amber
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+      primary: deep_purple
+      accent: amber
+    - media: '(prefers-color-scheme: light)'
+      scheme: slate
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+      primary: deep_purple
+      accent: amber
+  pygments_style: material
+  pygments_dark_style: material
+  font:
+    text: Roboto Flex
+    code: Roboto Mono
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - content.tooltips
+    - header.autohide
+    - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.prune
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+  icon:
+    logo: material/library
+    menu: material/menu
+    alternate: material/translate
+    search: material/magnify
+    share: material/share-variant-outline
+    close: material/close-circle-outline
+    top: material/arrow-up-bold-outline
+    edit: material/file-document-edit-outline
+    view: material/file-document-outline
+    repo: material/github
+    # admonition: material/
+    tag:
+      default: material/tag-outline
+    previous: material/arrow-left-bold-outline
+    next: material/arrow-right-bold-outline
+    paypal: fontawesome/brands/paypal
+  favicon: assets/favicons/favicon.svg
+  static_templates:
+    - 404.html
+  include_search_page: false
+  search_index_only: true
+
+plugins:
+  - search:
+      lang: de
+      separator: '[\s\-\._,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+  - privacy: {}
+  - social:
+      cards: true
+  - meta:
+      meta_file: .meta.yml
+  - tags:
+      tags_slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - git-revision-date-localized:
+      enabled: !ENV [CI, true]
+      enable_creation_date: true
+      type: datetime
+      timezone: Europe/Berlin
+      locale: de
+      fallback_to_build_date: true
+      enable_git_follow: false
+  - git-committers:
+      enabled: !ENV [CI, true]
+      token: !ENV [GITHUB_TOKEN, '']
+      repository: RootService/MKDocs
+      branch: main
+  - htmlproofer:
+      validate_external_urls: false
+      raise_error: true
+  # - redirects:
+  # redirect_maps:
+  # 'home.md': 'index.md'
+  # - minify:
+  # minify_html: true
+
+# extra_css:
+#   - assets/stylesheets/extra.css
+
+# extra_javascript:
+#   - assets/javascripts/extra.js
+
+extra:
+  homepage: https://www.rootservice.org/
+  site_author:
+    name: Markus Kohlmeyer
+    url: https://github.com/JoeUser78
+  site_publisher:
+    name: RootService Team
+    url: https://github.com/RootService
+  site_license:
+    name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+    shortname: CC BY-NC-SA 4.0
+    url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+  view_url: https://raw.githubusercontent.com/RootService/MKDocs/main/docs
+  paypal_url: https://www.paypal.me/JoeUser
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/JoeUser78
+      name: GitHub
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/in/MarkusKohlmeyer78
+      name: LinkedIn
+    - icon: fontawesome/solid/paper-plane
+      link: mailto:info@rootservice.org
+      name: E-Mail
+  schema:
+    '@context': https://schema.org
+    '@type': WebSite
+    name: RootService
+    url: https://www.rootservice.org/
+    author:
+      name: Markus Kohlmeyer
+      url: https://github.com/JoeUser78
+    publisher:
+      name: RootService
+      logo: material/library
+    license: https://creativecommons.org/licenses/by-nc-sa/4.0/
+  consent:
+    title: Cookie consent
+    description: >-
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+    actions:
+      - manage
+      - reject
+      - accept
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - meta
+  - smarty:
+      smart_quotes: false
+  - tables
+  - toc:
+      permalink: '⚓︎'
+      permalink_title: Anchor link to this section for reference
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+      toc_depth: 3
+  #      permalink: "🔗"
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.blocks.caption
+  - pymdownx.caret
+  - pymdownx.critic:
+      mode: view
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      options:
+        custom_icons:
+          - overrides/.icons
+  - pymdownx.escapeall:
+      hardbreak: true
+      nbsp: true
+  - pymdownx.highlight:
+      use_pygments: true
+      auto_title: true
+      linenums: true
+      linenums_style: pymdownx-inline
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys:
+      separator: '＋'
+      strict: true
+  - pymdownx.magiclink:
+      repo_url_shortener: true
+      repo_url_shorthand: true
+      social_url_shorthand: true
+      social_url_shortener: true
+      user: RootService
+      repo: MKDocs
+      normalize_issue_symbols: true
+  - pymdownx.mark
+  - pymdownx.progressbar
+  - pymdownx.saneheaders
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      base_path: snippets
+      auto_append:
+        - includes/abbreviations.md
+  - pymdownx.striphtml
+  - pymdownx.superfences:
+      preserve_tabs: true
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+      clickable_checkbox: true
+  - pymdownx.tilde
+
+nav:
+  - Home: 'index.md'
+  - HowTos:
+      - Allgemein:
+          - 'howtos/general/getting_started.md'
+      - Sicherheit:
+          - 'howtos/security/server_hacked.md'
+      - FreeBSD:
+          - 'howtos/freebsd/mfsbsd_image.md'
+          - Remote Installation:
+              - 'howtos/freebsd/remote_install/intro.md'
+              - 'howtos/freebsd/remote_install/basesystem.md'
+              - 'howtos/freebsd/remote_install/baseports.md'
+              - 'howtos/freebsd/remote_install/basetools.md'
+          - Hosting System:
+              - 'howtos/freebsd/hosting_system/intro.md'
+              - Sicherheit:
+                  - 'howtos/freebsd/hosting_system/security/certbot.md'
+                  - 'howtos/freebsd/hosting_system/security/openssh.md'
+              - Nameserver:
+                  - 'howtos/freebsd/hosting_system/nameserver/unbound.md'
+              - Datenbanken:
+                  - 'howtos/freebsd/hosting_system/databases/postgresql.md'
+                  - 'howtos/freebsd/hosting_system/databases/mysql.md'
+              - Webserver:
+                  - 'howtos/freebsd/hosting_system/webserver/apache.md'
+                  - 'howtos/freebsd/hosting_system/webserver/nginx.md'
+                  - 'howtos/freebsd/hosting_system/webserver/php.md'
+                  - 'howtos/freebsd/hosting_system/webserver/nodejs.md'
+              - Mailserver:
+                  - 'howtos/freebsd/hosting_system/mailserver/dovecot.md'
+                  - 'howtos/freebsd/hosting_system/mailserver/postfix.md'
+                  - 'howtos/freebsd/hosting_system/mailserver/postfixadmin.md'
+                  - 'howtos/freebsd/hosting_system/mailserver/opendkim.md'
+                  - 'howtos/freebsd/hosting_system/mailserver/opendmarc.md'
+                  - 'howtos/freebsd/hosting_system/mailserver/spamassassin.md'
+                  - 'howtos/freebsd/hosting_system/mailserver/amavisd.md'
+                  - 'howtos/freebsd/hosting_system/mailserver/clamav.md'
+      - Gentoo:
+          - 'howtos/gentoo/remote_install.md'
+          - 'howtos/gentoo/hosting_system.md'
+  - Projekte:
+      - 'projects/rootforum_community.md'
+      - 'projects/mysql_tuning_primer.md'
+      - 'projects/certbot_wrapper.md'
+  - About:
+      - 'about/imprint.md'
+      - 'about/contact.md'
+      - 'about/privacy.md'
+      - 'about/terms.md'

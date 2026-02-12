@@ -1,0 +1,40 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# Build / cache
+.cache/
+site/
+dist/
+build/
+out/
+coverage/
+htmlcov/
+tmp/
+build.sh
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Node leftovers (if ever used locally)
+node_modules/

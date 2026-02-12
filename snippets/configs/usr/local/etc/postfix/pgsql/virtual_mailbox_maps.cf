@@ -1,0 +1,5 @@
+hosts       = 127.0.0.1:5432
+user        = postfix
+password    = __PASSWORD_POSTFIX__
+dbname      = postfixadmin
+query       = SELECT maildir FROM mailbox WHERE username='%s' AND (('%s' = 'smtp' AND smtp_active = true) OR ('%s' <> 'smtp' AND active = true))

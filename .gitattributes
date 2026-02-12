@@ -1,0 +1,29 @@
+# Normalize text files to LF
+* text=auto eol=lf
+
+# Common text formats
+*.md   text diff=markdown
+*.yml  text
+*.yaml text
+*.json text
+*.toml text
+*.ini  text
+*.cfg  text
+*.py   text
+*.sh   text eol=lf
+*.ps1  text eol=crlf
+
+# Binary assets
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.pdf  binary
+*.zip  binary
+*.gz   binary
+*.7z   binary
+*.mp4  binary
+*.mp3  binary
+*.ogg  binary

@@ -1,0 +1,5 @@
+# Device           Mountpoint    FStype     Options      Dump    Pass
+# Custom /etc/fstab for FreeBSD VM images
+/dev/mirror/rootfs    /             ufs        rw           1       1
+/dev/mirror/swapfs    none          swap       sw           0       0
+/dev/mirror/efiesp    /boot/efi     msdosfs    rw           2       2

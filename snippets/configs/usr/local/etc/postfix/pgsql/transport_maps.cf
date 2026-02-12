@@ -1,0 +1,5 @@
+hosts       = 127.0.0.1:5432
+user        = postfix
+password    = __PASSWORD_POSTFIX__
+dbname      = postfixadmin
+query       = SELECT REPLACE(transport, 'virtual', ':') AS transport FROM domain WHERE domain='%s' AND ('%s' <> 'smtp' AND active = true)

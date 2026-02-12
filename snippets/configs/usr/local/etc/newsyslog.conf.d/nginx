@@ -1,0 +1,2 @@
+/var/log/nginx-*.log                    644  13    *    $W6D0 JCG   /var/run/nginx.pid
+/data/www/vhosts/*/logs/nginx_*_log     644  24    *    $M1D0 JCG   /var/run/nginx.pid

@@ -1,0 +1,184 @@
+alias_database = hash:${config_directory}/aliases
+alias_maps = hash:${config_directory}/aliases
+allow_percent_hack = no
+always_add_missing_headers = yes
+amavisfeed_destination_recipient_limit = 2
+biff = no
+body_checks = pcre:${config_directory}/body_checks.pcre
+compatibility_level = 3.6
+debugger_command = PATH=/bin:/usr/bin:/usr/local/bin ddd
+    $daemon_directory/$process_name $process_id & sleep 5
+default_destination_concurrency_limit = 5
+disable_vrfy_command = yes
+dovecot_destination_recipient_limit = 1
+enable_long_queue_ids = yes
+enable_original_recipient = no
+header_checks = pcre:${config_directory}/header_checks
+home_mailbox = .maildir/
+inet_interfaces = all
+inet_protocols = all
+internal_mail_filter_classes = bounce
+lmtp_tls_mandatory_protocols = >=TLSv1.2
+lmtp_tls_protocols = >=TLSv1.2
+local_destination_concurrency_limit = 2
+local_header_rewrite_clients = permit_mynetworks permit_sasl_authenticated
+local_recipient_maps = $virtual_mailbox_maps
+local_transport = virtual
+mail_spool_directory = /data/vmail
+mailbox_size_limit = 0
+mailbox_transport = lmtp:unix:private/dovecot-lmtp
+masquerade_domains = $mydomain
+masquerade_exceptions = root mailer-daemon
+message_size_limit = 0
+milter_default_action = accept
+milter_protocol = 2
+mydestination = $myhostname localhost.$mydomain localhost localhost.localdomain
+mydomain = example.com
+myhostname = mail.$mydomain
+mynetworks =
+    127.0.0.0/8 [::1]/128
+    10.0.0.0/8 [fe80::]/10
+    __IPADDR4__/32 [__IPADDR6__]/64
+myorigin = $mydomain
+notify_classes = data protocol resource software
+openssl_path = /usr/local/bin/openssl
+policyd-spf_time_limit = 3600
+postscreen_access_list = permit_mynetworks
+    cidr:${config_directory}/postscreen_access.cidr
+    cidr:${config_directory}/postscreen_whitelist.cidr
+postscreen_bare_newline_action = enforce
+postscreen_bare_newline_enable = yes
+postscreen_blacklist_action = enforce
+postscreen_denylist_action = enforce
+postscreen_dnsbl_action = enforce
+postscreen_dnsbl_allowlist_threshold = 0
+postscreen_dnsbl_reply_map = texthash:${config_directory}/postscreen_dnsbl_reply
+postscreen_dnsbl_sites =
+    list.dnswl.org=127.0.[0..255].0*-2
+    list.dnswl.org=127.0.[0..255].1*-4
+    list.dnswl.org=127.0.[0..255].2*-6
+    list.dnswl.org=127.0.[0..255].3*-8
+    zen.spamhaus.org=127.0.0.20*20
+    zen.spamhaus.org=127.0.0.20*20
+    zen.spamhaus.org=127.0.0.9*99
+    zen.spamhaus.org=127.0.0.3*10
+    zen.spamhaus.org=127.0.0.2*3
+    zen.spamhaus.org=127.0.0.[4..7]*3
+    zen.spamhaus.org=127.0.0.[10..11]*3
+    swl.spamhaus.org*-10
+    bl.mailspike.net=127.0.0.2*10
+    bl.mailspike.net=127.0.0.10*5
+    bl.mailspike.net=127.0.0.11*4
+    bl.mailspike.net=127.0.0.12*3
+    bl.mailspike.net=127.0.0.13*2
+    bl.mailspike.net=127.0.0.14*1
+    wl.mailspike.net=127.0.0.16*-2
+    wl.mailspike.net=127.0.0.17*-4
+    wl.mailspike.net=127.0.0.18*-6
+    wl.mailspike.net=127.0.0.19*-8
+    wl.mailspike.net=127.0.0.20*-10
+    backscatter.spameatingmonkey.net*2
+    bl.ipv6.spameatingmonkey.net*2
+    bl.spameatingmonkey.net*2
+    bl.spamcop.net*2
+    db.wpbl.info*2
+    psbl.surriel.com*2
+    torexit.dan.me.uk*2
+    tor.dan.me.uk*1
+postscreen_dnsbl_threshold = 5
+postscreen_dnsbl_whitelist_threshold = -2
+postscreen_greet_action = enforce
+postscreen_non_smtp_command_enable = yes
+postscreen_pipelining_enable = yes
+proxy_read_maps = $canonical_maps $lmtp_generic_maps $local_recipient_maps
+    $mydestination $mynetworks $recipient_bcc_maps $recipient_canonical_maps
+    $relay_domains $relay_recipient_maps $relocated_maps $sender_bcc_maps
+    $sender_canonical_maps $smtp_generic_maps $smtpd_sender_login_maps
+    $transport_maps $virtual_alias_domains $virtual_alias_maps
+    $virtual_mailbox_domains $virtual_mailbox_maps $smtpd_sender_restrictions
+    $sender_dependent_relayhost_maps
+rbl_reply_maps = hash:${config_directory}/dnsbl_reply_map
+#receive_override_options = no_address_mappings
+#recipient_bcc_maps = proxy:pgsql:${config_directory}/pgsql/recipient_bcc_maps.cf
+recipient_delimiter = +
+relay_domains = $mydestination proxy:pgsql:${config_directory}/pgsql/relay_domains.cf
+remote_header_rewrite_domain = domain.invalid
+#sender_bcc_maps = proxy:pgsql:${config_directory}/pgsql/sender_bcc_maps.cf
+#sender_dependent_relayhost_maps = proxy:pgsql:${config_directory}/pgsql/sender_dependent_relayhost_maps.cf
+show_user_unknown_table_name = no
+smtp_dns_support_level = enabled
+smtp_tls_CAfile = /etc/ssl/cert.pem
+smtp_tls_CApath = /etc/ssl/certs
+smtp_tls_connection_reuse = yes
+smtp_tls_loglevel = 1
+smtp_tls_mandatory_protocols = >=TLSv1.2
+smtp_tls_note_starttls_offer = yes
+smtp_tls_protocols = >=TLSv1.2
+smtp_tls_security_level = may
+smtpd_client_port_logging = yes
+smtpd_client_restrictions = permit_mynetworks permit_sasl_authenticated
+    sleep 1
+smtpd_command_filter = pcre:${config_directory}/command_filter.pcre
+smtpd_data_restrictions = reject_unauth_pipelining reject_multi_recipient_bounce
+smtpd_etrn_restrictions = reject
+smtpd_helo_required = yes
+smtpd_helo_restrictions = permit_mynetworks permit_sasl_authenticated
+    check_helo_access pcre:${config_directory}/helo_access.pcre
+    reject_non_fqdn_helo_hostname reject_unknown_helo_hostname
+smtpd_recipient_restrictions = permit_mynetworks permit_sasl_authenticated
+    reject_unauth_destination
+    check_recipient_access      pcre:${config_directory}/recipient_checks.pcre
+    reject_non_fqdn_recipient reject_unlisted_recipient reject_unknown_recipient_domain
+    reject_rhsbl_sender         zen.spamhaus.org=127.0.1.[2..99],
+    reject_rhsbl_helo           zen.spamhaus.org=127.0.1.[2..99],
+    reject_rhsbl_reverse_client zen.spamhaus.org=127.0.1.[2..99],
+    reject_rhsbl_sender         zen.spamhaus.org=127.0.2.[2..24],
+    reject_rhsbl_helo           zen.spamhaus.org=127.0.2.[2..24],
+    reject_rhsbl_reverse_client zen.spamhaus.org=127.0.2.[2..24],
+    reject_rbl_client           zen.spamhaus.org=127.0.0.[2..255]
+smtpd_reject_unlisted_sender = yes
+smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated
+    reject_unauth_destination
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_authenticated_header = yes
+smtpd_sasl_path = private/dovecot-auth
+smtpd_sasl_type = dovecot
+smtpd_sender_login_maps = proxy:pgsql:${config_directory}/pgsql/sender_login_maps.cf
+smtpd_sender_restrictions = permit_mynetworks permit_sasl_authenticated
+    check_sender_access pcre:${config_directory}/sender_access.pcre
+    reject_sender_login_mismatch reject_non_fqdn_sender
+    reject_unlisted_sender reject_unknown_sender_domain
+smtpd_tls_CAfile = /etc/ssl/cert.pem
+smtpd_tls_CApath = /etc/ssl/certs
+smtpd_tls_auth_only = yes
+smtpd_tls_chain_files =
+    /usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem
+    /usr/local/etc/letsencrypt/live/mail.example.com/fullchain.pem
+smtpd_tls_loglevel = 1
+smtpd_tls_mandatory_protocols = >=TLSv1.2
+smtpd_tls_protocols = >=TLSv1.2
+smtpd_tls_received_header = yes
+smtpd_tls_security_level = may
+smtputf8_enable = no
+soft_bounce = yes
+strict_rfc821_envelopes = yes
+swap_bangpath = no
+tls_eecdh_auto_curves = X448 X25519 secp384r1 prime256v1 secp521r1
+tls_high_cipherlist = CHACHA20 AESGCM !SSLv3 !TLSv1 !DSS !RSA !PSK !aNULL @STRENGTH
+tls_medium_cipherlist = CHACHA20 AESGCM !SSLv3 !TLSv1 !DSS !RSA !PSK !aNULL @STRENGTH
+tls_preempt_cipherlist = yes
+tls_ssl_options = NO_RENEGOTIATION NO_SESSION_RESUMPTION_ON_RENEGOTIATION
+transport_maps = proxy:pgsql:${config_directory}/pgsql/transport_maps.cf
+virtual_alias_domains =
+    proxy:pgsql:${config_directory}/pgsql/virtual_alias_domains_maps.cf
+    proxy:pgsql:${config_directory}/pgsql/virtual_alias_domains_catchall_maps.cf
+virtual_alias_maps =
+    proxy:pgsql:${config_directory}/pgsql/virtual_alias_maps.cf
+    proxy:pgsql:${config_directory}/pgsql/virtual_alias_domains_mailbox_maps.cf
+virtual_gid_maps = static:5000
+virtual_mailbox_base = /var/vmail
+virtual_mailbox_domains = proxy:pgsql:${config_directory}/pgsql/virtual_mailbox_domains.cf
+virtual_mailbox_maps = proxy:pgsql:${config_directory}/pgsql/virtual_mailbox_maps.cf
+virtual_minimum_uid = 5000
+virtual_transport = lmtp:unix:private/dovecot-lmtp
+virtual_uid_maps = static:5000

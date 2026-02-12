@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /
+No-Archive: true
+No-Cache: true
+Data-Usage: no-training
+Contact: security@rootservice.org

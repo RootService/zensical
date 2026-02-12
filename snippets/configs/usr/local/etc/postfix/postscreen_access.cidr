@@ -1,0 +1,6 @@
+127.0.0.0/8 permit
+[::1]/128 permit
+10.0.0.0/8 permit
+[fe80::]/10 permit
+__IPADDR4__/32 permit
+[__IPADDR6__]/64 permit

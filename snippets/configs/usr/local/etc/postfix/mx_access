@@ -1,0 +1,28 @@
+0.0.0.0/8                REJECT MX in RFC 1122 Broadcast Network
+10.0.0.0/8               REJECT MX in RFC 1918 Private Network
+100.64.0.0/10            REJECT MX in RFC 6598 Shared Address Space
+127.0.0.0/8              REJECT MX in RFC 1122 Loopback Network
+169.254.0.0/16           REJECT MX in RFC 3927 Link Local Network
+172.16.0.0/12            REJECT MX in RFC 1918 Private Network
+192.0.0.0/24             REJECT MX in RFC 6890 IETF Protocol Assignments Network
+192.0.0.0/29             REJECT MX in RFC 6333 DS-Lite Network
+192.0.2.0/24             REJECT MX in RFC 5737 Documentation (TEST-NET-1) Network
+192.168.0.0/16           REJECT MX in RFC 1918 Private Network
+198.18.0.0/15            REJECT MX in RFC 2544 Interconnect Device Benchmark Testing Network
+198.51.100.0/24          REJECT MX in RFC 5737 Documentation (TEST-NET-2) Network
+203.0.113.0/24           REJECT MX in RFC 5737 Documentation (TEST-NET-3) Network
+224.0.0.0/4              REJECT MX in RFC 5771 Multicast Network
+240.0.0.0/4              REJECT MX in RFC 1122 Reserved Network
+255.255.255.255/32       REJECT MX in RFC 919  Limited Broadcast Destination Address
+::/128                   REJECT MX in RFC 4291 Unspecified Address
+::1/128                  REJECT MX in RFC 4291 Loopback Address
+::ffff:0:0/96            REJECT MX in RFC 4291 IPv4-mapped Address
+100::/64                 REJECT MX in RFC 6666 Discard-Only Network
+2001::/23                REJECT MX in RFC 2928 IETF Protocol Assignements Network
+2001::/32                REJECT MX in RFC 4380 TEREDO Network
+2001:2::/48              REJECT MX in RFC 5180 Interconnect Device Benchmark Testing Network
+2001:10::/28             REJECT MX in RFC 4843 ORCHID Network
+2001:db8::/32            REJECT MX in RFC 3849 Documentation Network
+fc00::/7                 REJECT MX in RFC 4193 Unique-Local Network
+fe80::/10                REJECT MX in RFC 4291 Linked-Scoped Unicast Network
+ff00::/8                 REJECT MX in RFC 4291 Multicast Network

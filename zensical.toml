@@ -11,18 +11,18 @@
 # The site_name is shown in the page header and the browser window title
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_name
-site_name = "Documentation"
+site_name = "RootService"
 
 # The site_description is included in the HTML head and should contain a
 # meaningful description of the site content for use by search engines.
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_description
-site_description = "A new project generated from the default template project."
+site_description = "RootService Documentation (migrated from MkDocs)"
 
 # The site_author attribute. This is used in the HTML head element.
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_author
-site_author = "<your name here>"
+site_author = "RootService Team"
 
 # The site_url is the canonical URL for your site. When building online
 # documentation you should set this.
@@ -108,7 +108,7 @@ Copyright &copy; 2026 The authors
 # Read more:
 # - https://zensical.org/docs/setup/language/
 #
-language = "en"
+language = "de"
 
 # Zensical provides a number of feature toggles that change the behavior
 # of the documentation site.

@@ -30,6 +30,12 @@ site_author = "RootService Team"
 # Read more: https://zensical.org/docs/setup/basics/#site_url
 site_url = "https://www.rootservice.org/"
 
+# Repository settings (enables repo + edit/view buttons)
+repo_url = "https://github.com/RootService/zensical"
+repo_name = "GitHub"
+# IMPORTANT: set branch to main (Zensical defaults to master)
+edit_uri = "edit/main/docs"
+
 # The copyright notice appears in the page footer and can contain an HTML
 # fragment.
 #
@@ -140,7 +146,7 @@ nav = [
 # Read more:
 # - https://zensical.org/docs/customization/#extending-the-theme
 #
-#custom_dir = "overrides"
+custom_dir = "zensical_overrides"
 
 # With the "favicon" option you can set your own image to use as the icon
 # browsers will use in the browser title bar or tab bar. The path provided

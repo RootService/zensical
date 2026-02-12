@@ -1,3 +1,4 @@
+
 # ============================================================================
 #
 # The configuration produced by default is meant to highlight the features
@@ -17,7 +18,7 @@ site_name = "RootService"
 # meaningful description of the site content for use by search engines.
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_description
-site_description = "RootService Documentation (migrated from MkDocs)"
+site_description = "Wir bieten Service, Support, HowTos und andere nützliche Informationen rund um die Administration von FreeBSD und Linux basierten Servern"
 
 # The site_author attribute. This is used in the HTML head element.
 #
@@ -27,14 +28,14 @@ site_author = "RootService Team"
 # The site_url is the canonical URL for your site. When building online
 # documentation you should set this.
 # Read more: https://zensical.org/docs/setup/basics/#site_url
-#site_url = "https://www.example.com/"
+site_url = "https://www.rootservice.org/"
 
 # The copyright notice appears in the page footer and can contain an HTML
 # fragment.
 #
 # Read more: https://zensical.org/docs/setup/basics/#copyright
 copyright = """
-Copyright &copy; 2026 The authors
+Copyright &copy; 2002-2026 RootService Team
 """
 
 # Zensical supports both implicit navigation and explicitly defined navigation.

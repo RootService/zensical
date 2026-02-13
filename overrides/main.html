@@ -1,6 +1,3 @@
-{#-
-  RootService Zensical overrides
--#}
 {% extends "base.html" %}
 
 {% block site_meta %}
@@ -18,7 +15,7 @@
         <meta name="description" content="{{ config.site_description }}" />
       {% endif %}
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
-      {% if page and page.meta and page.meta.robots %}
+      {% if page.meta and page.meta.robots %}
         <meta name="CCBot" content="nofollow" />
         <meta name="robots" content="noai, noimageai, notrain, noarchive, noimageindex, max-snippet:-1, max-image-preview:-1, max-video-preview:-1, {{ page.meta.robots }}" />
       {% else %}
@@ -27,10 +24,22 @@
       {% endif %}
         <meta name="tdm-reservation" content="1" />
         <meta name="format-detection" content="telephone=no" />
-      {% if page.meta and page.meta.author.name %}
-        <meta name="author" content="{"email": "{{ page.meta.author.email }}", "name": "{{ page.meta.author.name }}", "url": "{{ page.meta.author.url }}"}">
+      {% if page.meta and page.meta.author and page.meta.author.name and page.meta.author.url and page.meta.author.email %}
+        <meta name="author" content="{"email": "{{ page.meta.author.email }}", "name": "{{ page.meta.author.name }}", "url": "{{ page.meta.author.url }}"}" />
+      {% elif page.meta and page.meta.author and page.meta.author.name and page.meta.author.url %}
+        <meta name="author" content="{"name": "{{ page.meta.author.name }}", "url": "{{ page.meta.author.url }}"}" />
+      {% elif page.meta and page.meta.author and page.meta.author.name and page.meta.author.email %}
+        <meta name="author" content="{"email": "{{ page.meta.author.email }}", "name": "{{ page.meta.author.name }}"}" />
+      {% elif page.meta and page.meta.author and page.meta.author.name %}
+        <meta name="author" content="{"name": "{{ page.meta.author.name }}"}" />
+      {% elif config.extra.site_author.name and config.extra.site_author.url and config.extra.site_author.email %}
+        <meta name="author" content="{"email": "{{ config.extra.site_author.email }}", "name": "{{ config.extra.site_author.name }}", "url": "{{ config.extra.site_author.url }}"}" />
+      {% elif config.extra.site_author.name and config.extra.site_author.url %}
+        <meta name="author" content="{"name": "{{ config.extra.site_author.name }}", "url": "{{ config.extra.site_author.url }}"}" />
+      {% elif config.extra.site_author.name  and config.extra.site_author.email %}
+        <meta name="author" content="{"email": "{{ config.extra.site_author.email }}", "name": "{{ config.extra.site_author.name }}"}" />
       {% elif config.extra.site_author.name %}
-        <meta name="author" content="{"email": "{{ config.extra.site_author.email }}", "name": "{{ config.extra.site_author.name }}", "url": "{{ config.extra.site_author.url }}"}">
+        <meta name="author" content="{"name": "{{ config.extra.site_author.name }}"}" />
       {% endif %}
       {% if config.extra.site_publisher.name %}
         <meta name="publisher" content="{{ config.extra.site_publisher.name }}" />
@@ -41,7 +50,7 @@
         <meta name="date" content="{{ page.meta.date }}T12:00:00+02:00" />
       {% else %}
 {#-
-        <meta name="date" content="{{ build_date_utc() }}T12:00:00+02:00" />
+        <meta name="date" content="{{ build_date_utc.date() }}T12:00:00+02:00" />
 -#}
       {% endif %}
         <link rel="license" href="{{ config.extra.site_license.url | url }}" />
@@ -54,7 +63,7 @@
       {% if page.next_page %}
         <link rel="next" href="{{ page.next_page.url | url }}" />
       {% endif %}
-      {% if page.meta and page.meta.author.url %}
+      {% if page.meta and page.meta.author and page.meta.author.url %}
         <link rel="me" href="{{ page.meta.author.url }}" />
       {% elif config.extra.site_author.url %}
         <link rel="me" href="{{ config.extra.site_author.url }}" />
@@ -69,12 +78,14 @@
         <link rel="manifest" href="/assets/favicons/manifest.json" type="application/manifest+json" />
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0013" />
-      {% if "rss" in config.plugins %}
-        <link rel="alternate" type="application/rss+xml" title="{{ lang.t('rss.created') }}" href="{{ 'feed_rss_created.xml' | url }}" />
-        <link rel="alternate" type="application/rss+xml" title="{{ lang.t('rss.updated') }}" href="{{ 'feed_rss_updated.xml' | url }}" />
-      {% endif %}
         <meta property="article:content_tier" content="free" />
         <meta property="article:opinion" content="false" />
+        <meta name="generator" content="{{ generator }}">
+      {% if config.extra.alternate is iterable %}
+        {% for alt in config.extra.alternate %}
+          <link rel="alternate" href="{{ alt.link | url }}" hreflang="{{ alt.lang | d(lang.t('language')) }}">
+        {% endfor %}
+      {% endif %}
 {% endblock %}
 
 
@@ -90,22 +101,21 @@
 
 
 {% block styles %}
-<!--
-        <link rel="preload" as="style" href="{{ 'assets/stylesheets/modern/main.1e989742.min.css' | url }}" onload="this.onload=null;this.rel='stylesheet'" />
-        <noscript><link rel="stylesheet" href="{{ 'assets/stylesheets/modern/main.1e989742.min.css' | url }}" /></noscript>
--->
-        <link rel="preload" as="style" href="{{ 'assets/stylesheets/modern/main.202509142335.css' | url }}" onload="this.onload=null;this.rel='stylesheet'" />
-        <noscript><link rel="stylesheet" href="{{ 'assets/stylesheets/modern/main.202509142335.css' | url }}" /></noscript>
+      {% if config.theme.variant == "modern" %}
+        {% set href = 'assets/stylesheets/modern/main.1e989742.min.css' | url %}
+      {% else %}
+        {% set href = 'assets/stylesheets/classic/main.d9d44b50.min.css' | url %}
+      {% endif %}
+        <link rel="preload" as="style" href="{{ href }}" onload="this.onload=null;this.rel='stylesheet'" />
+        <noscript><link rel="stylesheet" href="{{ href }}" /></noscript>
       {% if config.theme.palette %}
-        {% set palette = config.theme.palette %}
-<!--
-        <link rel="preload" as="style" href="{{ 'assets/stylesheets/modern/palette.dfe2e883.min.css' | url }}" onload="this.onload=null;this.rel='stylesheet'" />
-        <noscript><link rel="stylesheet" href="{{ 'assets/stylesheets/modern/palette.dfe2e883.min.css' | url }}" /></noscript>
--->
-        <link rel="preload" as="style" href="{{ 'assets/stylesheets/modern/palette.202509142335.css' | url }}" onload="this.onload=null;this.rel='stylesheet'" />
-        <noscript><link rel="stylesheet" href="{{ 'assets/stylesheets/modern/palette.202509142335.css' | url }}" /></noscript>
-        <link rel="preload" as="style" href="{{ 'assets/stylesheets/modern/github.202509142335.css' | url }}" onload="this.onload=null;this.rel='stylesheet'" />
-        <noscript><link rel="stylesheet" href="{{ 'assets/stylesheets/modern/github.202509142335.css' | url }}" /></noscript>
+        {% if config.theme.variant == "modern" %}
+          {% set href = 'assets/stylesheets/modern/palette.dfe2e883.min.css' | url %}
+        {% else %}
+          {% set href = 'assets/stylesheets/classic/palette.7dc9a0ad.min.css' | url %}
+        {% endif %}
+        <link rel="preload" as="style" href="{{ href }}" onload="this.onload=null;this.rel='stylesheet'" />
+        <noscript><link rel="stylesheet" href="{{ href }}" /></noscript>
       {% endif %}
       {% include "partials/icons.html" %}
       {% for path in config.extra_css %}
@@ -148,7 +158,7 @@
             "@id": "{{ page.canonical_url }}",
             "url": "{{ page.canonical_url }}",
             "name": "{{ config.site_name }}",
-            {% if page.meta.title %}
+            {% if page.meta and page.meta.title %}
             "headline": "{{ page.meta.title }}",
             {% elif page.title and not page.is_homepage %}
             "headline": "{{ page.title | striptags }}",
@@ -158,10 +168,10 @@
             "inLanguage": "{{ lang.t('language') }}",
             "author": {
               "@type": "Person",
-            {% if page.meta.author.name and page.meta.author.url %}
+            {% if page.meta.author and page.meta.author.name and page.meta.author.url %}
               "name": "{{ page.meta.author.name }}",
               "url": "{{ page.meta.author.url }}"
-            {% elif page.meta.author.name %}
+            {% elif page.meta.author and page.meta.author.name %}
               "name": "{{ page.meta.author.name }}"
             {% elif config.extra.site_author.name and config.extra.site_author.url %}
               "name": "{{ config.extra.site_author.name }}",
@@ -181,21 +191,21 @@
               }
             },
             {% endif %}
-            {% if page.meta.date %}
+            {% if page.meta and page.meta.date %}
             "datePublished": "{{ page.meta.date }}T12:00:00+02:00",
             {% else %}
 {#-
             "datePublished": "{{ build_date_utc.date() }}T12:00:00+02:00",
 -#}
             {% endif %}
-            {% if page.meta.lastmod %}
+            {% if page.meta and page.meta.lastmod %}
             "dateModified": "{{ page.meta.lastmod }}T12:00:00+02:00",
             {% else %}
 {#-
             "dateModified": "{{ build_date_utc.date() }}T12:00:00+02:00",
 -#}
             {% endif %}
-            {% if page.meta.license.url %}
+            {% if page.meta and page.meta.license and page.meta.license.url %}
             "license": "{{ page.meta.license.url }}",
             {% elif config.extra.site_license.url %}
             "license": "{{ config.extra.site_license.url }}",

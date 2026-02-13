@@ -357,15 +357,73 @@ code = "Roboto Mono"
 # - https://zensical.org/docs/authoring/icons-emojis/#search
 # ----------------------------------------------------------------------------
 [project.theme.icon]
-#logo = "assets/images/rootservice.svg"
-#repo = "lucide/smile"
+logo = "rootservice"
+repo = "lucide/github"
 
 # ----------------------------------------------------------------------------
 # The "extra" section contains miscellaneous settings.
 # ----------------------------------------------------------------------------
+[project.extra]
+homepage = "https://www.rootservice.org/"
+view_url = "https://raw.githubusercontent.com/RootService/MKDocs/main/docs"
+paypal_url = "https://www.paypal.me/JoeUser"
+generator = false
+
+[[project.extra.site_author]]
+name = "Markus Kohlmeyer"
+url = "https://github.com/JoeUser78"
+email = "joeuser@rootservice.org"
+
+[[project.extra.site_publisher]]
+name = "RootService Team"
+url = "https://github.com/RootService"
+email = "team@rootservice.org"
+
+[[project.extra.site_license]]
+name = "Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)"
+shortname = "CC BY-NC-SA 4.0"
+url = "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+
+[[project.extra.schema]]
+'@context' = "https://schema.org"
+'@type' = "WebSite"
+name = "RootService"
+url = "https://www.rootservice.org/"
+license = "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+
+[[project.extra.schema.author]]
+name = "Markus Kohlmeyer"
+url = "https://github.com/JoeUser78"
+email = "joeuser@rootservice.org"
+
+[[project.extra.schema.publisher]]
+name = "RootService"
+logo = "material/library"
+email = "team@rootservice.org"
+
+[[project.extra.consent]]
+title = "Cookie consent"
+description = """
+  We use cookies to recognize your repeated visits and preferences, as well
+  as to measure the effectiveness of our documentation and whether users
+  find what they're searching for. With your consent, you're helping us to
+  make our documentation better.
+"""
+
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
-link = "https://github.com/RootService/zensical"
+link = "https://github.com/JoeUser78"
+name = "GitHub"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/linkedin"
+link = "https://linkedin.com/in/MarkusKohlmeyer78"
+name = "LinkedIn"
+
+[[project.extra.social]]
+icon = "material/email"
+link = "mailto:info@rootservice.org"
+name = "E-Mail"
 
 [project.markdown_extensions.abbr]
 [project.markdown_extensions.admonition]

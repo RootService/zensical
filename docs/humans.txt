@@ -1,6 +1,3 @@
 /* TEAM */
 Developer: Markus Kohlmeyer
 Site: https://www.rootservice.org/
-
-/* THANKS */
-Built with Material for MkDocs

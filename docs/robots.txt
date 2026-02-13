@@ -23,8 +23,8 @@ Disallow: /
 User-agent: *
 Allow: /
 Disallow: /about/
-Disallow: /search/
-Disallow: /help/
+Disallow: /assets/
+Disallow: /resources/
 Crawl-delay: 2
 
 Sitemap: https://www.rootservice.org/sitemap.xml

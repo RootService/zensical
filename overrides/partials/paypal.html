@@ -1,6 +1,0 @@
-{% if config.theme.icon.paypal %}
-  <img src="{{ config.theme.icon.paypal | url }}" alt="Donate via PayPal">
-{% else %}
-  {% set icon = config.theme.icon.paypal or "fontawesome/brands/paypal" %}
-  {% include ".icons/" ~ icon ~ ".svg" %}
-{% endif %}

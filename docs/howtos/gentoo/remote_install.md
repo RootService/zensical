@@ -6,6 +6,7 @@ author:
 publisher:
   name: RootService Team
   url: https://github.com/RootService
+  email: team@rootservice.org
 license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
@@ -15,34 +16,24 @@ date: '2003-03-02'
 lastmod: '2014-09-01'
 title: Remote Installation
 description: In diesem HowTo wird step-by-step die Remote Installation von Gentoo Linux 64Bit auf einem dedizierten Server beschrieben.
-keywords:
-  - Remote Installation
-  - mkdocs
-  - docs
-lang: de
 robots: index, follow
+lang: de
 hide: []
 search:
   exclude: false
 ---
 
+# Remote Installation
+
 ## Einleitung
 
-<!-- markdownlint-disable MD046 -->
+!!!danger
+Dieses HowTo wird seit **2014-09-01** nicht mehr aktiv gepflegt und entspricht daher nicht mehr dem aktuellen Stand.
 
-???+ warning
+Die Verwendung dieses HowTo geschieht somit auf eigene Gefahr!
+!!!
 
-    Dieses HowTo wird seit **2014-09-01** nicht mehr aktiv gepflegt und entspricht daher nicht mehr dem aktuellen Stand.
-
-    Die Verwendung dieses HowTo geschieht somit auf eigene Gefahr!
-
-<!-- markdownlint-enable MD046 -->
-
-In diesem HowTo beschreibe ich step-by-step die Remote Installation von [Gentoo Linux
-Hardened](https://wiki.gentoo.org/wiki/Project:Hardened){: target="\_blank" rel="noopener"} 64Bit auf einem dedizierten
-Server. Um eine weitere Republikation der offiziellen [Gentoo Linux
-Dokumentation](https://www.gentoo.org/support/documentation/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich
-in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
+In diesem HowTo beschreibe ich step-by-step die Remote Installation von [Gentoo Linux Hardened](https://wiki.gentoo.org/wiki/Project:Hardened){: target="\_blank" rel="noopener"} 64Bit auf einem dedizierten Server. Um eine weitere Republikation der offiziellen [Gentoo Linux Dokumentation](https://www.gentoo.org/support/documentation/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
 
 Folgende Punkte sind in diesem HowTo zu beachten.
 
@@ -51,26 +42,16 @@ Folgende Punkte sind in diesem HowTo zu beachten.
 - Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
 - Alle Passworte werden als `__PASSWORD__` dargestellt und sind selbstständig durch sichere Passworte zu ersetzen.
 - Die Domain des Servers lautet `example.com` und ist selbstständig durch die eigene Domain zu ersetzen.
-- Der Hostname des Servers lautet `devnull` und ist selbstständig durch den eigenen Hostnamen zu ersetzen
-  (FQDN=devnull.example.com).
+- Der Hostname des Servers lautet `devnull` und ist selbstständig durch den eigenen Hostnamen zu ersetzen (FQDN=devnull.example.com).
 - Es wird der FQDN `devnull.example.com` verwendet und ist selbstständig im DNS zu registrieren.
 
 ## Das Referenzsystem
 
-Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM
-VirtualBox](https://www.virtualbox.org/){: target="\_blank" rel="noopener"} unter [Microsoft Windows 7 Professional (64
-Bit)](https://www.microsoft.com/en-us/windows/windows-11){: target="\_blank" rel="noopener"} entschieden. So lässt sich
-ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle
-Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
+Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM VirtualBox](https://www.virtualbox.org/){: target="\_blank" rel="noopener"} unter [Microsoft Windows 7 Professional (64 Bit)](https://www.microsoft.com/en-us/windows/windows-11){: target="\_blank" rel="noopener"} entschieden. So lässt sich ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
 
-Trotzdem habe ich dieses HowTo so ausgelegt, dass es sich nahezu unverändert auf dedizierte Server übertragen lässt und
-dieses auch auf mehreren dedizierten Servern getestet.
+Trotzdem habe ich dieses HowTo so ausgelegt, dass es sich nahezu unverändert auf dedizierte Server übertragen lässt und dieses auch auf mehreren dedizierten Servern getestet.
 
-Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64
-Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="\_blank" rel="noopener"} zurückgreife. Zur
-Simulation des bei nahezu allen Anbietern dedizierter Server vorhandene Rettungssystem, nachfolgend RescueSystem
-genannt, wird in diesem HowTo die auf [Gentoo Linux](https://www.gentoo.org/){: target="\_blank" rel="noopener"}
-basierende [SystemRescueCD](https://www.system-rescue.org/){: target="\_blank" rel="noopener"} eingesetzt.
+Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="\_blank" rel="noopener"} zurückgreife. Zur Simulation des bei nahezu allen Anbietern dedizierter Server vorhandene Rettungssystem, nachfolgend RescueSystem genannt, wird in diesem HowTo die auf [Gentoo Linux](https://www.gentoo.org/){: target="\_blank" rel="noopener"} basierende [SystemRescueCD](https://www.system-rescue.org/){: target="\_blank" rel="noopener"} eingesetzt.
 
 VirtualBox und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 
@@ -81,10 +62,7 @@ winget install Oracle.VirtualBox
 
 ## Die Virtuelle Maschine
 
-Als Erstes öffnen wir eine neue PowerShell und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine
-bekommt den Namen `Gentoo` und wird mit 2048MB RAM, 32MB VideoRAM, zwei 32GB SATA-Festplatte, einem DVD-Player, sowie
-einer Intel-Netzwerkkarte ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC
-(Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
+Als Erstes öffnen wir eine neue PowerShell und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `Gentoo` und wird mit 2048MB RAM, 32MB VideoRAM, zwei 32GB SATA-Festplatte, einem DVD-Player, sowie einer Intel-Netzwerkkarte ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
 ```powershell
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" createvm --name "Gentoo" --ostype Gentoo_64 --register
@@ -107,9 +85,7 @@ cd "${Env:USERPROFILE}\VirtualBox VMs\Gentoo"
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "Gentoo" --storagectl "AHCI Controller" --port 1 --device 0 --type hdd --medium "Gentoo2.vdi"
 ```
 
-Die virtuelle Maschine, genauer die virtuelle Netzwerkkarte, kann dank NAT zwar problemlos mit der Aussenwelt, aber
-leider nicht direkt mit dem Hostsystem kommunizieren. Aus diesem Grund richten wir nun für den SSH-Zugang noch ein
-Portforwarding ein, welches den Port 2222 des Hostsystems auf den Port 22 der virtuellen Maschine weiterleitet.
+Die virtuelle Maschine, genauer die virtuelle Netzwerkkarte, kann dank NAT zwar problemlos mit der Aussenwelt, aber leider nicht direkt mit dem Hostsystem kommunizieren. Aus diesem Grund richten wir nun für den SSH-Zugang noch ein Portforwarding ein, welches den Port 2222 des Hostsystems auf den Port 22 der virtuellen Maschine weiterleitet.
 
 ```powershell
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "Gentoo" --natpf1 SSH,tcp,,2222,,22
@@ -119,10 +95,7 @@ Nachdem die virtuelle Maschine nun konfiguriert ist, wird es Zeit diese zu boote
 
 ## RescueSystem booten
 
-Um unser Gentoo Linux Hardened installieren zu können, müssen wir unsere virtuelle Maschine mit einem RescueSystem
-booten. Hierfür eignet sich die auf [Gentoo Linux](https://www.gentoo.org/){: target="\_blank" rel="noopener"}
-basierende [SystemRescueCD](https://www.system-rescue.org/){: target="\_blank" rel="noopener"} am Besten, welche wir
-mittels des mit Windows mitgelieferten FTP-Client herunterladen und unserer virtuellen Maschine als Bootmedium zuweisen.
+Um unser Gentoo Linux Hardened installieren zu können, müssen wir unsere virtuelle Maschine mit einem RescueSystem booten. Hierfür eignet sich die auf [Gentoo Linux](https://www.gentoo.org/){: target="\_blank" rel="noopener"} basierende [SystemRescueCD](https://www.system-rescue.org/){: target="\_blank" rel="noopener"} am Besten, welche wir mittels des mit Windows mitgelieferten FTP-Client herunterladen und unserer virtuellen Maschine als Bootmedium zuweisen.
 
 ```powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\Gentoo"
@@ -144,8 +117,7 @@ Wir können das RescueSystem jetzt booten.
 
 Im Bootmenü wählen wir die erste Option "boot with default options" aus.
 
-Wer mit dem amerikanischen Tastaturlayout nicht zurechtkommt, sollte während des Bootens die Frage nach der Keymap mit
-`de` beantworten.
+Wer mit dem amerikanischen Tastaturlayout nicht zurechtkommt, sollte während des Bootens die Frage nach der Keymap mit `de` beantworten.
 
 Ist der Bootvorgang abgeschlossen, wird als Erstes das root-Passwort für das RescueSystem gesetzt.
 
@@ -153,8 +125,7 @@ Ist der Bootvorgang abgeschlossen, wird als Erstes das root-Passwort für das Re
 passwd root
 ```
 
-Jetzt sollten wir uns mittels PuTTY als `root` in das RescueSystem einloggen und mit der Installation unseres Gentoo
-Linux Hardened fortfahren können.
+Jetzt sollten wir uns mittels PuTTY als `root` in das RescueSystem einloggen und mit der Installation unseres Gentoo Linux Hardened fortfahren können.
 
 ```powershell
 putty -ssh -P 2222 root@127.0.0.1
@@ -162,20 +133,14 @@ putty -ssh -P 2222 root@127.0.0.1
 
 ## Partitionieren der Festplatte
 
-Bevor wir anfangen, bereinigen wir die Festplatten von jeglichen Datenrückständen, indem wir sie mit Nullen
-überschreiben. Je nach Festplattengrösse kann dies einige Stunden bis Tage in Anspruch nehmen. Aus diesem Grund
-verlegen wir diese Jobs mittels `nohup` in den Hintergrund, so dass wir uns zwischenzeitlich ausloggen können ohne dass
-dabei die Jobs automatisch von der Shell abgebrochen werden. Ob die Jobs fertig sind, lässt dann mittels `ps -auxfwww`
-und `top -atCP` ermitteln.
+Bevor wir anfangen, bereinigen wir die Festplatten von jeglichen Datenrückständen, indem wir sie mit Nullen überschreiben. Je nach Festplattengrösse kann dies einige Stunden bis Tage in Anspruch nehmen. Aus diesem Grund verlegen wir diese Jobs mittels `nohup` in den Hintergrund, so dass wir uns zwischenzeitlich ausloggen können ohne dass dabei die Jobs automatisch von der Shell abgebrochen werden. Ob die Jobs fertig sind, lässt dann mittels `ps -auxfwww` und `top -atCP` ermitteln.
 
 ```shell
 nohup dd if=/dev/zero of=/dev/sda bs=512  &
 nohup dd if=/dev/zero of=/dev/sdb bs=512  &
 ```
 
-Da jeder Administrator andere Präferenzen an sein Partitionslayout stellt und wir andernfalls mit diesem HowTo nicht
-weiterkommen, verwenden wir im Folgenden ein Standard-Partitionslayout. Fortgeschrittenere Linux-Administratoren können
-dieses Partitionslayout selbstverständlich an ihre eigenen Bedürfnisse anpassen.
+Da jeder Administrator andere Präferenzen an sein Partitionslayout stellt und wir andernfalls mit diesem HowTo nicht weiterkommen, verwenden wir im Folgenden ein Standard-Partitionslayout. Fortgeschrittenere Linux-Administratoren können dieses Partitionslayout selbstverständlich an ihre eigenen Bedürfnisse anpassen.
 
 | Partition           | Mountpunkt |  Filesystem  | Grösse |
 | :------------------ | :--------- | :----------: | -----: |
@@ -252,14 +217,9 @@ mdadm --create /dev/md5 --name=swap --bitmap=internal --level=raid1 --raid-devic
 
 ## Formatieren der Partitionen
 
-Die frisch angelegten Partitionen müssen selbstverständlich noch formatiert werden. Normalerweise formatiere ich die
-Rootpartition mit XFS, da allerdings nicht jeder Administrator XFS für seine Rootpartition verwenden möchte, werden wir
-ein manuell optimiertes EXT3 anlegen. Dieses ist nötig, da die e2fsprogs bei einigen Distributionen und somit auch
-RescueSystemen oft veraltet oder suboptimal konfiguriert sind und daher nicht immer ein für Server optimiertes EXT3
-erzeugen.
+Die frisch angelegten Partitionen müssen selbstverständlich noch formatiert werden. Normalerweise formatiere ich die Rootpartition mit XFS, da allerdings nicht jeder Administrator XFS für seine Rootpartition verwenden möchte, werden wir ein manuell optimiertes EXT3 anlegen. Dieses ist nötig, da die e2fsprogs bei einigen Distributionen und somit auch RescueSystemen oft veraltet oder suboptimal konfiguriert sind und daher nicht immer ein für Server optimiertes EXT3 erzeugen.
 
-Die Bootpartition sollte grundsätzlich mit EXT2 formatiert weren, da dieses Filesystem als Einziges von allen gängigen
-Linux-Bootloadern fehlerfrei unterstützt wird.
+Die Bootpartition sollte grundsätzlich mit EXT2 formatiert weren, da dieses Filesystem als Einziges von allen gängigen Linux-Bootloadern fehlerfrei unterstützt wird.
 
 ```shell
 mke2fs -c -b 4096 -t ext2 /dev/md2
@@ -299,11 +259,7 @@ mount -t ext3 -o defaults,relatime,barrier=1 /dev/md3 /mnt/gentoo
 
 ## Entpacken des Stage-Tarballs
 
-Der Stage3-Tarball enthält ein minimalistisches Gentoo Linux Hardened, welches alle zur Installation notwendigen Tools
-enthält und uns als Chroot-Umgebung dient. Wir müssen nun den aktuellen Stage3-Tarball ermitteln, wozu wir die
-entsprechende Angabe vom [Gentoo Linux Master Mirror](https://gentoo.osuosl.org/){: target="\_blank" rel="noopener"}
-verwenden und diese in dem folgenden zweiten wget-Aufruf entsprechend ersetzen. Den Stage3-Tarball werden wir bereits
-während des Download direkt nach `/mnt/gentoo` entpacken.
+Der Stage3-Tarball enthält ein minimalistisches Gentoo Linux Hardened, welches alle zur Installation notwendigen Tools enthält und uns als Chroot-Umgebung dient. Wir müssen nun den aktuellen Stage3-Tarball ermitteln, wozu wir die entsprechende Angabe vom [Gentoo Linux Master Mirror](https://gentoo.osuosl.org/){: target="\_blank" rel="noopener"} verwenden und diese in dem folgenden zweiten wget-Aufruf entsprechend ersetzen. Den Stage3-Tarball werden wir bereits während des Download direkt nach `/mnt/gentoo` entpacken.
 
 ```shell
 wget -q -O - "https://gentoo.osuosl.org/releases/amd64/autobuilds/latest-stage3-amd64-hardened+nomultilib.txt" | tail -n 1 | \
@@ -312,8 +268,7 @@ wget -q -O - "https://gentoo.osuosl.org/releases/amd64/autobuilds/latest-stage3-
 
 ## Vorbereiten der Chroot-Umgebung
 
-Vor dem Wechsel in die Chroot-Umgebung müssen wir noch die `resolv.conf` und `mdadm.conf` in die Chroot-Umgebung
-kopieren und die für eine erfolgreiche Installation noch fehlenden Filesysteme mounten.
+Vor dem Wechsel in die Chroot-Umgebung müssen wir noch die `resolv.conf` und `mdadm.conf` in die Chroot-Umgebung kopieren und die für eine erfolgreiche Installation noch fehlenden Filesysteme mounten.
 
 ```shell
 cp /etc/resolv.conf /mnt/gentoo/etc/resolv.conf
@@ -327,9 +282,7 @@ mount -o bind /dev/shm /mnt/gentoo/dev/shm
 
 ## Betreten der Chroot-Umgebung
 
-Beim Betreten der Chroot-Umgebung setzen wir mittels `/bin/env -i` erstmal alle Environment-Variablen zurück.
-Andererseits benötigen wir aber die Environment-Variablen `HOME`, `TERM`, `PS1` und `PATH`, welche wir manuell auf
-sinnvolle Defaults setzen.
+Beim Betreten der Chroot-Umgebung setzen wir mittels `/bin/env -i` erstmal alle Environment-Variablen zurück. Andererseits benötigen wir aber die Environment-Variablen `HOME`, `TERM`, `PS1` und `PATH`, welche wir manuell auf sinnvolle Defaults setzen.
 
 ```shell
 chroot /mnt/gentoo /bin/env -i HOME=/root TERM=$TERM PS1='\u:\w\$ ' PATH=/sbin:/bin:/usr/sbin:/usr/bin /bin/bash +h
@@ -385,8 +338,7 @@ CURL_SSL="openssl"
 EOF
 ```
 
-Mittels `/etc/portage/package.use` werden einzelnen Paketen von der `/etc/portage/make.conf` abweichende USE-Flags
-zugewiesen.
+Mittels `/etc/portage/package.use` werden einzelnen Paketen von der `/etc/portage/make.conf` abweichende USE-Flags zugewiesen.
 
 ```shell
 cat > /etc/portage/package.use << "EOF"
@@ -401,8 +353,7 @@ emerge-webrsync
 
 ## Locales setzen
 
-Da das System später weltweit erreichbar sein wird und die Standardsystemsprache amerikanisch ist, werden die Locales
-auf `en_US.utf8` gesetzt und neu erzeugt.
+Da das System später weltweit erreichbar sein wird und die Standardsystemsprache amerikanisch ist, werden die Locales auf `en_US.utf8` gesetzt und neu erzeugt.
 
 ```shell
 cat > /etc/env.d/02locale << "EOF"
@@ -426,21 +377,11 @@ source /etc/profile
 
 ## Basissystem kompilieren
 
-Nun muss das komplette Basissystem neu kompiliert werden. Dieser Vorgang ist zwar zeitaufwendig, aber für diese
-Installationsvariante zwingend notwendig. Auch die Reihenfolge ist sehr wichtig, da das System ansonsten unbrauchbar
-beziehungsweise instabil wird. Während dieses Vorgangs werden nur wenige Konfigurationsdateien automatisch
-aktualisiert, alle anderen müssen manuell mittels `dispatch-conf` aktualisiert werden.
+Nun muss das komplette Basissystem neu kompiliert werden. Dieser Vorgang ist zwar zeitaufwendig, aber für diese Installationsvariante zwingend notwendig. Auch die Reihenfolge ist sehr wichtig, da das System ansonsten unbrauchbar beziehungsweise instabil wird. Während dieses Vorgangs werden nur wenige Konfigurationsdateien automatisch aktualisiert, alle anderen müssen manuell mittels `dispatch-conf` aktualisiert werden.
 
-<!-- markdownlint-disable MD046 -->
-
-???+ note
-
-    Die folgenden Schritte sind nötig, da dieses HowTo eine angepasste Portage-Konfiguration verwendet und zudem seit
-
-dem Release des Stage3-Tarballs eventuell ein paar für diese Installationvariante wichtige Basispakete im Portage-Tree
-aktualisiert wurden.
-
-<!-- markdownlint-enable MD046 -->
+!!!info
+Die folgenden Schritte sind nötig, da dieses HowTo eine angepasste Portage-Konfiguration verwendet und zudem seit dem Release des Stage3-Tarballs eventuell ein paar für diese Installationvariante wichtige Basispakete im Portage-Tree aktualisiert wurden.
+!!!
 
 ```shell
 emerge portage portage-utils
@@ -464,11 +405,7 @@ dispatch-conf
 
 ## Basissystem rekompilieren
 
-Um sicherzustellen, dass das Basissystem ab diesem Punkt keine veraltete Konfiguration oder (speicheresistente)
-Software nutzt, wird sicherheitshalber kurz die Chroot-Umgebung verlassen und gleich wieder betreten. Im Anschluss wird
-das Basissystem ein zweites Mal vollständig rekompiliert, damit sichergestellt ist, dass auch wirklich jedes Paket nur
-noch gegen die aktuell vorhanden Libraries gelinkt ist und somit keine veralteten und/oder nicht mehr vorhandenen
-Funktionen nutzt.
+Um sicherzustellen, dass das Basissystem ab diesem Punkt keine veraltete Konfiguration oder (speicheresistente) Software nutzt, wird sicherheitshalber kurz die Chroot-Umgebung verlassen und gleich wieder betreten. Im Anschluss wird das Basissystem ein zweites Mal vollständig rekompiliert, damit sichergestellt ist, dass auch wirklich jedes Paket nur noch gegen die aktuell vorhanden Libraries gelinkt ist und somit keine veralteten und/oder nicht mehr vorhandenen Funktionen nutzt.
 
 ```shell
 exit
@@ -503,8 +440,7 @@ EOF
 
 ## OpenSSL konfigurieren
 
-Folgende Optionen müssen mit dem Editor `ee` (`ee /etc/ssl/openssl.cnf`) in der `/etc/ssl/openssl.cnf` im Abschnitt `[
-req_distinguished_name ]` angepasst beziehungsweise ergänzt werden.
+Folgende Optionen müssen mit dem Editor `ee` (`ee /etc/ssl/openssl.cnf`) in der `/etc/ssl/openssl.cnf` im Abschnitt `[req_distinguished_name ]` angepasst beziehungsweise ergänzt werden.
 
 ```text
 countryName_default             = DE
@@ -538,8 +474,7 @@ openssl genpkey -genparam -algorithm EC -pkeyopt ec_paramgen_curve:secp384r1 -ou
 
 ## OpenSSH konfigurieren
 
-Da wir gerade ein Produktiv-System aufsetzen, werden wir den SSH-Dienst recht restriktiv konfigurieren, unter Anderem
-werden wir den Login per Passwort verbieten und nur per PublicKey zulassen.
+Da wir gerade ein Produktiv-System aufsetzen, werden wir den SSH-Dienst recht restriktiv konfigurieren, unter Anderem werden wir den Login per Passwort verbieten und nur per PublicKey zulassen.
 
 ```shell
 sed -e 's/^#\(Protocol\).*$/\1 2/' \
@@ -673,8 +608,7 @@ ifconfig `ip -f inet route show scope global | awk '/default/ {print $5}'` | \
 
 ## Kernelsourcen installieren
 
-Wir installieren nun die Gentoo Linux Hardened Kernelsourcen und das Gentoo Linux Tool `genkernel` zum automatisierten
-Erstellen des Kernel und des zugehörigen Initramfs.
+Wir installieren nun die Gentoo Linux Hardened Kernelsourcen und das Gentoo Linux Tool `genkernel` zum automatisierten Erstellen des Kernel und des zugehörigen Initramfs.
 
 ```shell
 cat >> /etc/portage/package.keywords << "EOF"
@@ -711,7 +645,10 @@ sed -e 's/^#\(SYMLINK=\).*$/\1"no"/' \
 ```shell
 mkdir -p /root/kernels
 
-wget -q -O /root/kernels/MYKERNEL "https://raw.githubusercontent.com/RootService/configs/master/gentoo/kernel_config_hardened.txt"
+cat <<'EOF' > /root/kernels/MYKERNEL
+{{~ include "snippets/gentoo/kernel_hardened.config" ~}}
+EOF
+
 
 cd /usr/src/linux
 make mrproper
@@ -721,9 +658,7 @@ make oldconfig
 
 ## Kernelsourcen kompilieren
 
-Die Kernelkonfiguration, insbesondere die Hardware-Optionen, muss Abseits der virtuellen Maschine an das eigene System
-angepasst werden. Dies ermöglicht uns die Angabe der Option `--menuconfig` beim genkernel-Aufruf. Für die Verwendung
-des Kernels in der virtuelle Maschine ist allerdings kein weiteres Anpassen der Kernelkonfiguration notwendig.
+Die Kernelkonfiguration, insbesondere die Hardware-Optionen, muss Abseits der virtuellen Maschine an das eigene System angepasst werden. Dies ermöglicht uns die Angabe der Option `--menuconfig` beim genkernel-Aufruf. Für die Verwendung des Kernels in der virtuelle Maschine ist allerdings kein weiteres Anpassen der Kernelkonfiguration notwendig.
 
 ```shell
 make
@@ -788,9 +723,7 @@ emerge gradm app-crypt/gnupg bind-tools ntp smartmontools
 
 ## Systemtools konfigurieren
 
-Wir sorgen nun dafür, dass unsere Systemzeit mittels `cron` stündlich mit dem Timeserver der PTB in Braunschweig, dem
-Betreiber der deutschen Atomuhr, synchronisiert wird. Zudem aktivieren die regelmässige Überwachung der SMART-Werte
-unserer Festplatten.
+Wir sorgen nun dafür, dass unsere Systemzeit mittels `cron` stündlich mit dem Timeserver der PTB in Braunschweig, dem Betreiber der deutschen Atomuhr, synchronisiert wird. Zudem aktivieren die regelmässige Überwachung der SMART-Werte unserer Festplatten.
 
 ```shell
 cat > /etc/cron.hourly/ntpdate << "EOF"
@@ -814,8 +747,7 @@ sed -e 's/^#net.ipv4/net.ipv4/g' -i /etc/sysctl.conf
 
 ## Root-Passwort setzen
 
-Das Passwort für root sollte mindestens 8 Zeichen lang sein und neben Gross/Klein-Schreibung auch Ziffern und/oder
-Sonderzeichen enthalten.
+Das Passwort für root sollte mindestens 8 Zeichen lang sein und neben Gross/Klein-Schreibung auch Ziffern und/oder Sonderzeichen enthalten.
 
 ```shell
 passwd root
@@ -823,9 +755,7 @@ passwd root
 
 ## Arbeitsuser anlegen
 
-Wir legen uns nun einen Arbeitsuser für administrative Aufgaben an. Diesen Arbeitsuser stecken wir in die Systemgruppen
-`admin`, `users` und `wheel`. Das Passwort für den Arbeitsuser sollte wie das root-Passwort aufgebaut sein, sich von
-diesem aber deutlich unterscheiden.
+Wir legen uns nun einen Arbeitsuser für administrative Aufgaben an. Diesen Arbeitsuser stecken wir in die Systemgruppen `admin`, `users` und `wheel`. Das Passwort für den Arbeitsuser sollte wie das root-Passwort aufgebaut sein, sich von diesem aber deutlich unterscheiden.
 
 ```shell
 groupadd -g 1000 admin
@@ -851,10 +781,7 @@ cat .ssh/id_rsa.pub >> .ssh/authorized_keys
 exit
 ```
 
-Um uns künftig mit unserem Arbeitsuser einloggen zu können, müssen wir uns dessen SSH-Key (id_rsa) auf unser lokales
-System kopieren und ihn dann mit Hilfe der [PuTTYgen
-Dokumentation](https://the.earth.li/~sgtatham/putty/latest/htmldoc/Chapter8.html){: target="\_blank" rel="noopener"} in
-einen für PuTTY lesbaren Key umwandeln.
+Um uns künftig mit unserem Arbeitsuser einloggen zu können, müssen wir uns dessen SSH-Key (id_rsa) auf unser lokales System kopieren und ihn dann mit Hilfe der [PuTTYgen Dokumentation](https://the.earth.li/~sgtatham/putty/latest/htmldoc/Chapter8.html){: target="\_blank" rel="noopener"} in einen für PuTTY lesbaren Key umwandeln.
 
 ```powershell
 pscp -P 2222 -r root@127.0.0.1:/mnt/gentoo/home/admin/.ssh "${Env:USERPROFILE}\VirtualBox VMs\Gentoo\ssh"
@@ -901,6 +828,6 @@ dispatch-conf
 
 ## Wie geht es weiter?
 
-Natürlich mit der [Hosting System](hosting_system.md).
+Natürlich mit dem [Hosting System](/howtos/gentoo/hosting_system.md)
 
 Viel Spass mit dem neuen Gentoo Basissystem.

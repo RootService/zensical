@@ -6,6 +6,7 @@ author:
 publisher:
   name: RootService Team
   url: https://github.com/RootService
+  email: team@rootservice.org
 license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
@@ -17,31 +18,24 @@ date: '2006-03-02'
 lastmod: '2014-09-01'
 title: Hosting System
 description: In diesem HowTo wird step-by-step die Installation eines Hosting Systems auf Basis von Gentoo Linux 64Bit auf einem dedizierten Server beschrieben.
-keywords:
-  - Hosting System
-  - mkdocs
-  - docs
-lang: de
 robots: index, follow
+lang: de
 hide: []
 search:
   exclude: false
 ---
 
+# Hosting System
+
 ## Einleitung
 
-<!-- markdownlint-disable MD046 -->
+!!!danger
+Dieses HowTo wird seit **2014-09-01** nicht mehr aktiv gepflegt und entspricht daher nicht mehr dem aktuellen Stand.
 
-???+ warning
+Die Verwendung dieses HowTo geschieht somit auf eigene Gefahr!
+!!!
 
-    Dieses HowTo wird seit **2014-09-01** nicht mehr aktiv gepflegt und entspricht daher nicht mehr dem aktuellen Stand.
-
-    Die Verwendung dieses HowTo geschieht somit auf eigene Gefahr!
-
-<!-- markdownlint-enable MD046 -->
-
-Dieses HowTo setzt ein wie in [Remote Installation](remote_install.md) beschriebenes, installiertes und
-konfiguriertes Gentoo Linux Basissystem voraus.
+Dieses HowTo setzt ein wie in [Remote Installation](remote_install.md) beschriebenes, installiertes und konfiguriertes Gentoo Linux Basissystem voraus.
 
 Folgende Punkte sind in diesem HowTo zu beachten:
 
@@ -50,8 +44,7 @@ Folgende Punkte sind in diesem HowTo zu beachten:
 - Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
 - Alle Passworte werden als `__PASSWORD__` dargestellt und sind selbstständig durch sichere Passworte zu ersetzen.
 - Alle Domainangaben werden als `example.com` dargestellt und sind selbstständig durch die eigene Domain zu ersetzen.
-- Die IP-Adresse des Servers wird als `10.0.2.15` dargestellt und ist selbstständig durch die eigene IP-Adresse zu
-  ersetzen.
+- Die IP-Adresse des Servers wird als `10.0.2.15` dargestellt und ist selbstständig durch die eigene IP-Adresse zu ersetzen.
 - Postfix und Dovecot teilen sich sowohl den Hostnamen `mail.example.com` als auch das SSL-Zertifikat.
 
 Unser Hosting System wird folgende Dienste umfassen:
@@ -72,8 +65,7 @@ Desweiteren werden wir folgende Applikationen installieren:
 
 ### OpenSSL konfigurieren
 
-Sofern noch nicht während der [Remote Installation](remote_install.md) erledigt, müssen folgende Optionen
-in der `/etc/ssl/openssl.cnf` im Abschnitt `[ req_distinguished_name ]` angepasst werden:
+Sofern noch nicht während der [Remote Installation](remote_install.md) erledigt, müssen folgende Optionen in der `/etc/ssl/openssl.cnf` im Abschnitt `[ req_distinguished_name ]` angepasst werden:
 
 ```text
 [ req_distinguished_name ]
@@ -88,10 +80,7 @@ emailAddress_default            = admin@example.com
 
 ### OpenSSL CA
 
-Sofern noch nicht während der [Remote Installation](remote_install.md) erledigt, wird als Nächstes ein
-eigenes CA Zertifikat erstellt und selbst signiert. Hierzu werden jeweils die Default-Werte übernommen und sehr sichere
-Passworte gewählt. Die Option `A challenge password` sollte jedoch leer gelassen werden, andernfalls kann es zu
-Problemen mit einigen Diensten kommen:
+Sofern noch nicht während der [Remote Installation](remote_install.md) erledigt, wird als Nächstes ein eigenes CA Zertifikat erstellt und selbst signiert. Hierzu werden jeweils die Default-Werte übernommen und sehr sichere Passworte gewählt. Die Option `A challenge password` sollte jedoch leer gelassen werden, andernfalls kann es zu Problemen mit einigen Diensten kommen:
 
 ```shell
 cd /etc/ssl
@@ -109,9 +98,7 @@ cd
 
 ### OpenSSL Zertifikate
 
-Wir erstellen uns die nachfolgend benötigten selbstsignierten Zertifikate. Dabei verwenden wir für das
-Mailserver-Zertifikat `mail.example.com` und für das Webserver-Zertifikat `ssl.example.com` als `Common Name`. Die
-anderen Fragen beantworten wir jeweils mit den Default-Vorgaben.
+Wir erstellen uns die nachfolgend benötigten selbstsignierten Zertifikate. Dabei verwenden wir für das Mailserver-Zertifikat `mail.example.com` und für das Webserver-Zertifikat `ssl.example.com` als `Common Name`. Die anderen Fragen beantworten wir jeweils mit den Default-Vorgaben.
 
 ```shell
 cd /etc/ssl
@@ -130,20 +117,11 @@ cd
 
 ## MySQL
 
-MySQL unterstützt mehrere Engines, dieses HowTo beschränkt sich allerdings auf die Beiden am Häufigsten verwendeten:
-MyISAM und InnoDB. Werden weitere Engines benötigt, müssen die entsprechenden USE-Flags manuell gesetzt werden.
+MySQL unterstützt mehrere Engines, dieses HowTo beschränkt sich allerdings auf die Beiden am Häufigsten verwendeten: MyISAM und InnoDB. Werden weitere Engines benötigt, müssen die entsprechenden USE-Flags manuell gesetzt werden.
 
-<!-- markdownlint-disable MD046 -->
-
-???+ note
-
-    Sollen bereits existierende Datenbanken importiert werden, müssen diese, sofern noch nicht geschehen, zuvor nach
-
-UTF-8 konvertiert werden. Ist dies nicht möglich, weil beispielsweise eine Client-Applikation noch kein UTF-8
-ünterstützt, so ist in der folgenden `/etc/mysql/my.cnf` jeweils `utf8` durch `latin1` zu ersetzen. Desweiteren muss in
-diesem Fall für `dev-db/mysql` in der `/etc/portage/package.use` zusätzlich das USE-Flag `latin1` gesetzt werden.
-
-<!-- markdownlint-enable MD046 -->
+!!!note
+Sollen bereits existierende Datenbanken importiert werden, müssen diese, sofern noch nicht geschehen, zuvor nach UTF-8 konvertiert werden. Ist dies nicht möglich, weil beispielsweise eine Client-Applikation noch kein UTF-8 ünterstützt, so ist in der folgenden `/etc/mysql/my.cnf` jeweils `utf8` durch `latin1` zu ersetzen. Desweiteren muss in diesem Fall für `dev-db/mysql` in der `/etc/portage/package.use` zusätzlich das USE-Flag `latin1` gesetzt werden.
+!!!
 
 ### MySQL installieren
 
@@ -327,16 +305,13 @@ EOF
 
 ### MySQL absichern
 
-MySQL wird nun zum ersten Mal gestartet, was durch das Erzeugen der InnoDB-Files einige Minuten dauern und zu einer
-falschen Fehlermeldung des Init-Scripts führen kann. Daher warten wir bis im `tail -f` eine Zeile ähnlich der folgenden
-erscheint und beenden `tail` mittels `^C` (STRG+C).
+MySQL wird nun zum ersten Mal gestartet, was durch das Erzeugen der InnoDB-Files einige Minuten dauern und zu einer falschen Fehlermeldung des Init-Scripts führen kann. Daher warten wir bis im `tail -f` eine Zeile ähnlich der folgenden erscheint und beenden `tail` mittels `^C` (STRG+C).
 
 ```shell
 Version: '5.1.50-log'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  Gentoo Linux mysql-5.1.50-r1
 ```
 
-Abschliessend wird MySQL mittels `mysql_secure_installation` abgesichert. Hierzu werden alle Fragen, abgesehen vom
-zuvor gesetztem root-Passwort, jeweils mit einem beherzten Druck auf die Return-Taste beantwortet.
+Abschliessend wird MySQL mittels `mysql_secure_installation` abgesichert. Hierzu werden alle Fragen, abgesehen vom zuvor gesetztem root-Passwort, jeweils mit einem beherzten Druck auf die Return-Taste beantwortet.
 
 ```shell
 /etc/init.d/mysql start
@@ -448,10 +423,7 @@ EOF
 
 ## Postfix
 
-Postfix wird inklusive MySQL, Dovecot-SASL und TLS/SSL Support installiert und für das Zusammenspiel mit PostfixAdmin
-konfiguriert. Zudem werden die Empfehlungen aus dem [Postfix Anti-UCE Cheat
-Sheet](https://jimsun.linxnet.com/misc/postfix-anti-UCE.txt){: target="\_blank" rel="noopener"} umgesetzt. Zusätzlich
-wird als gute und recht zuverlässige Anti-Spam Lösung `policyd-weight` eingerichtet.
+Postfix wird inklusive MySQL, Dovecot-SASL und TLS/SSL Support installiert und für das Zusammenspiel mit PostfixAdmin konfiguriert. Zudem werden die Empfehlungen aus dem [Postfix Anti-UCE Cheat Sheet](https://jimsun.linxnet.com/misc/postfix-anti-UCE.txt){: target="\_blank" rel="noopener"} umgesetzt. Zusätzlich wird als gute und recht zuverlässige Anti-Spam Lösung `policyd-weight` eingerichtet.
 
 ### Postfix installieren
 
@@ -776,13 +748,9 @@ EOF
 
 `mysql_*_maps.cf` einrichten:
 
-<!-- markdownlint-disable MD046 -->
-
-???+ note
-
-    Bitte jeweils das gleiche Passwort wie in der `dovecot-sql.conf` aus der Dovecot Konfiguration verwenden.
-
-<!-- markdownlint-enable MD046 -->
+!!!note
+Bitte jeweils das gleiche Passwort wie in der `dovecot-sql.conf` aus der Dovecot Konfiguration verwenden.
+!!!
 
 ```shell
 mkdir -p /etc/postfix/sql
@@ -911,9 +879,7 @@ chown postfix:postfix /var/vmail
 
 ## Apache
 
-Die folgende Konfiguration verwendet für den Default-Host den Pfad `/var/www/vhosts/www.example.com`, für den
-Default-SSL-Host den Pfad `/var/www/vhosts/ssl.example.com` und für die regulären Virtual-Hosts den Pfad
-`/var/www/vhosts/sub.domain.tld`.
+Die folgende Konfiguration verwendet für den Default-Host den Pfad `/var/www/vhosts/www.example.com`, für den Default-SSL-Host den Pfad `/var/www/vhosts/ssl.example.com` und für die regulären Virtual-Hosts den Pfad `/var/www/vhosts/sub.domain.tld`.
 
 ### Apache installieren
 
@@ -1287,8 +1253,7 @@ EOF
 
 ## PHP
 
-Die Konfiguration entspricht weitestgehend den Empfehlungen der PHP-Entwickler und ist somit sowohl auf Security als
-auch auf Performance getrimmt.
+Die Konfiguration entspricht weitestgehend den Empfehlungen der PHP-Entwickler und ist somit sowohl auf Security als auch auf Performance getrimmt.
 
 ### PHP installieren
 
@@ -1703,8 +1668,7 @@ mkdir -p /var/www/vhosts/ssl.example.com/data/phpmyadmin/config
 chown www:www /var/www/vhosts/ssl.example.com/data/phpmyadmin/config
 ```
 
-Nun bitte `https://ssl.example.com/phpmyadmin/setup/index.php` im Browser aufrufen und phpMyAdmin konfigurieren. Danach
-muss die `config.inc.php` noch installiert werden:
+Nun bitte `https://ssl.example.com/phpmyadmin/setup/index.php` im Browser aufrufen und phpMyAdmin konfigurieren. Danach muss die `config.inc.php` noch installiert werden:
 
 ```shell
 mv /var/www/vhosts/ssl.example.com/data/phpmyadmin/config/config.inc.php /var/www/vhosts/ssl.example.com/data/phpmyadmin/config.inc.php
@@ -1731,13 +1695,9 @@ find /var/www/vhosts/ssl.example.com/data/postfixadmin -type f -print0 | xargs -
 
 Anlegen der Datenbank und der Datenbank-User:
 
-<!-- markdownlint-disable MD046 -->
-
-???+ note
-
-    Bitte jeweils das gleiche Passwort wie in der `dovecot-sql.conf` aus der Dovecot Konfiguration verwenden.
-
-<!-- markdownlint-enable MD046 -->
+!!!note
+Bitte jeweils das gleiche Passwort wie in der `dovecot-sql.conf` aus der Dovecot Konfiguration verwenden.
+!!!
 
 ```shell
 mysql -uroot -p
@@ -1791,8 +1751,7 @@ chmod 0640 /var/www/vhosts/ssl.example.com/data/postfixadmin/config.local.php
 chown www:www /var/www/vhosts/ssl.example.com/data/postfixadmin/config.local.php
 ```
 
-Nun bitte `https://ssl.example.com/postfixadmin/setup.php` im Browser aufrufen, am Ende der Seite das Setup-Passwort
-generieren und in der `config.local.php` nachtragen:
+Nun bitte `https://ssl.example.com/postfixadmin/setup.php` im Browser aufrufen, am Ende der Seite das Setup-Passwort generieren und in der `config.local.php` nachtragen:
 
 ```shell
 cat >> /var/www/vhosts/ssl.example.com/data/postfixadmin/config.local.php << "EOF"

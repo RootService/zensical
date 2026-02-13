@@ -6,6 +6,7 @@ author:
 publisher:
   name: RootService Team
   url: https://github.com/RootService
+  email: team@rootservice.org
 license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
@@ -15,45 +16,43 @@ date: '2010-08-25'
 lastmod: '2025-06-28'
 title: Unbound
 description: In diesem HowTo wird step-by-step die Installation von Unbound für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
-keywords:
-  - Unbound
-  - mkdocs
-  - docs
-lang: de
 robots: index, follow
+lang: de
 hide: []
 search:
   exclude: false
 ---
 
+# Unbound
+
 ## Einleitung
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- Unbound 1.22.0 (DNScrypt, DNS over TLS)
+- Unbound 1.24.2 (DNScrypt, DNS over TLS)
 
 ## Voraussetzungen
 
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../intro.md)
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../requirements.md)
 
 ## Installation
 
 Wir installieren `dns/unbound` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 mkdir -p /var/db/ports/security_libsodium
 cat <<'EOF' > /var/db/ports/security_libsodium/options
---8<-- "ports/security_libsodium/options"
+--8<-- "freebsd/ports/security_libsodium/options"
 EOF
 
 mkdir -p /var/db/ports/devel_libevent
 cat <<'EOF' > /var/db/ports/devel_libevent/options
---8<-- "ports/devel_libevent/options"
+--8<-- "freebsd/ports/devel_libevent/options"
 EOF
 
 mkdir -p /var/db/ports/dns_unbound
 cat <<'EOF' > /var/db/ports/dns_unbound/options
---8<-- "ports/dns_unbound/options"
+--8<-- "freebsd/ports/dns_unbound/options"
 EOF
 
 
@@ -68,9 +67,9 @@ sysrc unbound_enable=YES
 
 Wir konfigurieren Unbound:
 
-```shell
+``` shell
 cat <<'EOF' > /usr/local/etc/unbound/unbound.conf
---8<-- "configs/usr/local/etc/unbound/unbound.conf"
+--8<-- "freebsd/configs/usr/local/etc/unbound/unbound.conf"
 EOF
 
 curl -o "/usr/local/etc/unbound/root.hints" -L "https://www.internic.net/domain/named.root"
@@ -85,7 +84,7 @@ sudo -u unbound unbound-control-setup
 
 Unbound kann nun gestartet werden.
 
-```shell
+``` shell
 service local_unbound onestop
 
 service unbound start

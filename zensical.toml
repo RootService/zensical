@@ -54,18 +54,18 @@ Copyright &copy; 2002-2026 RootService Team
 nav = [
   { "Home" = "index.md" },
   { "HowTos" = [
-    { "Allgemein" = [ { "Getting Started" = "howtos/general/getting_started.md" } ] },
+    { "Allgemein" = [ { "Pro und Contra dedidzerte Server" = "howtos/general/getting_started.md" } ] },
     { "Sicherheit" = [ { "Server hacked" = "howtos/security/server_hacked.md" } ] },
     { "FreeBSD" = [
-      { "mfsbsd image" = "howtos/freebsd/mfsbsd_image.md" },
       { "Remote Installation" = [
-        { "Intro" = "howtos/freebsd/remote_install/intro.md" },
+        { "Voraussetzungen" = "howtos/freebsd/remote_install/requirements.md" },
+        { "mfsBSD Image" = "howtos/freebsd/remote_install/mfsbsd_image.md" },
         { "Base system" = "howtos/freebsd/remote_install/basesystem.md" },
         { "Base ports" = "howtos/freebsd/remote_install/baseports.md" },
         { "Base tools" = "howtos/freebsd/remote_install/basetools.md" }
       ] },
       { "Hosting System" = [
-        { "Intro" = "howtos/freebsd/hosting_system/intro.md" },
+        { "Voraussetzungen" = "howtos/freebsd/hosting_system/requirements.md" },
         { "Sicherheit" = [
           { "Certbot" = "howtos/freebsd/hosting_system/security/certbot.md" },
           { "OpenSSH" = "howtos/freebsd/hosting_system/security/openssh.md" }
@@ -94,7 +94,7 @@ nav = [
       ] }
     ] },
     { "Gentoo" = [
-      { "Remote Install" = "howtos/gentoo/remote_install.md" },
+      { "Remote Installation" = "howtos/gentoo/remote_install.md" },
       { "Hosting System" = "howtos/gentoo/hosting_system.md" }
     ] }
   ] },
@@ -103,11 +103,11 @@ nav = [
     { "MySQL Tuning Primer" = "projects/mysql_tuning_primer.md" },
     { "Certbot Wrapper" = "projects/certbot_wrapper.md" }
   ] },
-  { "About" = [
-    { "Imprint" = "about/imprint.md" },
-    { "Contact" = "about/contact.md" },
-    { "Privacy" = "about/privacy.md" },
-    { "Terms" = "about/terms.md" }
+  { "Über uns" = [
+    { "Impressum" = "about/imprint.md" },
+    { "Kontact" = "about/contact.md" },
+    { "Datenschutzerklärung" = "about/privacy.md" },
+    { "Nutzungsbedingungen" = "about/terms.md" }
   ] }
 ]
 

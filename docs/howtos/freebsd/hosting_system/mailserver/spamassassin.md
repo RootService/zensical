@@ -6,6 +6,7 @@ author:
 publisher:
   name: RootService Team
   url: https://github.com/RootService
+  email: team@rootservice.org
 license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
@@ -15,95 +16,93 @@ date: '2010-08-25'
 lastmod: '2025-06-28'
 title: SpamAssassin
 description: In diesem HowTo wird step-by-step die Installation von SpamAssassin für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
-keywords:
-  - SpamAssassin
-  - mkdocs
-  - docs
-lang: de
 robots: index, follow
+lang: de
 hide: []
 search:
   exclude: false
 ---
 
+# SpamAssassin
+
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- SpamAssassin 4.0.1 (SpamAss-Milter)
+- SpamAssassin 4.0.2 (SpamAss-Milter)
 
 ## Voraussetzungen
 
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../intro.md)
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../requirements.md)
 
 ## Installation
 
 Wir installieren `mail/spamassassin` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 mkdir -p /var/db/ports/databases_p5-DBD-SQLite
 cat <<'EOF' > /var/db/ports/databases_p5-DBD-SQLite/options
---8<-- "ports/databases_p5-DBD-SQLite/options"
+--8<-- "freebsd/ports/databases_p5-DBD-SQLite/options"
 EOF
 
 mkdir -p /var/db/ports/databases_p5-DBIx-Simple
 cat <<'EOF' > /var/db/ports/db/ports/databases_p5-DBIx-Simple/options
---8<-- "ports/databases_p5-DBIx-Simple/options"
+--8<-- "freebsd/ports/databases_p5-DBIx-Simple/options"
 EOF
 
 mkdir -p /var/db/ports/dns_p5-Net-DNS
 cat <<'EOF' > /var/db/ports/dns_p5-Net-DNS/options
---8<-- "ports/dns_p5-Net-DNS/options"
+--8<-- "freebsd/ports/dns_p5-Net-DNS/options"
 EOF
 
 mkdir -p /var/db/ports/devel_p5-Parse-RecDescent
 cat <<'EOF' > /var/db/ports/devel_p5-Parse-RecDescent/options
---8<-- "ports/devel_p5-Parse-RecDescent/options"
+--8<-- "freebsd/ports/devel_p5-Parse-RecDescent/options"
 EOF
 
 mkdir -p /var/db/ports/security_p5-IO-Socket-SSL
 cat <<'EOF' > /var/db/ports/security_p5-IO-Socket-SSL/options
---8<-- "ports/security_p5-IO-Socket-SSL/options"
+--8<-- "freebsd/ports/security_p5-IO-Socket-SSL/options"
 EOF
 
 mkdir -p /var/db/ports/security_p5-Net-SSLeay
 cat <<'EOF' > /var/db/ports/security_p5-Net-SSLeay/options
---8<-- "ports/security_p5-Net-SSLeay/options"
+--8<-- "freebsd/ports/security_p5-Net-SSLeay/options"
 EOF
 
 mkdir -p /var/db/ports/security_p5-Authen-SASL
 cat <<'EOF' > /var/db/ports/security_p5-Authen-SASL/options
---8<-- "ports/security_p5-Authen-SASL/options"
+--8<-- "freebsd/ports/security_p5-Authen-SASL/options"
 EOF
 
 mkdir -p /var/db/ports/net_p5-Net-Server
 cat <<'EOF' > /var/db/ports/net_p5-Net-Server/options
---8<-- "ports/net_p5-Net-Server/options"
+--8<-- "freebsd/ports/net_p5-Net-Server/options"
 EOF
 
 mkdir -p /var/db/ports/devel_p5-Test-NoWarnings
 cat <<'EOF' > /var/db/ports/devel_p5-Test-NoWarnings/options
---8<-- "ports/devel_p5-Test-NoWarnings/options"
+--8<-- "freebsd/ports/devel_p5-Test-NoWarnings/options"
 EOF
 
 mkdir -p /var/db/ports/www_p5-CGI
 cat <<'EOF' > /var/db/ports/www_p5-CGI/options
---8<-- "ports/www_p5-CGI/options"
+--8<-- "freebsd/ports/www_p5-CGI/options"
 EOF
 
 mkdir -p /var/db/ports/www_p5-HTTP-Tiny
 cat <<'EOF' > /var/db/ports/www_p5-HTTP-Tiny/options
---8<-- "ports/www_p5-HTTP-Tiny/options"
+--8<-- "freebsd/ports/www_p5-HTTP-Tiny/options"
 EOF
 
 mkdir -p /var/db/ports/devel_p5-Data-Dumper-Concise
 cat <<'EOF' > /var/db/ports/devel_p5-Data-Dumper-Concise/options
---8<-- "ports/devel_p5-Data-Dumper-Concise/options"
+--8<-- "freebsd/ports/devel_p5-Data-Dumper-Concise/options"
 EOF
 
 mkdir -p /var/db/ports/mail_spamassassin
 cat <<'EOF' > /var/db/ports/mail_spamassassin/options
---8<-- "ports/mail_spamassassin/options"
+--8<-- "freebsd/ports/mail_spamassassin/options"
 EOF
 
 
@@ -116,7 +115,7 @@ sysrc spamd_flags="-c -u spamd -H /var/spool/spamd"
 
 Datenbanken installieren.
 
-```shell
+``` shell
 cat <<'EOF' > /tmp/spamass_mail_bayes_shema.sql
 CREATE TABLE bayes_expire (
   id integer NOT NULL default '0',
@@ -322,10 +321,10 @@ exit
 
 Wir installieren `mail/spamass-milter` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 mkdir -p /var/db/ports/mail_spamass-milter
 cat <<'EOF' > /var/db/ports/mail_spamass-milter/options
---8<-- "ports/mail_spamass-milter/options"
+--8<-- "freebsd/ports/mail_spamass-milter/options"
 EOF
 
 
@@ -346,55 +345,54 @@ sysrc spamass_milter_localflags="-r 15 -f -u spamd -- -u spamd"
 
 `local.cf` einrichten.
 
-```shell
+``` shell
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/local.cf
---8<-- "configs/usr/local/etc/mail/spamassassin/local.cf"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/local.cf"
 EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/init.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/init.pre"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/init.pre"
 EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/v310.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/v310.pre"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v310.pre"
 EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/v312.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/v312.pre"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v312.pre"
 EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/v320.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/v320.pre"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v320.pre"
 EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/v330.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/v330.pre"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v330.pre"
 EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/v340.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/v340.pre"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v340.pre"
 EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/v341.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/v341.pre"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v341.pre"
 EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/v342.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/v342.pre"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v342.pre"
 EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/v343.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/v343.pre"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v343.pre"
 EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/v400.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/v400.pre"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v400.pre"
 EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/v401.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/v401.pre"
+--8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v401.pre"
 EOF
-
 
 # IPv4
 ifconfig -u -f cidr `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
@@ -413,7 +411,7 @@ awk '/^Password for PostgreSQL user spamass:/ {print $NF}' /root/_passwords | \
 
 SpamAssassin Datenbank anlegen.
 
-```shell
+``` shell
 /usr/local/bin/sa-update --channel updates.spamassassin.org --refreshmirrors --verbose
 /usr/local/bin/sa-update --channel updates.spamassassin.org --verbose
 /usr/local/bin/sa-update --nogpg --channel kam.sa-channels.mcgrail.com --refreshmirrors --verbose
@@ -424,10 +422,11 @@ SpamAssassin Datenbank anlegen.
 
 SpamAssassin Datenbank updaten.
 
-```shell
+``` shell
 cat <<'EOF' > /usr/local/sbin/update-spamassassin
---8<-- "configs/usr/local/sbin/update-spamassassin"
+--8<-- "freebsd/configs/usr/local/sbin/update-spamassassin"
 EOF
+
 chmod 0755 /usr/local/sbin/update-spamassassin
 ```
 
@@ -435,7 +434,7 @@ chmod 0755 /usr/local/sbin/update-spamassassin
 
 SpamAssassin kann nun gestartet werden.
 
-```shell
+``` shell
 mkdir -p /var/run/spamass-milter
 chown spamd:spamd /var/run/spamass-milter
 

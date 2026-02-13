@@ -6,6 +6,7 @@ author:
 publisher:
   name: RootService Team
   url: https://github.com/RootService
+  email: team@rootservice.org
 license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
@@ -15,44 +16,43 @@ date: '2010-08-25'
 lastmod: '2025-06-28'
 title: PostgreSQL
 description: In diesem HowTo wird step-by-step die Installation des PostgreSQL Datenbanksystem für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
-keywords:
-  - PostgreSQL
-  - mkdocs
-  - docs
-lang: de
 robots: index, follow
+lang: de
 hide: []
 search:
   exclude: false
 ---
 
+# PostgreSQL
+
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- PostgreSQL 17.5
+- PostgreSQL 17.5 (SSL, ZSTD)
 
 ## Voraussetzungen
 
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../intro.md)
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../requirements.md)
 
 ## Installation
 
 Wir installieren `databases/postgresql17-server` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 mkdir -p /var/db/ports/databases_postgresql17-client
 cat <<'EOF' > /var/db/ports/databases_postgresql7-client/options
---8<-- "ports/databases_postgresql17-client/options"
+--8<-- "freebsd/ports/databases_postgresql17-client/options"
 EOF
 
 mkdir -p /var/db/ports/databases_postgresql17-server
 cat <<'EOF' > /var/db/ports/databases_postgresql17-server/options
---8<-- "ports/databases_postgresql17-server/options"
+--8<-- "freebsd/ports/databases_postgresql17-server/options"
 EOF
 
 
 portmaster -w -B -g --force-config databases/postgresql17-server  -n
+
 portmaster -w -B -g --force-config databases/postgresql17-contrib  -n
 
 
@@ -67,7 +67,7 @@ sysrc postgresql_initdb_flags="--encoding=utf-8 --lc-collate=C --auth=scram-sha-
 
 PostgreSQL wird nun zum ersten Mal gestartet, was einige Minuten dauern kann.
 
-```shell
+``` shell
 # Password erzeugen und in /root/_passwords speichern
 chmod 0600 /root/_passwords
 newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
@@ -84,7 +84,7 @@ service postgresql start
 
 ## Sicherheit
 
-```shell
+``` shell
 # Password erzeugen und in /root/_passwords speichern
 chmod 0600 /root/_passwords
 newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
@@ -136,6 +136,6 @@ exit
 
 PostgreSQL sollte abschliessend einmal neu gestartet werden.
 
-```shell
+``` shell
 service postgresql restart
 ```

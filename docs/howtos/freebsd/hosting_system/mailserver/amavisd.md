@@ -6,6 +6,7 @@ author:
 publisher:
   name: RootService Team
   url: https://github.com/RootService
+  email: team@rootservice.org
 license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
@@ -15,80 +16,78 @@ date: '2010-08-25'
 lastmod: '2025-06-28'
 title: Amavisd
 description: In diesem HowTo wird step-by-step die Installation von Amavisd für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
-keywords:
-  - Amavisd
-  - mkdocs
-  - docs
-lang: de
 robots: index, follow
+lang: de
 hide: []
 search:
   exclude: false
 ---
 
+# Amavisd
+
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Amavisd
+- Amavisd 2.14.0 (PostGreSQL)
 
 ## Voraussetzungen
 
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../intro.md)
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../requirements.md)
 
 ## Installation
 
 Wir installieren `security/amavisd-new` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 mkdir -p /var/db/ports/archivers_7-zip
 cat <<'EOF' > /var/db/ports/archivers_7-zip/options
---8<-- "ports/archivers_7-zip/options"
+--8<-- "freebsd/ports/archivers_7-zip/options"
 EOF
 
 mkdir -p /var/db/ports/archivers_arc
 cat <<'EOF' > /var/db/ports/archivers_arc/options
---8<-- "ports/archivers_arc/options"
+--8<-- "freebsd/ports/archivers_arc/options"
 EOF
 
 mkdir -p /var/db/ports/archivers_arj
 cat <<'EOF' > /var/db/ports/archivers_arj/options
---8<-- "ports/archivers_arj/options"
+--8<-- "freebsd/ports/archivers_arj/options"
 EOF
 
 mkdir -p /var/db/ports/archivers_cabextract
 cat <<'EOF' > /var/db/ports/archivers_cabextract/options
---8<-- "ports/archivers_cabextract/options"
+--8<-- "freebsd/ports/archivers_cabextract/options"
 EOF
 
 mkdir -p /var/db/ports/archivers_lzop
 cat <<'EOF' > /var/db/ports/archivers_lzop/options
---8<-- "ports/archivers_lzop/options"
+--8<-- "freebsd/ports/archivers_lzop/options"
 EOF
 
 mkdir -p /var/db/ports/archivers_lzo2
 cat <<'EOF' > /var/db/ports/archivers_lzo2/options
---8<-- "ports/archivers_lzo2/options"
+--8<-- "freebsd/ports/archivers_lzo2/options"
 EOF
 
 mkdir -p /var/db/ports/archivers_unarj
 cat <<'EOF' > /var/db/ports/archivers_unarj/options
---8<-- "ports/archivers_unarj/options"
+--8<-- "freebsd/ports/archivers_unarj/options"
 EOF
 
 mkdir -p /var/db/ports/archivers_unrar
 cat <<'EOF' > /var/db/ports/archivers_unrar/options
---8<-- "ports/archivers_unrar/options"
+--8<-- "freebsd/ports/archivers_unrar/options"
 EOF
 
 mkdir -p /var/db/ports/net-mgmt_p0f
 cat <<'EOF' > /var/db/ports/net-mgmt_p0f/options
---8<-- "ports/net-mgmt_p0f/options"
+--8<-- "freebsd/ports/net-mgmt_p0f/options"
 EOF
 
 mkdir -p /var/db/ports/security_amavisd-new
 cat <<'EOF' > /var/db/ports/security_amavisd-new/options
---8<-- "ports/security_amavisd-new/options"
+--8<-- "freebsd/ports/security_amavisd-new/options"
 EOF
 
 
@@ -104,7 +103,7 @@ sysrc amavis_p0fanalyzer_p0f_filter="tcp dst port 25"
 
 Datenbanken installieren.
 
-```shell
+``` shell
 mkdir -p /data/db/postgres
 
 cat <<'EOF' > /tmp/amavisd_mail_prefs_shema.sql
@@ -371,9 +370,9 @@ exit
 
 `amavisd.conf` einrichten.
 
-```shell
+``` shell
 cat <<'EOF' > /usr/local/etc/amavisd.conf
---8<-- "configs/usr/local/etc/amavisd.conf"
+--8<-- "freebsd/configs/usr/local/etc/amavisd.conf"
 EOF
 
 # IPv4
@@ -403,7 +402,7 @@ amavisd showkeys
 
 Amavisd kann nun gestartet werden.
 
-```shell
+``` shell
 service amavisd start
 service amavis_p0fanalyzer start
 ```

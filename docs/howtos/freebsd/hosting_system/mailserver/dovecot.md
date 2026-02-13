@@ -6,6 +6,7 @@ author:
 publisher:
   name: RootService Team
   url: https://github.com/RootService
+  email: team@rootservice.org
 license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
@@ -15,16 +16,14 @@ date: '2010-08-25'
 lastmod: '2025-06-28'
 title: Dovecot
 description: In diesem HowTo wird step-by-step die Installation des Dovecot Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
-keywords:
-  - Dovecot
-  - mkdocs
-  - docs
-lang: de
 robots: index, follow
+lang: de
 hide: []
 search:
   exclude: false
 ---
+
+# Dovecot
 
 ## Einleitung
 
@@ -34,21 +33,21 @@ Unser Hosting System wird um folgende Dienste erweitert.
 
 ## Voraussetzungen
 
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../intro.md)
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../requirements.md)
 
 ## Installation
 
 Wir installieren `mail/dovecot` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 mkdir -p /var/db/ports/textproc_libexttextcat
 cat <<'EOF' > /var/db/ports/textproc_libexttextcat/options
---8<-- "ports/textproc_libexttextcat/options"
+--8<-- "freebsd/ports/textproc_libexttextcat/options"
 EOF
 
 mkdir -p /var/db/ports/mail_dovecot
 cat <<'EOF' > /var/db/ports/mail_dovecot/options
---8<-- "ports/mail_dovecot/options"
+--8<-- "freebsd/ports/mail_dovecot/options"
 EOF
 
 
@@ -60,10 +59,10 @@ sysrc dovecot_enable=YES
 
 Wir installieren `mail/dovecot-pigeonhole` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 mkdir -p /var/db/ports/mail_dovecot-pigeonhole
 cat <<'EOF' > /var/db/ports/mail_dovecot-pigeonhole/options
---8<-- "ports/mail_dovecot-pigeonhole/options"
+--8<-- "freebsd/ports/mail_dovecot-pigeonhole/options"
 EOF
 
 
@@ -74,43 +73,42 @@ portmaster -w -B -g --force-config mail/dovecot-pigeonhole@default  -n
 
 `dovecot.conf` einrichten.
 
-```shell
+``` shell
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot.conf
---8<-- "configs/usr/local/etc/dovecot/dovecot.conf"
+--8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot.conf"
 EOF
 
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-sql.conf
---8<-- "configs/usr/local/etc/dovecot/dovecot-sql.conf"
+--8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-sql.conf"
 EOF
 
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-pgsql.conf
---8<-- "configs/usr/local/etc/dovecot/dovecot-pgsql.conf"
+--8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-pgsql.conf"
 EOF
 
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-dict-quota.conf
---8<-- "configs/usr/local/etc/dovecot/dovecot-dict-quota.conf"
+--8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-dict-quota.conf"
 EOF
 
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-last-login.conf
---8<-- "configs/usr/local/etc/dovecot/dovecot-last-login.conf"
+--8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-last-login.conf"
 EOF
 
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-share-folder.conf
---8<-- "configs/usr/local/etc/dovecot/dovecot-share-folder.conf"
+--8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-share-folder.conf"
 EOF
 
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-used-quota.conf
---8<-- "configs/usr/local/etc/dovecot/dovecot-used-quota.conf"
+--8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-used-quota.conf"
 EOF
-
 
 awk '/^Password for PostgreSQL user postfix:/ {print $NF}' /root/_passwords | \
     xargs -I % sed -e 's|__PASSWORD_POSTFIX__|%|g' -i '' /usr/local/etc/dovecot/*.conf
 
-
 cat <<'EOF' > /usr/local/bin/dovecot-quota-warning.sh
---8<-- "configs/usr/local/bin/dovecot-quota-warning.sh"
+--8<-- "freebsd/configs/usr/local/bin/dovecot-quota-warning.sh"
 EOF
+
 chmod 0755 /usr/local/bin/dovecot-quota-warning.sh
 
 /usr/local/bin/openssl dhparam 4096 > /usr/local/etc/dovecot/dh.pem
@@ -120,10 +118,11 @@ chmod 0755 /usr/local/bin/dovecot-quota-warning.sh
 
 Wir legen einen neuen Superuser an.
 
-```shell
+``` shell
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-master-users
---8<-- "configs/usr/local/etc/dovecot/dovecot-master-users"
+--8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-master-users"
 EOF
+
 
 # Password erzeugen und in /root/_passwords speichern
 chmod 0600 /root/_passwords
@@ -137,10 +136,11 @@ unset newpw
 
 Das Anlegen neuer Mailuser wird mittels Script automatisiert.
 
-```shell
+``` shell
 cat <<'EOF' > /usr/local/etc/dovecot/create_mailuser.sh
---8<-- "configs/usr/local/etc/dovecot/create_mailuser.sh"
+--8<-- "freebsd/configs/usr/local/etc/dovecot/create_mailuser.sh"
 EOF
+
 chmod 0755 /usr/local/etc/dovecot/create_mailuser.sh
 
 # admin@example.com anlegen
@@ -153,6 +153,6 @@ chmod 0755 /usr/local/etc/dovecot/create_mailuser.sh
 
 Dovecot kann nun gestartet werden.
 
-```shell
+``` shell
 service dovecot start
 ```

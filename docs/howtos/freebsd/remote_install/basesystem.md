@@ -6,6 +6,7 @@ author:
 publisher:
   name: RootService Team
   url: https://github.com/RootService
+  email: team@rootservice.org
 license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
@@ -15,23 +16,18 @@ date: '2010-08-25'
 lastmod: '2025-06-28'
 title: BaseSystem
 description: In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.
-keywords:
-  - BaseSystem
-  - mkdocs
-  - docs
-lang: de
 robots: index, follow
+lang: de
 hide: []
 search:
   exclude: false
 ---
 
+# BaseSystem
+
 ## Einleitung
 
-In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD 64BIT](https://www.freebsd.org/){: target="\_blank" rel="noopener"}
-BaseSystem mittels [mfsBSD](https://mfsbsd.vx.sk/){: target="\_blank" rel="noopener"} auf einem dedizierten Server.
-Um eine weitere Republikation der offiziellen [FreeBSD Dokumentation](https://docs.freebsd.org/en/books/handbook/){: target="\_blank" rel="noopener"}
-zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
+In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD 64BIT](https://www.freebsd.org/){: target="\_blank" rel="noopener"} BaseSystem mittels [mfsBSD](https://mfsbsd.vx.sk/) auf einem dedizierten Server. Um eine weitere Republikation der offiziellen [FreeBSD Dokumentation](https://docs.freebsd.org/en/books/handbook/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
 
 Unser BaseSystem wird folgende Dienste umfassen.
 
@@ -42,14 +38,11 @@ Unser BaseSystem wird folgende Dienste umfassen.
 
 ## Voraussetzungen
 
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](intro.md)
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](requirements.md)
 
 ## RescueSystem booten
 
-Um unser [mfsBSD Image](../mfsbsd_image.md) installieren zu können, müssen wir unsere virtuelle Maschine mit
-einem RescueSystem booten. Hierfür eignet sich die auf [Arch Linux](https://www.archlinux.org/){: target="\_blank" rel="noopener"}
-basierende [SystemRescueCD](https://www.system-rescue.org/){: target="\_blank" rel="noopener"} am Besten, welche wir
-mittels des mit Windows mitgelieferten cURL-Client herunterladen und unserer virtuellen Maschine als Bootmedium zuweisen.
+Um unser [mfsBSD Image](mfsbsd_image.md) installieren zu können, müssen wir unsere virtuelle Maschine mit einem RescueSystem booten. Hierfür eignet sich die auf [Arch Linux](https://www.archlinux.org/){: target="\_blank" rel="noopener"} basierende [SystemRescueCD](https://www.system-rescue.org/){: target="\_blank" rel="noopener"} am Besten, welche wir mittels des mit Windows mitgelieferten cURL-Client herunterladen und unserer virtuellen Maschine als Bootmedium zuweisen.
 
 ```powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
@@ -67,8 +60,7 @@ Wir können das RescueSystem jetzt booten.
 
 Im Bootmenü wählen wir die erste Option "Boot with default options" aus.
 
-Ist der Bootvorgang abgeschlossen, wird als Erstes das root-Passwort für das RescueSystem gesetzt und die Firewall
-deaktiviert.
+Ist der Bootvorgang abgeschlossen, wird als Erstes das root-Passwort für das RescueSystem gesetzt und die Firewall deaktiviert.
 
 ```shell
 setkmap de
@@ -88,8 +80,7 @@ systemctl stop iptables
 systemctl stop ip6tables
 ```
 
-Jetzt sollten wir uns mittels PuTTY als `root` in das RescueSystem einloggen und mit der Installation unseres mfsBSD
-Image fortfahren können.
+Jetzt sollten wir uns mittels PuTTY als `root` in das RescueSystem einloggen und mit der Installation unseres mfsBSD Image fortfahren können.
 
 ```powershell
 putty -ssh -P 2222 root@127.0.0.1
@@ -97,8 +88,7 @@ putty -ssh -P 2222 root@127.0.0.1
 
 ## mfsBSD installieren
 
-Um unsere umfangreichen Vorbereitungen nun abzuschliessen, müssen wir nur noch unser [mfsBSD
-Image](../mfsbsd_image.md) installieren und booten.
+Um unsere umfangreichen Vorbereitungen nun abzuschliessen, müssen wir nur noch unser [mfsBSD Image](mfsbsd_image.md) installieren und booten.
 
 Als Erstes kopieren wir mittels PuTTYs SCP-Client (`pscp`) das mfsBSD Image in das RescueSystem.
 
@@ -106,8 +96,7 @@ Als Erstes kopieren wir mittels PuTTYs SCP-Client (`pscp`) das mfsBSD Image in d
 pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-14.3-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-14.3-RELEASE-amd64.img
 ```
 
-Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev/nvme0n1`) unserer virtuellen Maschine
-installieren und uns anschliessend wieder aus dem RescueSystem ausloggen.
+Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev/nvme0n1`) unserer virtuellen Maschine installieren und uns anschliessend wieder aus dem RescueSystem ausloggen.
 
 ```shell
 dd if=/dev/zero of=/dev/nvme0n1 count=512 bs=1M
@@ -117,8 +106,7 @@ dd if=/tmp/mfsbsd-14.3-RELEASE-amd64.img of=/dev/nvme0n1 bs=1M
 exit
 ```
 
-Abschliessend stoppen wir die virtuelle Maschine vorübergehend und entfernen die SystemRescueCD aus dem virtuellen
-DVD-Laufwerk.
+Abschliessend stoppen wir die virtuelle Maschine vorübergehend und entfernen die SystemRescueCD aus dem virtuellen DVD-Laufwerk.
 
 ```powershell
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" controlvm "FreeBSD" poweroff
@@ -128,35 +116,26 @@ DVD-Laufwerk.
 
 ## FreeBSD installieren
 
-Nachdem nun alle Vorbereitungen abgeschlossen sind, können wir endlich mit der eigentlichen FreeBSD Remote Installation
-beginnen, indem wir die virtuelle Maschine wieder booten.
+Nachdem nun alle Vorbereitungen abgeschlossen sind, können wir endlich mit der eigentlichen FreeBSD Remote Installation beginnen, indem wir die virtuelle Maschine wieder booten.
 
 ```powershell
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" startvm "FreeBSD"
 ```
 
-Jetzt sollten wir uns mittels PuTTY als `root` mit dem Passwort `mfsroot` in das mfsBSD Image einloggen und mit der
-Installation von FreeBSD beginnen können.
+Jetzt sollten wir uns mittels PuTTY als `root` mit dem Passwort `mfsroot` in das mfsBSD Image einloggen und mit der Installation von FreeBSD beginnen können.
 
 ```powershell
 putty -ssh -P 2222 root@127.0.0.1
 ```
 
-<!-- markdownlint-disable MD046 -->
-
-???+ hint
-
-    Diese Shell nutzt das amerikanische Tastaturlayout, welches einige Tasten anders belegt als das deutsche
-
-Tastaturlayout.
+!!! info
+    Diese Shell nutzt das amerikanische Tastaturlayout, welches einige Tasten anders belegt als das deutsche Tastaturlayout.
 
     Um auf das deutsche Tastaturlayout zu wechseln, wählen wir mittels `kbdmap` das Layout "German (accent keys)" aus:
 
     ```shell
     /usr/sbin/kbdmap -K
     ```
-
-<!-- markdownlint-enable MD046 -->
 
 Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf "UTC" (Universal Time Code).
 
@@ -166,33 +145,23 @@ Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf "UTC" (Un
 
 ## Partitionieren der Festplatte
 
-Bevor wir anfangen, bereinigen wir die Festplatten von jeglichen Datenrückständen, indem wir sie mit Nullen
-überschreiben. Je nach Festplattengrösse kann dies einige Stunden bis Tage in Anspruch nehmen. Aus diesem Grund
-verlegen wir diese Jobs mittels `nohup` in den Hintergrund, so dass wir uns zwischenzeitlich ausloggen können ohne dass
-dabei die Jobs automatisch von der Shell abgebrochen werden. Ob die Jobs fertig sind, lässt dann mittels `ps -auxfwww`
-und `top -atCP` ermitteln.
+Bevor wir anfangen, bereinigen wir die Festplatten von jeglichen Datenrückständen, indem wir sie mit Nullen überschreiben. Je nach Festplattengrösse kann dies einige Stunden bis Tage in Anspruch nehmen. Aus diesem Grund verlegen wir diese Jobs mittels `nohup` in den Hintergrund, so dass wir uns zwischenzeitlich ausloggen können ohne dass dabei die Jobs automatisch von der Shell abgebrochen werden. Ob die Jobs fertig sind, lässt dann mittels `ps -auxfwww` und `top -atCP` ermitteln.
 
 ```shell
 nohup dd if=/dev/zero of=/dev/nvd0 bs=1M  &
 nohup dd if=/dev/zero of=/dev/nvd1 bs=1M  &
 ```
 
-Da jeder Administrator andere Präferenzen an sein Partitionslayout stellt und wir andernfalls mit diesem HowTo nicht
-weiterkommen, verwenden wir im Folgenden ein Standard-Partitionslayout. Fortgeschrittenere FreeBSD-Administratoren
-können dieses Partitionslayout selbstverständlich an ihre eigenen Bedürfnisse anpassen.
+Da jeder Administrator andere Präferenzen an sein Partitionslayout stellt und wir andernfalls mit diesem HowTo nicht weiterkommen, verwenden wir im Folgenden ein Standard-Partitionslayout. Fortgeschrittenere FreeBSD-Administratoren können dieses Partitionslayout selbstverständlich an ihre eigenen Bedürfnisse anpassen.
 
 |    Partition     | Mountpunkt | Filesystem | Grösse |
 | :--------------: | :--------- | :--------: | -----: |
 | /dev/mirror/root | /          |    UFS2    |  60 GB |
 | /dev/mirror/swap | none       |    SWAP    |   4 GB |
 
-Als Erstes müssen wir die Festplatte partitionieren, was wir mittels `gpart` erledigen werden. Zuvor müssen wir dies
-aber dem Kernel mittels `sysctl` mitteilen, da er uns andernfalls dazwischenfunken würde.
+Als Erstes müssen wir die Festplatte partitionieren, was wir mittels `gpart` erledigen werden. Zuvor müssen wir dies aber dem Kernel mittels `sysctl` mitteilen, da er uns andernfalls dazwischenfunken würde.
 
-Wir werden auf beiden Festplatten jeweils vier Partitionen anlegen, die Erste für den GPT-Bootcode, die Zweite für den
-EFI-Bootcode, die Dritte als Swap und die Vierte als Systempartition. Dabei werden wir die Partitionen auch gleich für
-modernere Festplatten mit 4K-Sektoren optimieren und statt den veralteten "MBR Partition Tables" die aktuelleren "GUID
-Partition Tables (GPT)" verwenden.
+Wir werden auf beiden Festplatten jeweils vier Partitionen anlegen, die Erste für den GPT-Bootcode, die Zweite für den EFI-Bootcode, die Dritte als Swap und die Vierte als Systempartition. Dabei werden wir die Partitionen auch gleich für modernere Festplatten mit 4K-Sektoren optimieren und statt den veralteten "MBR Partition Tables" die aktuelleren "GUID Partition Tables (GPT)" verwenden.
 
 ```shell
 sysctl kern.geom.debugflags=0x10
@@ -232,8 +201,7 @@ gmirror label -b prefer -F swapfs nvd0p3 nvd1p3
 
 ## Formatieren der Partitionen
 
-Nun müssen wir noch die Systempartition und die Partition für die Nutzdaten mit "UFS2" und einer 4K-Blockgrösse
-formatieren und aktivieren auch gleich die "soft-updates".
+Nun müssen wir noch die Systempartition und die Partition für die Nutzdaten mit "UFS2" und einer 4K-Blockgrösse formatieren und aktivieren auch gleich die "soft-updates".
 
 ```shell
 newfs -U -l -t /dev/mirror/rootfs
@@ -251,8 +219,7 @@ mkdir -p /mnt/data
 
 ## Installation der Chroot-Umgebung
 
-Auf die gemounteten Partitionen entpacken wir ein FreeBSD Basesystem mit dem wir problemlos weiterarbeiten können. Je
-nach Auslastung des FreeBSD FTP-Servers kann dies ein wenig dauern, bitte nicht ungeduldig werden.
+Auf die gemounteten Partitionen entpacken wir ein FreeBSD Basesystem mit dem wir problemlos weiterarbeiten können. Je nach Auslastung des FreeBSD FTP-Servers kann dies ein wenig dauern, bitte nicht ungeduldig werden.
 
 ```shell
 fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/14.3-RELEASE/base.txz"   | tar Jxpvf - -C /mnt/
@@ -261,8 +228,7 @@ fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/1
 cp -a /mnt/boot/kernel /mnt/boot/GENERIC
 ```
 
-Unser System soll natürlich auch von den Festplatten booten können, weshalb wir jetzt den Bootcode und Bootloader in
-den Bootpartitionen installieren.
+Unser System soll natürlich auch von den Festplatten booten können, weshalb wir jetzt den Bootcode und Bootloader in den Bootpartitionen installieren.
 
 Festplatte 1:
 
@@ -298,12 +264,11 @@ gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd1
 
 ## Vorbereiten der Chroot-Umgebung
 
-Vor dem Wechsel in die Chroot-Umgebung müssen wir noch die `resolv.conf` in die Chroot-Umgebung kopieren und das
-Device-Filesysteme dorthin mounten.
+Vor dem Wechsel in die Chroot-Umgebung müssen wir noch die `resolv.conf` in die Chroot-Umgebung kopieren und das Device-Filesysteme dorthin mounten.
 
 ```shell
 cat <<'EOF' > /etc/resolv.conf
---8<-- "configs/etc/resolv.conf"
+--8<-- "freebsd/configs/etc/resolv.conf"
 EOF
 
 cp /etc/resolv.conf /mnt/etc/resolv.conf
@@ -313,34 +278,29 @@ mount -t devfs devfs /mnt/dev
 
 ## Betreten der Chroot-Umgebung
 
-Das neu installierte System selbstverständlich noch konfiguriert werden, bevor wir es nutzen können. Dazu werden wir
-jetzt in das neue System chrooten und eine minimale Grundkonfiguration vornehmen.
+Das neu installierte System selbstverständlich noch konfiguriert werden, bevor wir es nutzen können. Dazu werden wir jetzt in das neue System chrooten und eine minimale Grundkonfiguration vornehmen.
 
-Beim Betreten der Chroot-Umgebung setzen wir mittels `/usr/bin/env -i` erstmal alle Environment-Variablen zurück.
-Andererseits benötigen wir aber die Environment-Variablen `HOME` und `TERM`, welche wir manuell auf sinnvolle Defaults
-setzen.
+Beim Betreten der Chroot-Umgebung setzen wir mittels `/usr/bin/env -i` erstmal alle Environment-Variablen zurück. Andererseits benötigen wir aber die Environment-Variablen `HOME` und `TERM`, welche wir manuell auf sinnvolle Defaults setzen.
 
 Wir bringen etwas Farbe in die Console, passen den Prompt an und legen `ee` statt `vi` als Default-Editor fest:
 
 ```shell
-cat <<'EOF' > /mnt/root/.cshrc
---8<-- "configs/root/.cshrc"
+cat <<'EOF' > /root/.cshrc
+--8<-- "freebsd/configs/usr/share/skel/dot.cshrc"
 EOF
 
-cat <<'EOF' > /mnt/root/.shrc
---8<-- "configs/root/.shrc"
+cat <<'EOF' > /root/.shrc
+--8<-- "freebsd/configs/usr/share/skel/dot.shrc"
 EOF
 
-cat <<'EOF' > /mnt/root/.mailrc
---8<-- "configs/root/.mailrc"
+cat <<'EOF' > /root/.mailrc
+--8<-- "freebsd/configs/usr/share/skel/dot.mailrc"
 EOF
 
-cat <<'EOF' > /mnt/root/.profile
---8<-- "configs/root/.profile"
+cat <<'EOF' > /root/.profile
+--8<-- "freebsd/configs/usr/share/skel/dot.profile"
 EOF
-```
 
-```shell
 chroot /mnt /usr/bin/env -i HOME=/root TERM=$TERM /bin/tcsh
 ```
 
@@ -356,7 +316,7 @@ Cronjobs zur regelmässigen Syncronisation mit einem Zeitserver einrichten.
 
 ```shell
 cat <<'EOF' > /etc/crontab
---8<-- "configs/etc/crontab"
+--8<-- "freebsd/configs/etc/crontab"
 EOF
 ```
 
@@ -366,19 +326,19 @@ Wir bringen etwas Farbe in die Console, passen den Prompt an und legen `ee` stat
 
 ```shell
 cat <<'EOF' > /usr/share/skel/dot.cshrc
---8<-- "configs/usr/share/skel/dot.cshrc"
+--8<-- "freebsd/configs/usr/share/skel/dot.cshrc"
 EOF
 
 cat <<'EOF' > /usr/share/skel/dot.shrc
---8<-- "configs/usr/share/skel/dot.shrc"
+--8<-- "freebsd/configs/usr/share/skel/dot.shrc"
 EOF
 
 cat <<'EOF' > /usr/share/skel/dot.mailrc
---8<-- "configs/usr/share/skel/dot.mailrc"
+--8<-- "freebsd/configs/usr/share/skel/dot.mailrc"
 EOF
 
 cat <<'EOF' > /usr/share/skel/dot.profile
---8<-- "configs/usr/share/skel/dot.profile"
+--8<-- "freebsd/configs/usr/share/skel/dot.profile"
 EOF
 ```
 
@@ -389,9 +349,7 @@ pw useradd -D -g '' -M 0700 -s sh -w no
 pw usermod -n root -s sh -w none
 ```
 
-Das Home-Verzeichnis des Users root ist standardmässig leider nicht ausreichend restriktiv in seinen Zugriffsrechten,
-was wir mit einem entsprechenden Aufruf von `chmod` schnell ändern. Bevor wir es vergessen, setzen wir bei dieser
-Gelegenheit gleich ein sicheres Passwort für root.
+Das Home-Verzeichnis des Users root ist standardmässig leider nicht ausreichend restriktiv in seinen Zugriffsrechten, was wir mit einem entsprechenden Aufruf von `chmod` schnell ändern. Bevor wir es vergessen, setzen wir bei dieser Gelegenheit gleich ein sicheres Passwort für root.
 
 ```shell
 chmod 0700 /root
@@ -410,22 +368,15 @@ passwd root
 
 ## Systemsicherheit verstärken
 
-Die hier vorgestellten Massnahmen sind äusserst simple Basics, die aus Hygienegründen auf jedem FreeBSD System
-selbstverständlich sein sollten. Um ein FreeBSD System richtig zu härten (Hardened), kommt man jedoch nicht an
-komplexeren Methoden wie Security Event Auditing und Mandatory Access Control vorbei. Diese Themen werden im FreeBSD
-Handbuch recht ausführlich besprochen; für den Einstieg empfehle ich hier die Lektüre von
-[Chapter 14. Security](https://docs.freebsd.org/en/books/handbook/security/){: target="\_blank" rel="noopener"}, für die
-weiterführenden Themen die [Chapter 16. Mandatory Access Control](https://docs.freebsd.org/en/books/handbook/mac/){: target="\_blank" rel="noopener"}
-und [Chapter 17. Security Event Auditing](https://docs.freebsd.org/en/books/handbook/audit/){: target="\_blank" rel="noopener"}.
+Die hier vorgestellten Massnahmen sind äusserst simple Basics, die aus Hygienegründen auf jedem FreeBSD System selbstverständlich sein sollten. Um ein FreeBSD System richtig zu härten (Hardened), kommt man jedoch nicht an komplexeren Methoden wie Security Event Auditing und Mandatory Access Control vorbei. Diese Themen werden im FreeBSD Handbuch recht ausführlich besprochen; für den Einstieg empfehle ich hier die Lektüre von [Chapter 14. Security](https://docs.freebsd.org/en/books/handbook/security/){: target="\_blank" rel="noopener"}, für die weiterführenden Themen die [Chapter 16. Mandatory Access Control](https://docs.freebsd.org/en/books/handbook/mac/){: target="\_blank" rel="noopener"} und [Chapter 17. Security Event Auditing](https://docs.freebsd.org/en/books/handbook/audit/){: target="\_blank" rel="noopener"}.
 
 ### OpenSSH konfigurieren
 
-Da wir gerade ein Produktiv-System aufsetzen, werden wir den OpenSSH-Dienst recht restriktiv konfigurieren, unter
-Anderem werden wir den Login per Passwort verbieten und nur per PublicKey zulassen.
+Da wir gerade ein Produktiv-System aufsetzen, werden wir den OpenSSH-Dienst recht restriktiv konfigurieren, unter Anderem werden wir den Login per Passwort verbieten und nur per PublicKey zulassen.
 
 ```shell
 cat <<'EOF' > /etc/ssh/sshd_config
---8<-- "configs/etc/ssh/sshd_config"
+--8<-- "freebsd/configs/etc/ssh/sshd_config"
 EOF
 
 rm -f /etc/ssh/ssh_host_*_key*
@@ -448,22 +399,17 @@ cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 
 ### /etc/sysctl.conf anpassen
 
-In der `sysctl.conf` können die meisten Kernel-Parameter verändert werden. Wir wollen dies nutzen, um unser System
-etwas robuster und sicherer zu machen.
+In der `sysctl.conf` können die meisten Kernel-Parameter verändert werden. Wir wollen dies nutzen, um unser System etwas robuster und sicherer zu machen.
 
 ```shell
 cat <<'EOF' > /etc/sysctl.conf
---8<-- "configs/etc/sysctl.conf"
+--8<-- "freebsd/configs/etc/sysctl.conf"
 EOF
 ```
 
 ### Stärkere Passwort-Hashes verwenden
 
-Um Bruteforce-Attacken erheblich auszubremsen setzen wir für die Passworte der Systemuser eine Mindestlänge
-(minpasswordlen) von 12 Zeichen in einem Mix aus Gross- und Kleinschreibung (mixpasswordcase) fest. Desweiteren lassen
-wir User nach 30 Minuten Inaktivität automatisch ausloggen (idletime). Wir bearbeiten hierzu mit dem Editor `ee` (`ee
-/etc/login.conf`) in der Datei `/etc/login.conf` die Login-Klasse `default`, indem wir vor der vorletzten Zeile
-folgende Zeilen hinzufügen.
+Um Bruteforce-Attacken erheblich auszubremsen setzen wir für die Passworte der Systemuser eine Mindestlänge (minpasswordlen) von 12 Zeichen in einem Mix aus Gross- und Kleinschreibung (mixpasswordcase) fest. Desweiteren lassen wir User nach 30 Minuten Inaktivität automatisch ausloggen (idletime). Wir bearbeiten hierzu mit dem Editor `ee` (`ee /etc/login.conf`) in der Datei `/etc/login.conf` die Login-Klasse `default`, indem wir vor der vorletzten Zeile folgende Zeilen hinzufügen.
 
 ```text
         :mixpasswordcase=true:\
@@ -477,8 +423,7 @@ Anschliessend muss die Datei in eine Systemdatenbank umgewandelt werden.
 cap_mkdb /etc/login.conf
 ```
 
-Die neuen Einstellungen werden erst wirksam, wenn das Passwort eines Benutzers geändert wird. Deshalb müssen wir jetzt
-die Passwörter für `root` und alle anderen bisher von uns angelegten User ändern.
+Die neuen Einstellungen werden erst wirksam, wenn das Passwort eines Benutzers geändert wird. Deshalb müssen wir jetzt die Passwörter für `root` und alle anderen bisher von uns angelegten User ändern.
 
 ```shell
 # Password erzeugen und in /root/_passwords speichern
@@ -496,19 +441,15 @@ passwd root
 
 ### Terminals absichern
 
-Um zu verhindern, dass das System im Single User Mode ohne jeglichen Schutz benutzbar ist, ändern wir in der Datei
-`/etc/ttys` die Zeile `console none...` wie folgt ab.
+Um zu verhindern, dass das System im Single User Mode ohne jeglichen Schutz benutzbar ist, ändern wir in der Datei `/etc/ttys` die Zeile `console none...` wie folgt ab.
 
 ```text
 console none                            unknown off insecure
 ```
 
-Dadurch wird die Eingabe des root-Kennworts erforderlich, um das System im Single User Mode booten zu können.
-Den Rest sollten wir hingegen unverändert lassen.
+Dadurch wird die Eingabe des root-Kennworts erforderlich, um das System im Single User Mode booten zu können. Den Rest sollten wir hingegen unverändert lassen.
 
-Zusätzlich können wir veranlassen, dass die Konsole bei jedem Logout gelöscht wird, so dass nicht versehentlich
-vertrauliche Informationen auf dem Bildschirm sichtbar bleiben. Dazu ändern wir in der Datei `/etc/gettytab`
-den Eintrag `P|Pc|Pc console` (circa Zeile 170) wie folgt ab.
+Zusätzlich können wir veranlassen, dass die Konsole bei jedem Logout gelöscht wird, so dass nicht versehentlich vertrauliche Informationen auf dem Bildschirm sichtbar bleiben. Dazu ändern wir in der Datei `/etc/gettytab` den Eintrag `P|Pc|Pc console` (circa Zeile 170) wie folgt ab.
 
 ```text
 P|Pc|Pc console:\
@@ -520,44 +461,51 @@ Wir passen auch unsere Login-Begrüssung (motd) an.
 
 ```shell
 cat <<'EOF' > /etc/motd.template
---8<-- "configs/etc/motd.template"
+--8<-- "freebsd/configs/etc/motd.template"
 EOF
 ```
 
 ## System konfigurieren
 
-Die aliases-Datenbank für FreeBSDs DMA müssen wir mittels `newaliases` anlegen, auch wenn wir später DMA gar nicht
-verwenden möchten.
+Die aliases-Datenbank für FreeBSDs DMA müssen wir mittels `newaliases` anlegen, auch wenn wir später DMA gar nicht verwenden möchten.
 
 ```shell
 cat <<'EOF' > /etc/mail/aliases
---8<-- "configs/etc/mail/aliases"
+--8<-- "freebsd/configs/etc/mail/aliases"
 EOF
 
 newaliases
 ```
 
+Die `/etc/nscd.conf` legen wir mit folgendem Inhalt an.
+
 ```shell
 cat <<'EOF' > /etc/nscd.conf
---8<-- "configs/etc/nscd.conf"
+--8<-- "freebsd/configs/etc/nscd.conf"
 EOF
 ```
+
+Die `/etc/nsswitch.conf` legen wir mit folgendem Inhalt an.
 
 ```shell
 cat <<'EOF' > /etc/nsswitch.conf
---8<-- "configs/etc/nsswitch.conf"
+--8<-- "freebsd/configs/etc/nsswitch.conf"
 EOF
 ```
+
+Die `/etc/ntp.conf` legen wir mit folgendem Inhalt an.
 
 ```shell
 cat <<'EOF' > /etc/ntp.conf
---8<-- "configs/etc/ntp.conf"
+--8<-- "freebsd/configs/etc/ntp.conf"
 EOF
 ```
 
+Die `/etc/resolvconf.conf` legen wir mit folgendem Inhalt an.
+
 ```shell
 cat <<'EOF' > /etc/resolvconf.conf
---8<-- "configs/etc/resolvconf.conf"
+--8<-- "freebsd/configs/etc/resolvconf.conf"
 EOF
 
 resolvconf -u
@@ -567,15 +515,15 @@ Die `/etc/periodic.conf` legen wir mit folgendem Inhalt an.
 
 ```shell
 cat <<'EOF' > /etc/periodic.conf
---8<-- "configs/etc/periodic.conf"
+--8<-- "freebsd/configs/etc/periodic.conf"
 EOF
 ```
 
 Die `/etc/fstab` legen wir entsprechend unserem Partitionslayout an.
 
 ```shell
-cat <<'EOF' > /etc/fstab
---8<-- "configs/etc/fstab_mirror"
+cat <<'EOF' > /etc/fstab_mirror
+--8<-- "freebsd/configs/etc/fstab_mirror"
 EOF
 ```
 
@@ -583,7 +531,7 @@ In der `/etc/rc.conf` werden diverse Grundeinstellungen für das System und die 
 
 ```shell
 cat <<'EOF' > /etc/rc.conf
---8<-- "configs/etc/rc.conf"
+--8<-- "freebsd/configs/etc/rc.conf"
 EOF
 ```
 
@@ -630,9 +578,7 @@ ifconfig -u -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'`
 
 ### Systemgruppen anlegen
 
-Zur besseren Trennung beziehungsweise Gruppierung unterschiedlicher Nutzungszwecke legen wir ein paar Gruppen an (admin
-für rein administrative Nutzer, users für normale Nutzer, sshusers für Nutzer mit SSH-Zugang und sftponly für reine
-SFTP-Nutzer).
+Zur besseren Trennung beziehungsweise Gruppierung unterschiedlicher Nutzungszwecke legen wir ein paar Gruppen an (admin für rein administrative Nutzer, users für normale Nutzer, sshusers für Nutzer mit SSH-Zugang und sftponly für reine SFTP-Nutzer).
 
 ```shell
 pw groupadd -n admin -g 1000
@@ -643,11 +589,7 @@ pw groupadd -n sftponly -g 4000
 
 ### Systembenutzer anlegen
 
-Um nicht ständig mit dem root-User arbeiten zu müssen, legen wir uns einen Administrations-User an, den wir
-praktischerweise "admin" nennen. Diesem User verpassen wir die Standard-Systemgruppe "admin" und nehmen ihn zusätzlich
-in die Systemgruppe "wheel" auf, damit dieser User später per `su` zum root-User wechseln kann. Das Home-Verzeichnis
-des admin-Users lassen wir automatisch anlegen und setzen seine Standard-Shell auf `/bin/tcsh`. Ein sicheres Passwort
-bekommt er selbstverständlich auch noch.
+Um nicht ständig mit dem root-User arbeiten zu müssen, legen wir uns einen Administrations-User an, den wir praktischerweise "admin" nennen. Diesem User verpassen wir die Standard-Systemgruppe "admin" und nehmen ihn zusätzlich in die Systemgruppe "wheel" auf, damit dieser User später per `su` zum root-User wechseln kann. Das Home-Verzeichnis des admin-Users lassen wir automatisch anlegen und setzen seine Standard-Shell auf `/bin/tcsh`. Ein sicheres Passwort bekommt er selbstverständlich auch noch.
 
 ```shell
 pw useradd -n admin -u 1000 -g admin -G wheel -c 'Administrator' -m -w no
@@ -682,10 +624,7 @@ cat .ssh/id_rsa.pub >> .ssh/authorized_keys
 exit
 ```
 
-Einen normalen User mit SSH-Zugang legen wir ebenfalls an, ihn nennen wir "joeuser". Diesem User verpassen wir die
-Standard-Systemgruppe "users" und nehmen ihn zusätzlich in die Systemgruppe "sshusers" auf, damit sich dieser User
-später per `SSH` einloggen kann. Das Home-Verzeichnis des Users lassen wir automatisch anlegen und setzen seine
-Standard-Shell auf `/bin/tcsh`. Ein sicheres Passwort bekommt er selbstverständlich auch noch.
+Einen normalen User mit SSH-Zugang legen wir ebenfalls an, ihn nennen wir "joeuser". Diesem User verpassen wir die Standard-Systemgruppe "users" und nehmen ihn zusätzlich in die Systemgruppe "sshusers" auf, damit sich dieser User später per `SSH` einloggen kann. Das Home-Verzeichnis des Users lassen wir automatisch anlegen und setzen seine Standard-Shell auf `/bin/tcsh`. Ein sicheres Passwort bekommt er selbstverständlich auch noch.
 
 ```shell
 pw useradd -n joeuser -u 2000 -g users -G sshusers -c 'Joe User' -m -w no
@@ -724,13 +663,11 @@ exit
 
 ```shell
 cat <<'EOF' > /etc/make.conf
---8<-- "configs/etc/make.conf"
+--8<-- "freebsd/configs/etc/make.conf"
 EOF
-```
 
-```shell
 cat <<'EOF' > /etc/src.conf
---8<-- "configs/etc/src.conf"
+--8<-- "freebsd/configs/etc/src.conf"
 EOF
 ```
 
@@ -740,7 +677,7 @@ Kernel Parameter in `/boot/loader.conf` setzen.
 
 ```shell
 cat <<'EOF' > /boot/loader.conf
---8<-- "configs/boot/loader.conf"
+--8<-- "freebsd/configs/boot/loader.conf"
 EOF
 ```
 
@@ -748,11 +685,11 @@ EOF
 
 ```shell
 cat <<'EOF' > /etc/pf.conf
---8<-- "configs/etc/pf.conf"
+--8<-- "freebsd/configs/etc/pf.conf"
 EOF
 
 cat <<'EOF' > /etc/pf.internal
---8<-- "configs/etc/pf.internal"
+{{~ include "snippets/configs/etc/pf.internal"
 EOF
 
 # Default Interface
@@ -772,9 +709,7 @@ ifconfig -u -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'`
 
 ## Abschluss der Installation
 
-Um uns künftig mit unserem Arbeitsuser einloggen zu können, müssen wir uns dessen SSH-Key (id_ed25519) auf unser
-lokales System kopieren und ihn dann mit Hilfe der [PuTTYgen Dokumentation](https://the.earth.li/~sgtatham/putty/latest/htmldoc/Chapter8.html){: target="\_blank" rel="noopener"}
-in einen für PuTTY lesbaren Private Key umwandeln (id_ed25519.ppk).
+Um uns künftig mit unserem Arbeitsuser einloggen zu können, müssen wir uns dessen SSH-Key (id_ed25519) auf unser lokales System kopieren und ihn dann mit Hilfe der [PuTTYgen Dokumentation](https://the.earth.li/~sgtatham/putty/latest/htmldoc/Chapter8.html){: target="\_blank" rel="noopener"} in einen für PuTTY lesbaren Private Key umwandeln (id_ed25519.ppk).
 
 ```powershell
 pscp -P 2222 -r root@127.0.0.1:/mnt/home/admin/.ssh "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh"
@@ -782,8 +717,7 @@ pscp -P 2222 -r root@127.0.0.1:/mnt/home/admin/.ssh "${Env:USERPROFILE}\VirtualB
 puttygen "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_ed25519"
 ```
 
-Nun ist es endlich soweit: Wir verlassen das Chroot, unmounten die Partitionen und rebooten zum ersten Mal in unser
-neues FreeBSD Basis-System.
+Nun ist es endlich soweit: Wir verlassen das Chroot, unmounten die Partitionen und rebooten zum ersten Mal in unser neues FreeBSD Basis-System.
 
 ```shell
 exit
@@ -833,12 +767,9 @@ pkg install -y devel/git@default
 
 ### Source Tree auschecken
 
-Am Besten funktioniert bei FreeBSD immer noch die Aktualisierung über die System-Sourcen. Auf diesem Wege kann man ein
-System über viele Release-Generationen hinweg aktuell halten, ohne eine Neuinstallation durchzuführen. Das Verfahren
-ist zwar etwas zeitaufwändig, aber erprobt und führt bei richtiger Anwendung zu einem sauberen, aktuellen System.
+Am Besten funktioniert bei FreeBSD immer noch die Aktualisierung über die System-Sourcen. Auf diesem Wege kann man ein System über viele Release-Generationen hinweg aktuell halten, ohne eine Neuinstallation durchzuführen. Das Verfahren ist zwar etwas zeitaufwändig, aber erprobt und führt bei richtiger Anwendung zu einem sauberen, aktuellen System.
 
-Zunächst wird hierzu das aktuelle Quellenverzeichnis von FreeBSD benötigt, weshalb wir es mittels
-[git](https://www.freebsd.org/cgi/man.cgi?query=git&sektion=1&format=html){: target="\_blank" rel="noopener"} auschecken.
+Zunächst wird hierzu das aktuelle Quellenverzeichnis von FreeBSD benötigt, weshalb wir es mittels [git](https://www.freebsd.org/cgi/man.cgi?query=git&sektion=1&format=html){: target="\_blank" rel="noopener"} auschecken.
 
 ```shell
 # Neues Quellenverzeichnis anlegen (clone)
@@ -859,8 +790,7 @@ etcupdate extract
 
 ### Portstree auschecken
 
-Um unser Basissystem später um sinnvolle Programme erweitern zu können, fehlt uns noch der sogenannte Portstree. Diesen
-checken wir nun ebenfalls mittels `git` aus (kann durchaus eine Stunde oder länger dauern).
+Um unser Basissystem später um sinnvolle Programme erweitern zu können, fehlt uns noch der sogenannte Portstree. Diesen checken wir nun ebenfalls mittels `git` aus (kann durchaus eine Stunde oder länger dauern).
 
 ```shell
 rm -r /usr/ports
@@ -876,8 +806,7 @@ git -C /usr/ports pull --rebase
 make -C /usr/ports fetchindex
 ```
 
-Wichtige Informationen zu neuen Paketversionen finden sich in `/usr/ports/UPDATING` und sollten dringend beachtet
-werden.
+Wichtige Informationen zu neuen Paketversionen finden sich in `/usr/ports/UPDATING` und sollten dringend beachtet werden.
 
 ```shell
 less /usr/ports/UPDATING
@@ -895,31 +824,16 @@ pkg delete -y -f \*
 
 ### Konfiguration anpassen
 
-In den Abschnitten [Buildsystem konfigurieren](#buildsystem-konfigurieren) und [Kernel konfigurieren](#kernel-konfigurieren)
-haben wir uns bereits eine geeignete `make.conf` und gegebenenfalls auch eine individuelle Kernel-Konfiguration
-erstellt. Dennoch sei an dieser Stelle nochmals auf das FreeBSD Handbuch verwiesen. Insbesondere
-[Chapter 8. Configuring the FreeBSD Kernel](https://docs.freebsd.org/en/books/handbook/kernelconfig/){: target="\_blank" rel="noopener"}
-und [24.6. Updating FreeBSD from Source](https://docs.freebsd.org/en/books/handbook/cutting-edge/#makeworld){: target="\_blank" rel="noopener"}
-seien Jedem FreeBSD Administratoren ans Herz gelegt.
+In den Abschnitten [Buildsystem konfigurieren](#buildsystem-konfigurieren) und [Kernel konfigurieren](#kernel-konfigurieren) haben wir uns bereits eine geeignete `make.conf` und gegebenenfalls auch eine individuelle Kernel-Konfiguration erstellt. Dennoch sei an dieser Stelle nochmals auf das FreeBSD Handbuch verwiesen. Insbesondere [Chapter 8. Configuring the FreeBSD Kernel](https://docs.freebsd.org/en/books/handbook/kernelconfig/){: target="\_blank" rel="noopener"} und [24.6. Updating FreeBSD from Source](https://docs.freebsd.org/en/books/handbook/cutting-edge/#makeworld){: target="\_blank" rel="noopener"} seien Jedem FreeBSD Administratoren ans Herz gelegt.
 
-Ausserdem empfiehlt es sich vor einem Update des Basissystems die Datei `/usr/src/UPDATING` zu lesen. Alle Angaben und
-Hinweise in dieser Datei sind aktueller und zutreffender als das Handbuch und sollten unbedingt befolgt werden.
+Ausserdem empfiehlt es sich vor einem Update des Basissystems die Datei `/usr/src/UPDATING` zu lesen. Alle Angaben und Hinweise in dieser Datei sind aktueller und zutreffender als das Handbuch und sollten unbedingt befolgt werden.
 
 ### Vorbereitende Arbeiten
 
-<!-- markdownlint-disable MD046 -->
+!!! info
+    Für die spätere Installation des neu kompilierten Basissystems darf `/tmp` nicht mit der Option `noexec` gemounted sein. Da zwischendrin noch mal ein Reboot erfolgt, können wir bei Bedarf bereits jetzt die entsprechende Zeile in der `fstab` anpassen, sofern vorhanden.
 
-???+ hint
-
-    Für die spätere Installation des neu kompilierten Basissystems darf `/tmp` nicht mit der Option `noexec` gemounted
-
-sein. Da zwischendrin noch mal ein Reboot erfolgt, können wir bei Bedarf bereits jetzt die entsprechende Zeile in der
-`fstab` anpassen, sofern vorhanden.
-
-<!-- markdownlint-enable MD046 -->
-
-Zunächst müssen eventuell vorhandene Object-Dateien im Verzeichnis `/usr/obj` gelöscht werden, damit `make` später
-wirklich das gesamte System neu erstellt.
+Zunächst müssen eventuell vorhandene Object-Dateien im Verzeichnis `/usr/obj` gelöscht werden, damit `make` später wirklich das gesamte System neu erstellt.
 
 ```shell
 cd /usr/src
@@ -939,9 +853,7 @@ make -j4 buildworld
 
 ### Kernel rekompilieren und installieren
 
-Wenn die eigene Kernel-Konfiguration wie bei uns bereits in der `/etc/make.conf` eingetragen ist, wird sie automatisch
-verwendet, andernfalls wird die Konfiguration des generischen FreeBSD-Kernels verwendet. Das Kompilieren des Kernels
-kann durchaus eine Stunde oder länger dauern.
+Wenn die eigene Kernel-Konfiguration wie bei uns bereits in der `/etc/make.conf` eingetragen ist, wird sie automatisch verwendet, andernfalls wird die Konfiguration des generischen FreeBSD-Kernels verwendet. Das Kompilieren des Kernels kann durchaus eine Stunde oder länger dauern.
 
 ```shell
 mkdir -p /root/kernels
@@ -964,15 +876,13 @@ sed -e 's/^#*\(kernel=\).*$/\1"MYKERNEL"/' -i '' /boot/loader.conf
 rm -r /boot/kernel /boot/kernel.old
 ```
 
-Normalerweise wäre nun ein Reboot in den Single User Mode an der Reihe. Da sich ein Remote-System in diesem Modus ohne
-KVM-Lösung aber nicht bedienen lässt, begnügen wir uns damit, das System regulär neu zu starten.
+Normalerweise wäre nun ein Reboot in den Single User Mode an der Reihe. Da sich ein Remote-System in diesem Modus ohne KVM-Lösung aber nicht bedienen lässt, begnügen wir uns damit, das System regulär neu zu starten.
 
 ```shell
 shutdown -r now
 ```
 
-Wenn wir unser System zu einem späteren Zeitpunkt nochmals aktualisieren, sollten wir zuden zuvor alle Dienste ausser
-OpenSSH, sowie sämtliche Jails in der Datei `/etc/rc.conf` deaktivieren.
+Wenn wir unser System zu einem späteren Zeitpunkt nochmals aktualisieren, sollten wir zuden zuvor alle Dienste ausser OpenSSH, sowie sämtliche Jails in der Datei `/etc/rc.conf` deaktivieren.
 
 Einloggen und zu `root` werden
 
@@ -988,9 +898,7 @@ su - root
 
 Wir installieren das neue Basissystem.
 
-Ausserdem sollte [etcupdate](https://www.freebsd.org/cgi/man.cgi?query=etcupdate&sektion=8&format=html){: target="\_blank" rel="noopener"}
-im Pre-Build-Mode angeworfen werden, damit es während der Aktualisierung nicht zu Fehlern kommt,
-weil z. B. bestimmte User oder Gruppen noch nicht vorhanden sind.
+Ausserdem sollte [etcupdate](https://www.freebsd.org/cgi/man.cgi?query=etcupdate&sektion=8&format=html){: target="\_blank" rel="noopener"} im Pre-Build-Mode angeworfen werden, damit es während der Aktualisierung nicht zu Fehlern kommt, weil z. B. bestimmte User oder Gruppen noch nicht vorhanden sind.
 
 ```shell
 cd /usr/src
@@ -1000,9 +908,7 @@ etcupdate -p
 make installworld
 ```
 
-Als letzten Schritt müssen nun noch die Neuerungen in den Konfigurationsdateien gemerged werden. Dabei unterstützt uns
-das Tool `etcupdate`. Wir müssen selbstverständlich darauf achten, dass wir hierbei nicht versehentlich unsere zuvor
-gemachten Anpassungen an den diversen Konfigurationsdateien wieder rückgängig machen.
+Als letzten Schritt müssen nun noch die Neuerungen in den Konfigurationsdateien gemerged werden. Dabei unterstützt uns das Tool `etcupdate`. Wir müssen selbstverständlich darauf achten, dass wir hierbei nicht versehentlich unsere zuvor gemachten Anpassungen an den diversen Konfigurationsdateien wieder rückgängig machen.
 
 ```shell
 etcupdate -B
@@ -1017,8 +923,7 @@ make BATCH_DELETE_OLD_FILES=yes delete-old-dirs
 make BATCH_DELETE_OLD_FILES=yes delete-old
 ```
 
-Anschliessend müssen wir noch die für die Installation gegebenenfalls vorgenommenen Änderungen in der `fstab` sowie
-`rc.conf` rückgängig machen und das System nochmals durchstarten.
+Anschliessend müssen wir noch die für die Installation gegebenenfalls vorgenommenen Änderungen in der `fstab` sowie `rc.conf` rückgängig machen und das System nochmals durchstarten.
 
 ```shell
 shutdown -r now

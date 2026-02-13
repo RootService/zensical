@@ -6,6 +6,7 @@ author:
 publisher:
   name: RootService Team
   url: https://github.com/RootService
+  email: team@rootservice.org
 license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
@@ -15,39 +16,37 @@ date: '2010-08-25'
 lastmod: '2025-06-28'
 title: PHP-FPM
 description: In diesem HowTo wird step-by-step die Installation von PHP-FPM für ein´ Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
-keywords:
-  - PHP-FPM
-  - mkdocs
-  - docs
-lang: de
 robots: index, follow
+lang: de
 hide: []
 search:
   exclude: false
 ---
 
+# PHP-FPM
+
 ## Einleitung
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- PHP 8.3.22 (PHP-FPM, Composer, PEAR)
+- PHP 8.4.17 (PHP-FPM, Composer, PEAR)
 
 ## Voraussetzungen
 
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../intro.md)
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../requirements.md)
 
 ## Installation
 
-Wir installieren `lang/php83` und dessen Abhängigkeiten.
+Wir installieren `lang/php84` und dessen Abhängigkeiten.
 
-```shell
-mkdir -p /var/db/ports/lang_php83
-cat <<'EOF' > /var/db/ports/lang_php83/options
---8<-- "ports/lang_php83/options"
+``` shell
+mkdir -p /var/db/ports/lang_php84
+cat <<'EOF' > /var/db/ports/lang_php84/options
+--8<-- "freebsd/ports/lang_php84/options"
 EOF
 
 
-portmaster -w -B -g --force-config lang/php83  -n
+portmaster -w -B -g --force-config lang/php84  -n
 
 
 sysrc php_fpm_enable=YES
@@ -55,156 +54,145 @@ sysrc php_fpm_enable=YES
 
 ## PHP-Extensions installieren
 
-Wir installieren `lang/php83-extensions` und dessen Abhängigkeiten.
+Wir installieren `lang/php84-extensions` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 mkdir -p /var/db/ports/graphics_gd
 cat <<'EOF' > /var/db/ports/graphics_gd/options
---8<-- "ports/graphics_gd/options"
+--8<-- "freebsd/ports/graphics_gd/options"
 EOF
 
 mkdir -p /var/db/ports/graphics_jpeg-turbo
 cat <<'EOF' > /var/db/ports/graphics_jpeg-turbo/options
---8<-- "ports/graphics_jpeg-turbo/options"
+--8<-- "freebsd/ports/graphics_jpeg-turbo/options"
 EOF
 
 mkdir -p /var/db/ports/graphics_png
 cat <<'EOF' > /var/db/ports/graphics_png/options
---8<-- "ports/graphics_png/options"
+--8<-- "freebsd/ports/graphics_png/options"
 EOF
 
 mkdir -p /var/db/ports/graphics_tiff
 cat <<'EOF' > /var/db/ports/graphics_tiff/options
---8<-- "ports/graphics_tiff/options"
+--8<-- "freebsd/ports/graphics_tiff/options"
 EOF
 
 mkdir -p /var/db/ports/archivers_libdeflate
 cat <<'EOF' > /var/db/ports/archivers_libdeflate/options
---8<-- "ports/archivers_libdeflate/options"
+--8<-- "freebsd/ports/archivers_libdeflate/options"
 EOF
 
 mkdir -p /var/db/ports/graphics_jbigkit
 cat <<'EOF' > /var/db/ports/graphics_jbigkit/options
---8<-- "ports/graphics_jbigkit/options"
+--8<-- "freebsd/ports/graphics_jbigkit/options"
 EOF
 
 mkdir -p /var/db/ports/graphics_webp
 cat <<'EOF' > /var/db/ports/graphics_webp/options
---8<-- "ports/graphics_webp/options"
+--8<-- "freebsd/ports/graphics_webp/options"
 EOF
 
 mkdir -p /var/db/ports/graphics_giflib
 cat <<'EOF' > /var/db/ports/graphics_giflib/options
---8<-- "ports/graphics_giflib/options"
+--8<-- "freebsd/ports/graphics_giflib/options"
 EOF
 
 mkdir -p /var/db/ports/print_freetype2
 cat <<'EOF' > /var/db/ports/print_freetype2/options
---8<-- "ports/print_freetype2/options"
+--8<-- "freebsd/ports/print_freetype2/options"
 EOF
 
 mkdir -p /var/db/ports/print_libraqm
 cat <<'EOF' > /var/db/ports/print_libraqm/options
---8<-- "ports/print_libraqm/options"
+--8<-- "freebsd/ports/print_libraqm/options"
 EOF
 
 mkdir -p /var/db/ports/converters_fribidi
 cat <<'EOF' > /var/db/ports/converters_fribidi/options
---8<-- "ports/converters_fribidi/options"
+--8<-- "freebsd/ports/converters_fribidi/options"
 EOF
 
 mkdir -p /var/db/ports/print_harfbuzz
 cat <<'EOF' > /var/db/ports/print_harfbuzz/options
---8<-- "ports/print_harfbuzz/options"
+--8<-- "freebsd/ports/print_harfbuzz/options"
 EOF
 
 mkdir -p /var/db/ports/devel_gobject-introspection
 cat <<'EOF' > /var/db/ports/devel_gobject-introspection/options
---8<-- "ports/devel_gobject-introspection/options"
+--8<-- "freebsd/ports/devel_gobject-introspection/options"
 EOF
 
 mkdir -p /var/db/ports/x11-fonts_fontconfig
 cat <<'EOF' > /var/db/ports/x11-fonts_fontconfig/options
---8<-- "ports/x11-fonts_fontconfig/options"
+--8<-- "freebsd/ports/x11-fonts_fontconfig/options"
 EOF
 
 mkdir -p /var/db/ports/mail_panda-cclient
 cat <<'EOF' > /var/db/ports/mail_panda-cclient/options
---8<-- "ports/mail_panda-cclient/options"
+--8<-- "freebsd/ports/mail_panda-cclient/options"
 EOF
 
 mkdir -p /var/db/ports/devel_oniguruma
 cat <<'EOF' > /var/db/ports/devel_oniguruma/options
---8<-- "ports/devel_oniguruma/options"
+--8<-- "freebsd/ports/devel_oniguruma/options"
 EOF
 
 mkdir -p /var/db/ports/textproc_enchant2
 cat <<'EOF' > /var/db/ports/textproc_enchant2/options
---8<-- "ports/textproc_enchant2/options"
+--8<-- "freebsd/ports/textproc_enchant2/options"
 EOF
 
-mkdir -p /var/db/ports/databases_php83-dba
-cat <<'EOF' > /var/db/ports/databases_php83-dba/options
---8<-- "ports/databases_php83-dba/options"
+mkdir -p /var/db/ports/databases_php84-dba
+cat <<'EOF' > /var/db/ports/databases_php84-dba/options
+--8<-- "freebsd/ports/databases_php84-dba/options"
 EOF
 
-mkdir -p /var/db/ports/graphics_php83-gd
-cat <<'EOF' > /var/db/ports/graphics_php83-gd/options
---8<-- "ports/graphics_php83-gd/options"
+mkdir -p /var/db/ports/graphics_php84-gd
+cat <<'EOF' > /var/db/ports/graphics_php84-gd/options
+--8<-- "freebsd/ports/graphics_php84-gd/options"
 EOF
 
-mkdir -p /var/db/ports/mail_php83-imap
-cat <<'EOF' > /var/db/ports/mail_php83-imap/options
---8<-- "ports/mail_php83-imap/options"
+mkdir -p /var/db/ports/converters_php84-mbstring
+cat <<'EOF' > /var/db/ports/converters_php84-mbstring/options
+--8<-- "freebsd/ports/converters_php84-mbstring/options"
 EOF
 
-mkdir -p /var/db/ports/converters_php83-mbstring
-cat <<'EOF' > /var/db/ports/converters_php83-mbstring/options
---8<-- "ports/converters_php83-mbstring/options"
+mkdir -p /var/db/ports/databases_php84-pdo_mysql
+cat <<'EOF' > /var/db/ports/databases_php84-pdo_mysql/options
+--8<-- "freebsd/ports/databases_php84-pdo_mysql/options"
 EOF
 
-mkdir -p /var/db/ports/databases_php83-mysqli
-cat <<'EOF' > /var/db/ports/databases_php83-mysqli/options
---8<-- "ports/databases_php83-mysqli/options"
-EOF
-
-mkdir -p /var/db/ports/databases_php83-pdo_mysql
-cat <<'EOF' > /var/db/ports/databases_php83-pdo_mysql/options
---8<-- "ports/databases_php83-pdo_mysql/options"
-EOF
-
-mkdir -p /var/db/ports/lang_php83-extensions
-cat <<'EOF' > /var/db/ports/lang_php83-extensions/options
---8<-- "ports/lang_php83-extensions/options"
+mkdir -p /var/db/ports/lang_php84-extensions
+cat <<'EOF' > /var/db/ports/lang_php84-extensions/options
+--8<-- "freebsd/ports/lang_php84-extensions/options"
 EOF
 
 
-portmaster -w -B -g --force-config lang/php83-extensions  -n
+portmaster -w -B -g --force-config lang/php84-extensions  -n
 ```
 
 ## Konfiguration
 
-Die Konfiguration entspricht weitestgehend den Empfehlungen der PHP-Entwickler und ist sowohl auf Security als auch auf
-Performance getrimmt.
+Die Konfiguration entspricht weitestgehend den Empfehlungen der PHP-Entwickler und ist sowohl auf Security als auch auf Performance getrimmt.
 
 `php.ini` einrichten.
 
-```shell
+``` shell
 cat <<'EOF' > /usr/local/etc/php.ini
---8<-- "configs/usr/local/etc/php.ini"
+--8<-- "freebsd/configs/usr/local/etc/php.ini"
 EOF
 ```
 
 `php-fpm.conf` einrichten.
 
-```shell
+``` shell
 sed -e 's|^;[[:space:]]*\(events.mechanism =\).*$|;\1 kqueue|' \
     /usr/local/etc/php-fpm.conf.default > /usr/local/etc/php-fpm.conf
 ```
 
 `php-fpm.d/www.conf` einrichten.
 
-```shell
+``` shell
 sed -e 's|^\(listen =\).*$|\1 /var/run/fpm_www.sock|' \
     -e 's|^;\(listen.owner =\).*$|\1 www|' \
     -e 's|^;\(listen.group =\).*$|\1 www|' \
@@ -219,7 +207,7 @@ sed -e 's|^\(listen =\).*$|\1 /var/run/fpm_www.sock|' \
 
 Abschliessende Arbeiten.
 
-```shell
+``` shell
 touch /var/log/php_error.log
 chmod 0664 /var/log/php_error.log
 chown root:www /var/log/php_error.log
@@ -235,10 +223,10 @@ chown root:www /var/log/php_sendmail.log
 
 Wir installieren `devel/php-composer` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 mkdir -p /var/db/ports/devel_php-composer
 cat <<'EOF' > /var/db/ports/devel_php-composer/options
---8<-- "ports/devel_php-composer/options"
+--8<-- "freebsd/ports/devel_php-composer/options"
 EOF
 
 
@@ -249,10 +237,10 @@ portmaster -w -B -g --force-config devel/php-composer  -n
 
 Wir installieren `devel/pear` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 mkdir -p /var/db/ports/devel_pear
 cat <<'EOF' > /var/db/ports/devel_pear/options
---8<-- "ports/devel_pear/options"
+--8<-- "freebsd/ports/devel_pear/options"
 EOF
 
 
@@ -263,7 +251,7 @@ portmaster -w -B -g --force-config devel/pear  -n
 
 Wir installieren `textproc/pecl-yaml` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 portmaster -w -B -g --force-config textproc/pecl-yaml  -n
 ```
 
@@ -271,6 +259,6 @@ portmaster -w -B -g --force-config textproc/pecl-yaml  -n
 
 PHP-FPM kann nun gestartet werden.
 
-```shell
+``` shell
 service php-fpm start
 ```

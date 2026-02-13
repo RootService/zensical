@@ -6,6 +6,7 @@ author:
 publisher:
   name: RootService Team
   url: https://github.com/RootService
+  email: team@rootservice.org
 license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
@@ -15,16 +16,14 @@ date: '2010-08-25'
 lastmod: '2025-06-28'
 title: OpenDKIM
 description: In diesem HowTo wird step-by-step die Installation von OpenDKIM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
-keywords:
-  - OpenDKIM
-  - mkdocs
-  - docs
-lang: de
 robots: index, follow
+lang: de
 hide: []
 search:
   exclude: false
 ---
+
+# OpenDKIM
 
 ## Einleitung
 
@@ -34,31 +33,31 @@ Unser Hosting System wird um folgende Dienste erweitert.
 
 ## Voraussetzungen
 
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../intro.md)
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../requirements.md)
 
 ## Installation
 
 Wir installieren `mail/opendkim` und dessen Abhängigkeiten.
 
-```shell
+``` shell
 mkdir -p /var/db/ports/databases_opendbx
 cat <<'EOF' > /var/db/ports/databases_opendbx/options
---8<-- "ports/databases_opendbx/options"
+--8<-- "freebsd/ports/databases_opendbx/options"
 EOF
 
 mkdir -p /var/db/ports/dns_ldns
 cat <<'EOF' > /var/db/ports/dns_ldns/options
---8<-- "ports/dns_ldns/options"
+--8<-- "freebsd/ports/dns_ldns/options"
 EOF
 
 mkdir -p /var/db/ports/textproc_libtre
 cat <<'EOF' > /var/db/ports/textproc_libtre/options
---8<-- "ports/textproc_libtre/options"
+--8<-- "freebsd/ports/textproc_libtre/options"
 EOF
 
 mkdir -p /var/db/ports/mail_opendkim
 cat <<'EOF' > /var/db/ports/mail_opendkim/options
---8<-- "ports/mail_opendkim/options"
+--8<-- "freebsd/ports/mail_opendkim/options"
 EOF
 
 
@@ -71,7 +70,7 @@ sysrc milteropendkim_socket="inet:8891@localhost"
 
 Bitte example.com ersetzen:
 
-```shell
+``` shell
 mkdir -p /data/db/opendkim/keys/example.com
 
 chown -R mailnull:mailnull /data/db/opendkim
@@ -81,15 +80,15 @@ chown -R mailnull:mailnull /data/db/opendkim
 
 `opendkim.conf` einrichten.
 
-```shell
+``` shell
 cat <<'EOF' > /usr/local/etc/mail/opendkim.conf
---8<-- "configs/usr/local/etc/mail/opendkim.conf"
+--8<-- "freebsd/configs/usr/local/etc/mail/opendkim.conf"
 EOF
 ```
 
 Singning-Key erzeugen.
 
-```shell
+``` shell
 opendkim-genkey --append-domain --bits=2048 --directory=/data/db/opendkim/keys/example.com --domain=example.com --hash-algorithms=sha256 --note=example.com --selector=20250426 --subdomains --verbose
 
 chmod 0600 /data/db/opendkim/keys/*/*.private
@@ -97,7 +96,7 @@ chmod 0600 /data/db/opendkim/keys/*/*.private
 
 KeyTable anlegen.
 
-```shell
+``` shell
 cat <<'EOF' > /data/db/opendkim/keytable
 20250426._domainkey.example.com    example.com:20250426:/data/db/opendkim/keys/example.com/20250426.private
 EOF
@@ -105,7 +104,7 @@ EOF
 
 SingingTable anlegen.
 
-```shell
+``` shell
 cat <<'EOF' > /data/db/opendkim/signingtable
 *@example.com      20250426._domainkey.example.com
 *@*.example.com    20250426._domainkey.example.com
@@ -114,7 +113,7 @@ EOF
 
 TrustedHosts anlegen.
 
-```shell
+``` shell
 cat <<'EOF' > /data/db/opendkim/trustedhosts
 ::1
 127.0.0.1
@@ -139,21 +138,21 @@ ifconfig -u -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'`
     head -n 1 | xargs -I % sed -e 's|__IPADDR6__|%|g' -i '' /data/db/opendkim/trustedhosts
 ```
 
-```shell
+``` shell
 chown -R mailnull:mailnull /data/db/opendkim
 ```
 
 Es muss noch ein DNS-Record angelegt werden, sofern er noch nicht existiert, oder entsprechend geändert werden, sofern
 er bereits existiert.
 
-```shell
+``` shell
 /usr/local/bin/openssl pkey -pubout -outform pem -in /data/db/opendkim/keys/example.com/20250426.private | \
     awk '\!/^-----/ {printf $0}' | awk 'BEGIN{n=1}\
         {printf "\n20250426._domainkey.example.com.    IN  TXT    ( \"v=DKIM1; h=shs256; k=rsa; s=*; t=*; p=\"";\
             while(substr($0,n,98)){printf "\n        \"" substr($0,n,98) "\"";n+=98};printf " )\n"}'
 ```
 
-```dns-zone
+``` dns-zone
 #
 # The output should look similar to this one, which will be the DNS-Record to publish
 #
@@ -172,6 +171,6 @@ er bereits existiert.
 
 OpenDKIM kann nun gestartet werden.
 
-```shell
+``` shell
 service milter-opendkim start
 ```

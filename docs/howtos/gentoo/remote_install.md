@@ -31,7 +31,6 @@ search:
     Dieses HowTo wird seit **2014-09-01** nicht mehr aktiv gepflegt und entspricht daher nicht mehr dem aktuellen Stand.
 
     Die Verwendung dieses HowTo geschieht somit auf eigene Gefahr!
-!!!
 
 In diesem HowTo beschreibe ich step-by-step die Remote Installation von [Gentoo Linux Hardened](https://wiki.gentoo.org/wiki/Project:Hardened){: target="\_blank" rel="noopener"} 64Bit auf einem dedizierten Server. Um eine weitere Republikation der offiziellen [Gentoo Linux Dokumentation](https://www.gentoo.org/support/documentation/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
 
@@ -381,7 +380,6 @@ Nun muss das komplette Basissystem neu kompiliert werden. Dieser Vorgang ist zwa
 
 !!! info
     Die folgenden Schritte sind nötig, da dieses HowTo eine angepasste Portage-Konfiguration verwendet und zudem seit dem Release des Stage3-Tarballs eventuell ein paar für diese Installationvariante wichtige Basispakete im Portage-Tree aktualisiert wurden.
-!!!
 
 ``` shell
 emerge portage portage-utils
@@ -646,7 +644,7 @@ sed -e 's/^#\(SYMLINK=\).*$/\1"no"/' \
 mkdir -p /root/kernels
 
 cat <<'EOF' > /root/kernels/MYKERNEL
---8<-- "snippets/gentoo/kernel_hardened.config"
+--8<-- "gentoo/kernel_hardened.config"
 EOF
 
 

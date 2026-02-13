@@ -33,7 +33,6 @@ search:
     Dieses HowTo wird seit **2014-09-01** nicht mehr aktiv gepflegt und entspricht daher nicht mehr dem aktuellen Stand.
 
     Die Verwendung dieses HowTo geschieht somit auf eigene Gefahr!
-!!!
 
 Dieses HowTo setzt ein wie in [Remote Installation](remote_install.md) beschriebenes, installiertes und konfiguriertes Gentoo Linux Basissystem voraus.
 
@@ -121,7 +120,6 @@ MySQL unterstützt mehrere Engines, dieses HowTo beschränkt sich allerdings auf
 
 !!! info
     Sollen bereits existierende Datenbanken importiert werden, müssen diese, sofern noch nicht geschehen, zuvor nach UTF-8 konvertiert werden. Ist dies nicht möglich, weil beispielsweise eine Client-Applikation noch kein UTF-8 ünterstützt, so ist in der folgenden `/etc/mysql/my.cnf` jeweils `utf8` durch `latin1` zu ersetzen. Desweiteren muss in diesem Fall für `dev-db/mysql` in der `/etc/portage/package.use` zusätzlich das USE-Flag `latin1` gesetzt werden.
-!!!
 
 ### MySQL installieren
 
@@ -750,7 +748,6 @@ EOF
 
 !!! info
     Bitte jeweils das gleiche Passwort wie in der `dovecot-sql.conf` aus der Dovecot Konfiguration verwenden.
-!!!
 
 ``` shell
 mkdir -p /etc/postfix/sql
@@ -1697,7 +1694,6 @@ Anlegen der Datenbank und der Datenbank-User:
 
 !!! info
     Bitte jeweils das gleiche Passwort wie in der `dovecot-sql.conf` aus der Dovecot Konfiguration verwenden.
-!!!
 
 ``` shell
 mysql -uroot -p

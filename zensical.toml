@@ -1,3 +1,4 @@
+
 # ============================================================================
 #
 # The configuration produced by default is meant to highlight the features
@@ -11,30 +12,36 @@
 # The site_name is shown in the page header and the browser window title
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_name
-site_name = "Documentation"
+site_name = "RootService"
 
 # The site_description is included in the HTML head and should contain a
 # meaningful description of the site content for use by search engines.
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_description
-site_description = "A new project generated from the default template project."
+site_description = "Wir bieten Service, Support, HowTos und andere nützliche Informationen rund um die Administration von FreeBSD und Linux basierten Servern"
 
 # The site_author attribute. This is used in the HTML head element.
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_author
-site_author = "<your name here>"
+site_author = "RootService Team"
 
 # The site_url is the canonical URL for your site. When building online
 # documentation you should set this.
 # Read more: https://zensical.org/docs/setup/basics/#site_url
-#site_url = "https://www.example.com/"
+site_url = "https://www.rootservice.org/"
+
+# Repository settings (enables repo + edit/view buttons)
+repo_url = "https://github.com/RootService/zensical"
+repo_name = "GitHub"
+# IMPORTANT: set branch to main (Zensical defaults to master)
+edit_uri = "edit/main/docs"
 
 # The copyright notice appears in the page footer and can contain an HTML
 # fragment.
 #
 # Read more: https://zensical.org/docs/setup/basics/#copyright
 copyright = """
-Copyright &copy; 2026 The authors
+Copyright &copy; 2002-2026 RootService Team
 """
 
 # Zensical supports both implicit navigation and explicitly defined navigation.
@@ -44,10 +51,66 @@ Copyright &copy; 2026 The authors
 # can be defined using TOML syntax.
 #
 # Read more: https://zensical.org/docs/setup/navigation/
-# nav = [
-#   { "Get started" = "index.md" },
-#   { "Markdown in 5min" = "markdown.md" },
-# ]
+nav = [
+  { "Home" = "index.md" },
+  { "HowTos" = [
+    { "Allgemein" = [ { "Getting Started" = "howtos/general/getting_started.md" } ] },
+    { "Sicherheit" = [ { "Server hacked" = "howtos/security/server_hacked.md" } ] },
+    { "FreeBSD" = [
+      { "mfsbsd image" = "howtos/freebsd/mfsbsd_image.md" },
+      { "Remote Installation" = [
+        { "Intro" = "howtos/freebsd/remote_install/intro.md" },
+        { "Base system" = "howtos/freebsd/remote_install/basesystem.md" },
+        { "Base ports" = "howtos/freebsd/remote_install/baseports.md" },
+        { "Base tools" = "howtos/freebsd/remote_install/basetools.md" }
+      ] },
+      { "Hosting System" = [
+        { "Intro" = "howtos/freebsd/hosting_system/intro.md" },
+        { "Sicherheit" = [
+          { "Certbot" = "howtos/freebsd/hosting_system/security/certbot.md" },
+          { "OpenSSH" = "howtos/freebsd/hosting_system/security/openssh.md" }
+        ] },
+        { "Nameserver" = [ { "Unbound" = "howtos/freebsd/hosting_system/nameserver/unbound.md" } ] },
+        { "Datenbanken" = [
+          { "PostgreSQL" = "howtos/freebsd/hosting_system/databases/postgresql.md" },
+          { "MySQL" = "howtos/freebsd/hosting_system/databases/mysql.md" }
+        ] },
+        { "Webserver" = [
+          { "Apache" = "howtos/freebsd/hosting_system/webserver/apache.md" },
+          { "Nginx" = "howtos/freebsd/hosting_system/webserver/nginx.md" },
+          { "PHP" = "howtos/freebsd/hosting_system/webserver/php.md" },
+          { "NodeJS" = "howtos/freebsd/hosting_system/webserver/nodejs.md" }
+        ] },
+        { "Mailserver" = [
+          { "Dovecot" = "howtos/freebsd/hosting_system/mailserver/dovecot.md" },
+          { "Postfix" = "howtos/freebsd/hosting_system/mailserver/postfix.md" },
+          { "PostfixAdmin" = "howtos/freebsd/hosting_system/mailserver/postfixadmin.md" },
+          { "OpenDKIM" = "howtos/freebsd/hosting_system/mailserver/opendkim.md" },
+          { "OpenDMARC" = "howtos/freebsd/hosting_system/mailserver/opendmarc.md" },
+          { "SpamAssassin" = "howtos/freebsd/hosting_system/mailserver/spamassassin.md" },
+          { "AmavisD" = "howtos/freebsd/hosting_system/mailserver/amavisd.md" },
+          { "ClamAV" = "howtos/freebsd/hosting_system/mailserver/clamav.md" }
+        ] }
+      ] }
+    ] },
+    { "Gentoo" = [
+      { "Remote Install" = "howtos/gentoo/remote_install.md" },
+      { "Hosting System" = "howtos/gentoo/hosting_system.md" }
+    ] }
+  ] },
+  { "Projekte" = [
+    { "Rootforum" = "projects/rootforum_community.md" },
+    { "MySQL Tuning Primer" = "projects/mysql_tuning_primer.md" },
+    { "Certbot Wrapper" = "projects/certbot_wrapper.md" }
+  ] },
+  { "About" = [
+    { "Imprint" = "about/imprint.md" },
+    { "Contact" = "about/contact.md" },
+    { "Privacy" = "about/privacy.md" },
+    { "Terms" = "about/terms.md" }
+  ] }
+]
+
 
 # With the "extra_css" option you can add your own CSS styling to customize
 # your Zensical project according to your needs. You can add any number of
@@ -83,7 +146,7 @@ Copyright &copy; 2026 The authors
 # Read more:
 # - https://zensical.org/docs/customization/#extending-the-theme
 #
-#custom_dir = "overrides"
+custom_dir = "zensical_overrides"
 
 # With the "favicon" option you can set your own image to use as the icon
 # browsers will use in the browser title bar or tab bar. The path provided
@@ -108,7 +171,7 @@ Copyright &copy; 2026 The authors
 # Read more:
 # - https://zensical.org/docs/setup/language/
 #
-language = "en"
+language = "de"
 
 # Zensical provides a number of feature toggles that change the behavior
 # of the documentation site.
@@ -122,13 +185,13 @@ features = [
     # will generate an edit button for the page. This works for common
     # repository hosting services.
     # https://zensical.org/docs/setup/repository/#content-actions
-    #"content.action.edit",
+    "content.action.edit",
 
     # If you have a repository configured and turn on this feature, Zensical
     # will generate a button that allows the user to view the Markdown
     # code for the current page.
     # https://zensical.org/docs/setup/repository/#content-actions
-    #"content.action.view",
+    "content.action.view",
 
     # Code annotations allow you to add an icon with a tooltip to your
     # code blocks to provide explanations at crucial points.

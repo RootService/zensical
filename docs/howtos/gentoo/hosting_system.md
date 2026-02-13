@@ -29,10 +29,10 @@ search:
 
 ## Einleitung
 
-!!!danger
-Dieses HowTo wird seit **2014-09-01** nicht mehr aktiv gepflegt und entspricht daher nicht mehr dem aktuellen Stand.
+!!! danger
+    Dieses HowTo wird seit **2014-09-01** nicht mehr aktiv gepflegt und entspricht daher nicht mehr dem aktuellen Stand.
 
-Die Verwendung dieses HowTo geschieht somit auf eigene Gefahr!
+    Die Verwendung dieses HowTo geschieht somit auf eigene Gefahr!
 !!!
 
 Dieses HowTo setzt ein wie in [Remote Installation](remote_install.md) beschriebenes, installiertes und konfiguriertes Gentoo Linux Basissystem voraus.
@@ -67,7 +67,7 @@ Desweiteren werden wir folgende Applikationen installieren:
 
 Sofern noch nicht während der [Remote Installation](remote_install.md) erledigt, müssen folgende Optionen in der `/etc/ssl/openssl.cnf` im Abschnitt `[ req_distinguished_name ]` angepasst werden:
 
-```text
+``` text
 [ req_distinguished_name ]
 countryName_default             = DE
 stateOrProvinceName_default     = Bundesland
@@ -82,7 +82,7 @@ emailAddress_default            = admin@example.com
 
 Sofern noch nicht während der [Remote Installation](remote_install.md) erledigt, wird als Nächstes ein eigenes CA Zertifikat erstellt und selbst signiert. Hierzu werden jeweils die Default-Werte übernommen und sehr sichere Passworte gewählt. Die Option `A challenge password` sollte jedoch leer gelassen werden, andernfalls kann es zu Problemen mit einigen Diensten kommen:
 
-```shell
+``` shell
 cd /etc/ssl
 mkdir -p demoCA
 mkdir -p demoCA/certs
@@ -100,7 +100,7 @@ cd
 
 Wir erstellen uns die nachfolgend benötigten selbstsignierten Zertifikate. Dabei verwenden wir für das Mailserver-Zertifikat `mail.example.com` und für das Webserver-Zertifikat `ssl.example.com` als `Common Name`. Die anderen Fragen beantworten wir jeweils mit den Default-Vorgaben.
 
-```shell
+``` shell
 cd /etc/ssl
 openssl dhparam -out dh_512.pem -2 -rand /dev/urandom 512
 openssl dhparam -out dh_1024.pem -2 -rand /dev/urandom 1024
@@ -119,13 +119,13 @@ cd
 
 MySQL unterstützt mehrere Engines, dieses HowTo beschränkt sich allerdings auf die Beiden am Häufigsten verwendeten: MyISAM und InnoDB. Werden weitere Engines benötigt, müssen die entsprechenden USE-Flags manuell gesetzt werden.
 
-!!!note
-Sollen bereits existierende Datenbanken importiert werden, müssen diese, sofern noch nicht geschehen, zuvor nach UTF-8 konvertiert werden. Ist dies nicht möglich, weil beispielsweise eine Client-Applikation noch kein UTF-8 ünterstützt, so ist in der folgenden `/etc/mysql/my.cnf` jeweils `utf8` durch `latin1` zu ersetzen. Desweiteren muss in diesem Fall für `dev-db/mysql` in der `/etc/portage/package.use` zusätzlich das USE-Flag `latin1` gesetzt werden.
+!!! info
+    Sollen bereits existierende Datenbanken importiert werden, müssen diese, sofern noch nicht geschehen, zuvor nach UTF-8 konvertiert werden. Ist dies nicht möglich, weil beispielsweise eine Client-Applikation noch kein UTF-8 ünterstützt, so ist in der folgenden `/etc/mysql/my.cnf` jeweils `utf8` durch `latin1` zu ersetzen. Desweiteren muss in diesem Fall für `dev-db/mysql` in der `/etc/portage/package.use` zusätzlich das USE-Flag `latin1` gesetzt werden.
 !!!
 
 ### MySQL installieren
 
-```shell
+``` shell
 cat >> /etc/portage/package.use << "EOF"
 dev-db/mysql  -ssl
 EOF
@@ -137,7 +137,7 @@ rc-update add mysql default
 
 ### MySQL konfigurieren
 
-```shell
+``` shell
 cat > /etc/mysql/my.cnf << "EOF"
 [client]
 port                            = 3306
@@ -307,13 +307,13 @@ EOF
 
 MySQL wird nun zum ersten Mal gestartet, was durch das Erzeugen der InnoDB-Files einige Minuten dauern und zu einer falschen Fehlermeldung des Init-Scripts führen kann. Daher warten wir bis im `tail -f` eine Zeile ähnlich der folgenden erscheint und beenden `tail` mittels `^C` (STRG+C).
 
-```shell
+``` shell
 Version: '5.1.50-log'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  Gentoo Linux mysql-5.1.50-r1
 ```
 
 Abschliessend wird MySQL mittels `mysql_secure_installation` abgesichert. Hierzu werden alle Fragen, abgesehen vom zuvor gesetztem root-Passwort, jeweils mit einem beherzten Druck auf die Return-Taste beantwortet.
 
-```shell
+``` shell
 /etc/init.d/mysql start
 
 tail -f /var/log/mysql/mysqld.err
@@ -327,7 +327,7 @@ Dovecot wird inklusive MySQL und TLS/SSL Support installiert und für das Zusamm
 
 ### Dovecot installieren
 
-```shell
+``` shell
 cat >> /etc/portage/package.use << "EOF"
 net-mail/dovecot  maildir
 EOF
@@ -341,7 +341,7 @@ rc-update add dovecot default
 
 `dovecot.conf` einrichten:
 
-```shell
+``` shell
 cat > /etc/dovecot/dovecot.conf << "EOF"
 protocols = imap pop3 imaps pop3s
 listen = 10.0.2.15
@@ -411,7 +411,7 @@ EOF
 
 `dovecot-sql.conf` einrichten:
 
-```shell
+``` shell
 cat > /etc/dovecot/dovecot-sql.conf << "EOF"
 driver = mysql
 connect = host=localhost dbname=postfix user=postfix password=__PASSWORD__
@@ -427,7 +427,7 @@ Postfix wird inklusive MySQL, Dovecot-SASL und TLS/SSL Support installiert und f
 
 ### Postfix installieren
 
-```shell
+``` shell
 cat >> /etc/portage/package.use << "EOF"
 mail-mta/postfix  dovecot-sasl vda
 EOF
@@ -440,7 +440,7 @@ rc-update add postfix default
 
 ### policyd-weight installieren
 
-```shell
+``` shell
 cat >> /etc/portage/package.keywords << "EOF"
 mail-filter/policyd-weight ~amd64
 EOF
@@ -454,7 +454,7 @@ rc-update add policyd-weight default
 
 Aliases einrichten:
 
-```shell
+``` shell
 cat > /etc/mail/aliases << "EOF"
 # Basic system aliases -- these MUST be present.
 MAILER-DAEMON:      postmaster
@@ -496,7 +496,7 @@ EOF
 
 `main.cf` einrichten:
 
-```shell
+``` shell
 cat > /etc/postfix/main.cf << "EOF"
 allow_percent_hack = no
 biff = no
@@ -637,7 +637,7 @@ EOF
 
 `master.cf` einrichten:
 
-```shell
+``` shell
 cat > /etc/postfix/master.cf << "EOF"
 #
 # Postfix master process configuration file.  For details on the format
@@ -748,11 +748,11 @@ EOF
 
 `mysql_*_maps.cf` einrichten:
 
-!!!note
-Bitte jeweils das gleiche Passwort wie in der `dovecot-sql.conf` aus der Dovecot Konfiguration verwenden.
+!!! info
+    Bitte jeweils das gleiche Passwort wie in der `dovecot-sql.conf` aus der Dovecot Konfiguration verwenden.
 !!!
 
-```shell
+``` shell
 mkdir -p /etc/postfix/sql
 
 cat > /etc/postfix/sql/mysql_relay_domains_maps.cf << "EOF"
@@ -825,7 +825,7 @@ chmod 0640 /etc/postfix/sql/mysql_*_maps.cf
 
 Transport map einrichten:
 
-```shell
+``` shell
 cat >> /etc/postfix/transport << "EOF"
 autoreply.example.com   vacation:
 EOF
@@ -835,7 +835,7 @@ postmap /etc/postfix/transport
 
 Restriktionen einrichten:
 
-```shell
+``` shell
 cat > /etc/postfix/recipient_checks.pcre << "EOF"
 /^\@/             550 Invalid address format.
 /[!%\@].*\@/      550 This server disallows weird address syntax.
@@ -869,7 +869,7 @@ postmap /etc/postfix/mx_access
 
 Abschliessende Arbeiten:
 
-```shell
+``` shell
 gpasswd -a postfix mail
 
 mkdir -p /var/vmail
@@ -883,7 +883,7 @@ Die folgende Konfiguration verwendet für den Default-Host den Pfad `/var/www/vh
 
 ### Apache installieren
 
-```shell
+``` shell
 cat >> /etc/portage/package.use << "EOF"
 dev-libs/apr-util  -mysql
 www-servers/apache  -threads suexec
@@ -903,7 +903,7 @@ rc-update add apache2 default
 
 Docroots für die Default-Hosts erstellen:
 
-```shell
+``` shell
 mkdir -p /var/www/vhosts/www.example.com/logs
 mkdir -p /var/www/vhosts/www.example.com/data
 chmod 0750 /var/www/vhosts/www.example.com/data
@@ -917,7 +917,7 @@ chown apache:apache /var/www/vhosts/ssl.example.com/data
 
 Grundkonfiguration:
 
-```shell
+``` shell
 emerge --config apache
 
 sed 's@^APACHE2_OPTS\(.*\)@#APACHE2_OPTS\1\
@@ -927,7 +927,7 @@ sed 's@^#RELOAD_TYPE@RELOAD_TYPE@' -i /etc/conf.d/apache2
 
 `httpd.conf` einrichten:
 
-```shell
+``` shell
 cat > /etc/apache2/httpd.conf << "EOF"
 ServerRoot "/usr/lib64/apache2"
 PidFile "/var/run/apache2.pid"
@@ -1257,7 +1257,7 @@ Die Konfiguration entspricht weitestgehend den Empfehlungen der PHP-Entwickler u
 
 ### PHP installieren
 
-```shell
+``` shell
 cat >> /etc/portage/package.keywords << "EOF"
 dev-lang/php ~amd64
 EOF
@@ -1274,7 +1274,7 @@ emerge php
 
 `php.ini` einrichten:
 
-```shell
+``` shell
 cat > /etc/php/cgi-php5/php.ini << "EOF"
 [PHP]
 user_ini.filename =
@@ -1638,7 +1638,7 @@ cp /etc/php/cgi-php5/php.ini /etc/php/apache2-php5/php.ini
 
 ### PHP-PEAR installieren
 
-```shell
+``` shell
 echo "dev-php/pear ~amd64" >> /etc/portage/package.keywords
 for pkg in `ls /usr/portage/dev-php | grep PEAR` ; do echo "dev-php/${pkg} ~amd64" >> /etc/portage/package.keywords ; done
 
@@ -1649,7 +1649,7 @@ emerge pear
 
 ### phpMyAdmin installieren
 
-```shell
+``` shell
 wget -O 'phpMyAdmin-3.3.7-all-languages.tar.gz' https://files.phpmyadmin.net/phpMyAdmin//3.3.7/phpMyAdmin-3.3.7-all-languages.tar.gz
 
 tar xzf phpMyAdmin-3.3.7-all-languages.tar.gz
@@ -1663,14 +1663,14 @@ find /var/www/vhosts/ssl.example.com/data/phpmyadmin -type f -print0 | xargs -0 
 
 ### phpMyAdmin konfigurieren
 
-```shell
+``` shell
 mkdir -p /var/www/vhosts/ssl.example.com/data/phpmyadmin/config
 chown www:www /var/www/vhosts/ssl.example.com/data/phpmyadmin/config
 ```
 
 Nun bitte `https://ssl.example.com/phpmyadmin/setup/index.php` im Browser aufrufen und phpMyAdmin konfigurieren. Danach muss die `config.inc.php` noch installiert werden:
 
-```shell
+``` shell
 mv /var/www/vhosts/ssl.example.com/data/phpmyadmin/config/config.inc.php /var/www/vhosts/ssl.example.com/data/phpmyadmin/config.inc.php
 chmod 0640 /var/www/vhosts/ssl.example.com/data/phpmyadmin/config.inc.php
 rm -r /var/www/vhosts/ssl.example.com/data/phpmyadmin/config
@@ -1680,7 +1680,7 @@ rm -r /var/www/vhosts/ssl.example.com/data/phpmyadmin/config
 
 ### PostfixAdmin installieren
 
-```shell
+``` shell
 # FIXME MIME::EncWords is masked by keyword
 emerge Email-Valid Mail-Sender Mail-Sendmail MIME-tools log-dispatch Log-Log4perl TimeDate
 
@@ -1695,11 +1695,11 @@ find /var/www/vhosts/ssl.example.com/data/postfixadmin -type f -print0 | xargs -
 
 Anlegen der Datenbank und der Datenbank-User:
 
-!!!note
-Bitte jeweils das gleiche Passwort wie in der `dovecot-sql.conf` aus der Dovecot Konfiguration verwenden.
+!!! info
+    Bitte jeweils das gleiche Passwort wie in der `dovecot-sql.conf` aus der Dovecot Konfiguration verwenden.
 !!!
 
-```shell
+``` shell
 mysql -uroot -p
 CREATE DATABASE postfix DEFAULT CHARACTER SET utf8;
 GRANT ALL PRIVILEGES ON postfix.* TO 'postfix'@'localhost' IDENTIFIED BY '__PASSWORD__';
@@ -1712,7 +1712,7 @@ QUIT;
 
 Anlegen der `config.local.php`:
 
-```shell
+``` shell
 cat > /var/www/vhosts/ssl.example.com/data/postfixadmin/config.local.php << "EOF"
 <?php
 $CONF['configured'] = true;
@@ -1753,7 +1753,7 @@ chown www:www /var/www/vhosts/ssl.example.com/data/postfixadmin/config.local.php
 
 Nun bitte `https://ssl.example.com/postfixadmin/setup.php` im Browser aufrufen, am Ende der Seite das Setup-Passwort generieren und in der `config.local.php` nachtragen:
 
-```shell
+``` shell
 cat >> /var/www/vhosts/ssl.example.com/data/postfixadmin/config.local.php << "EOF"
 $CONF['setup_password'] = '__PASSWORD__';
 EOF
@@ -1765,7 +1765,7 @@ Die Installation der `vacation.pl` ist Optional und nicht getestet!
 
 `vacation.pl` installieren:
 
-```shell
+``` shell
 groupadd -g 65001 vacation
 useradd -u 65001 -g vacation -c "virtual vacation" -d /nonexistent -s /sbin/nologin vacation
 mkdir -p /var/spool/vacation
@@ -1776,7 +1776,7 @@ chown -R vacation:vacation /var/spool/vacation
 
 `vacation.pl` konfigurieren:
 
-```shell
+``` shell
 sed -e "s/^\(my \$db_type = 'Pg';\)/#\1/" \
     -e "s/^#\(my \$db_type = 'mysql';\)/\1/" \
     -e "s/^\(my \$db_host =\).*$/\1 'localhost';/" \
@@ -1789,7 +1789,7 @@ sed -e "s/^\(my \$db_type = 'Pg';\)/#\1/" \
 
 ### RoundCube installieren
 
-```shell
+``` shell
 wget -O 'roundcubemail-0.4.1.tar.gz' https://github.com/roundcube/roundcubemail/archive/v0.4.1.tar.gz
 
 tar xzf roundcubemail-0.4.1.tar.gz
@@ -1801,7 +1801,7 @@ find /var/www/vhosts/ssl.example.com/data/roundcube -type f -print0 | xargs -0 c
 
 Anlegen der Datenbank und des Datenbank-User:
 
-```shell
+``` shell
 mysql -uroot -p
 CREATE DATABASE roundcube DEFAULT CHARACTER SET utf8;
 GRANT ALL PRIVILEGES ON roundcube.* TO 'roundcube'@'localhost' IDENTIFIED BY '__PASSWORD__';
@@ -1811,7 +1811,7 @@ QUIT;
 
 ### RoundCube konfigurieren
 
-```shell
+``` shell
 mysql -uroot -p roundcube < /var/www/vhosts/ssl.example.com/data/roundcube/SQL/mysql.initial.sql
 rm /var/www/vhosts/ssl.example.com/data/roundcube/.htaccess
 mv /var/www/vhosts/ssl.example.com/data/roundcube/config/db.inc.php.dist /var/www/vhosts/ssl.example.com/data/roundcube/config/db.inc.php
@@ -1820,13 +1820,13 @@ mv /var/www/vhosts/ssl.example.com/data/roundcube/config/main.inc.php.dist /var/
 
 Folgende Zeile muss in der `config/db.inc.php` angepasst werden:
 
-```shell
+``` shell
 $rcmail_config['db_dsnw'] = 'mysqli://roundcube:__PASSWORD__@localhost/roundcube';
 ```
 
 Folgende Zeilen müssen in der `config/main.inc.php` angepasst werden:
 
-```shell
+``` shell
 $rcmail_config['default_host'] = 'ssl://mail.example.com';
 $rcmail_config['default_port'] = 993;
 $rcmail_config['imap_auth_type'] = plain;

@@ -1,3 +1,6 @@
+# RootService robots.txt
+
+# --- AI / LLM crawlers (best-effort block) ---
 User-agent: GPTBot
 User-agent: OAI-SearchBot
 User-agent: OAI-PageScanBot
@@ -20,11 +23,9 @@ User-agent: DataForSeoBot
 User-agent: xai-search
 Disallow: /
 
+# --- Default crawlers ---
 User-agent: *
 Allow: /
-Disallow: /about/
-Disallow: /assets/
-Disallow: /resources/
 Crawl-delay: 2
 
 Sitemap: https://www.rootservice.org/sitemap.xml

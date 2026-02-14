@@ -38,3 +38,14 @@ build.sh
 
 # Node leftovers (if ever used locally)
 node_modules/
+
+# Zensical
+.zensical/
+
+# Python packaging
+*.egg-info/
+pip-wheel-metadata/
+
+# Misc
+.history/
+*.bak

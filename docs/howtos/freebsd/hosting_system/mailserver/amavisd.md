@@ -11,7 +11,7 @@ license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
   url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-contributers: []
+contributors: []
 date: '2010-08-25'
 lastmod: '2025-06-28'
 title: Amavisd

@@ -1,2 +1,1 @@
-
-oadplugin Mail::SpamAssassin::Plugin::AskDNS
+loadplugin Mail::SpamAssassin::Plugin::AskDNS

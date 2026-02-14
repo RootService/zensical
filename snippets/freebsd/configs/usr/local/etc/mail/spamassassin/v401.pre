@@ -1,2 +1,1 @@
-
-oadplugin Mail::SpamAssassin::Plugin::AuthRes
+loadplugin Mail::SpamAssassin::Plugin::AuthRes

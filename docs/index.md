@@ -6,6 +6,7 @@ author:
 publisher:
   name: RootService Team
   url: https://github.com/RootService
+  email: team@rootservice.org
 license:
   name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
   shortname: CC BY-NC-SA 4.0
@@ -15,16 +16,14 @@ date: '2002-02-02'
 lastmod: '2022-04-28'
 title: RootService
 description: Wir bieten Service, Support, HowTos und andere nützliche Informationen rund um die Administration von FreeBSD und Linux basierten Servern
-keywords:
-  - RootService
-  - mkdocs
-  - docs
-lang: de
 robots: index, follow
+lang: de
 hide:
   - docinfo
 search:
   exclude: false
 ---
+
+# RootService
 
 Wir bieten Service, Support, HowTos und andere nützliche Informationen rund um die Administration von FreeBSD und Linux basierten Servern.

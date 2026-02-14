@@ -1,0 +1,20 @@
+{
+  "name": "RootService",
+  "short_name": "RootService",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0013",
+  "theme_color": "#0b0013",
+  "icons": [
+    {
+      "src": "/assets/favicons/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/favicons/apple-touch-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

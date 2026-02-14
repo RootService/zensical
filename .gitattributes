@@ -27,3 +27,16 @@
 *.mp4  binary
 *.mp3  binary
 *.ogg  binary
+
+# Additional text formats
+*.svg  text diff
+*.php  text
+*.html text
+*.css  text
+*.js   text
+*.xml  text
+*.txt  text
+
+# Web fonts
+*.woff  binary
+*.woff2 binary

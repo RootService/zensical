@@ -37,7 +37,7 @@ Unser Hosting System wird am Ende folgende Dienste umfassen.
 - PostgreSQL 17.5 (SSL, ZSTD)
 - MySQL 8.0.44 (InnoDB, GTID)
 - Apache 2.4.66 (MPM-Event, HTTP/2, mod_brotli)
-- NGinx 1.28.0 (HTTP/2, HTTP/3, mod_brotli)
+- Nginx 1.28.0 (HTTP/2, HTTP/3, mod_brotli)
 - PHP 8.4.17 (PHP-FPM, Composer, PEAR)
 - NodeJS 24.13.0 (NPM, YARN)
 - Dovecot 2.3.21 (IMAP only, Pigeonhole)

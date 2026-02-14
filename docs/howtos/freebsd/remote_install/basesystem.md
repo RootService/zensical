@@ -27,7 +27,7 @@ search:
 
 ## Einleitung
 
-In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD 64BIT](https://www.freebsd.org/){: target="\_blank" rel="noopener"} BaseSystem mittels [mfsBSD](https://mfsbsd.vx.sk/) auf einem dedizierten Server. Um eine weitere Republikation der offiziellen [FreeBSD Dokumentation](https://docs.freebsd.org/en/books/handbook/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
+In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD 64Bit](https://www.freebsd.org/){: target="\_blank" rel="noopener"} BaseSystem mittels [mfsBSD](https://mfsbsd.vx.sk/) auf einem dedizierten Server. Um eine weitere Republikation der offiziellen [FreeBSD Dokumentation](https://docs.freebsd.org/en/books/handbook/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
 
 Unser BaseSystem wird folgende Dienste umfassen.
 

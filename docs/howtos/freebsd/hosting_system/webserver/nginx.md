@@ -14,8 +14,8 @@ license:
 contributors: []
 date: '2010-08-25'
 lastmod: '2025-06-28'
-title: NGinx
-description: In diesem HowTo wird step-by-step die Installation des NGinx Webservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server´ beschrieben.
+title: Nginx
+description: In diesem HowTo wird step-by-step die Installation des Nginx Webservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []
@@ -23,13 +23,13 @@ search:
   exclude: false
 ---
 
-# NGinx
+# Nginx
 
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- NGinx 1.28.0 (HTTP/2, HTTP/3, mod_brotli)
+- Nginx 1.28.0 (HTTP/2, HTTP/3, mod_brotli)
 
 ## Voraussetzungen
 
@@ -38,7 +38,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../requir
 ## Installation
 
 !!! warning
-    Der Rest des HowTo ist derzeit nicht auf das Zusammenspiel mit NGinx abgestimmt, daher ist die Verwendung von Apache aktuell zu bevorzugen. NGinx bietet zudem auch keinen wirklichen Mehrwert gegenüber Apache, so dass Apache generell bevorzugt werden sollte. Die hier gezeigte Konfiguration ist nicht ausreichend getestet, enthält möglicherweise sicherheitsrelevante Fehler und ist daher vollkommen unsupportet. Die Verwendung von NGinx erfolgt daher ausschliesslich auf eigenes Risiko und ohne weitere Unterstützung durch dieses HowTo.
+    Der Rest des HowTo ist derzeit nicht auf das Zusammenspiel mit Nginx abgestimmt, daher ist die Verwendung von Apache aktuell zu bevorzugen. Nginx bietet zudem auch keinen wirklichen Mehrwert gegenüber Apache, so dass Apache generell bevorzugt werden sollte. Die hier gezeigte Konfiguration ist nicht ausreichend getestet, enthält möglicherweise sicherheitsrelevante Fehler und ist daher vollkommen unsupportet. Die Verwendung von Nginx erfolgt daher ausschliesslich auf eigenes Risiko und ohne weitere Unterstützung durch dieses HowTo.
 
 Wir installieren `www/nginx` und dessen Abhängigkeiten.
 
@@ -236,7 +236,7 @@ EOF
 
 ## Abschluss
 
-NGinx kann nun gestartet werden.
+Nginx kann nun gestartet werden.
 
 ``` shell
 service nginx start

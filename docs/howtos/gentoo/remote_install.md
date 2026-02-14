@@ -32,7 +32,7 @@ search:
 
     Die Verwendung dieses HowTo geschieht somit auf eigene Gefahr!
 
-In diesem HowTo beschreibe ich step-by-step die Remote Installation von [Gentoo Linux Hardened](https://wiki.gentoo.org/wiki/Project:Hardened){: target="\_blank" rel="noopener"} 64Bit auf einem dedizierten Server. Um eine weitere Republikation der offiziellen [Gentoo Linux Dokumentation](https://www.gentoo.org/support/documentation/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
+In diesem HowTo beschreibe ich step-by-step die Remote Installation von [Gentoo Linux Hardened](https://wiki.gentoo.org/wiki/Project:Hardened){: target="\_blank" rel="noopener"} 64Bit auf einem dedizierten Server. Um eine weitere Reproduktion der offiziellen [Gentoo Linux Dokumentation](https://www.gentoo.org/support/documentation/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
 
 Folgende Punkte sind in diesem HowTo zu beachten.
 
@@ -46,11 +46,11 @@ Folgende Punkte sind in diesem HowTo zu beachten.
 
 ## Das Referenzsystem
 
-Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM VirtualBox](https://www.virtualbox.org/){: target="\_blank" rel="noopener"} unter [Microsoft Windows 7 Professional (64 Bit)](https://www.microsoft.com/en-us/windows/windows-11){: target="\_blank" rel="noopener"} entschieden. So lässt sich ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
+Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM VirtualBox](https://www.virtualbox.org/){: target="\_blank" rel="noopener"} unter [Microsoft Windows 7 Professional (64Bit)](https://www.microsoft.com/en-us/windows/windows-11){: target="\_blank" rel="noopener"} entschieden. So lässt sich ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
 
 Trotzdem habe ich dieses HowTo so ausgelegt, dass es sich nahezu unverändert auf dedizierte Server übertragen lässt und dieses auch auf mehreren dedizierten Servern getestet.
 
-Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="\_blank" rel="noopener"} zurückgreife. Zur Simulation des bei nahezu allen Anbietern dedizierter Server vorhandene Rettungssystem, nachfolgend RescueSystem genannt, wird in diesem HowTo die auf [Gentoo Linux](https://www.gentoo.org/){: target="\_blank" rel="noopener"} basierende [SystemRescueCD](https://www.system-rescue.org/){: target="\_blank" rel="noopener"} eingesetzt.
+Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="\_blank" rel="noopener"} zurückgreife. Zur Simulation des bei nahezu allen Anbietern dedizierter Server vorhandene Rettungssystem, nachfolgend RescueSystem genannt, wird in diesem HowTo die auf [Gentoo Linux](https://www.gentoo.org/){: target="\_blank" rel="noopener"} basierende [SystemRescueCD](https://www.system-rescue.org/){: target="\_blank" rel="noopener"} eingesetzt.
 
 VirtualBox und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 

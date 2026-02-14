@@ -35,7 +35,7 @@ Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine 
 
 Trotzdem habe ich dieses HowTo so ausgelegt, dass es sich nahezu unverändert auf handelsübliche dedizierte Server übertragen lässt und dieses auch auf mehreren dedizierten Servern getestet.
 
-Obwohl Microsoft Windows 11 Pro einen eigenen OpenSSH-Client mitbringt, greife ich lieber auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="\_blank" rel="noopener"} zurück.
+Obwohl Microsoft Windows 11 Pro einen eigenen OpenSSH-Client mitbringt, greife ich lieber auf das sehr empfehlenswerte [PuTTY (64Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="\_blank" rel="noopener"} zurück.
 
 VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 

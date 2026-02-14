@@ -60,11 +60,11 @@ install -m 0644 /usr/local/share/postfix/mailer.conf.postfix /usr/local/etc/mail
 
 `main.cf` einrichten.
 
+``` shell
 cat <<'EOF' > /usr/local/etc/postfix/main.cf
 --8<-- "freebsd/configs/usr/local/etc/postfix/main.cf"
 EOF
 
-``` shell
 # IPv4
 ifconfig -u -f cidr `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
     awk 'tolower($0) ~ /inet[\ \t]+((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {if(substr($2,1,3)!=127) print $2}' | \

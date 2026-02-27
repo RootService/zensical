@@ -15,7 +15,7 @@ contributors: []
 date: '2010-08-25'
 lastmod: '2026-02-27'
 title: BaseSystem
-description: In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64 Bit BaseSystem auf einem dedizierten Server beschrieben.
+description: In diesem HowTo wird Schritt für Schritt die Remote Installation des FreeBSD 64 Bit BaseSystem auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []
@@ -31,7 +31,7 @@ search:
 
 ## Einleitung
 
-In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD 64 Bit](https://www.freebsd.org/){: target="\_blank" rel="noopener"} BaseSystem mittels [mfsBSD](https://mfsbsd.vx.sk/) auf einem dedizierten Server. Um eine weitere Reproduktion der offiziellen [FreeBSD Dokumentation](https://docs.freebsd.org/en/books/handbook/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
+In diesem HowTo beschreibe ich Schritt für Schritt die Remote Installation des [FreeBSD 64 Bit](https://www.freebsd.org/){: target="\_blank" rel="noopener"} BaseSystem mittels [mfsBSD](https://mfsbsd.vx.sk/) auf einem dedizierten Server. Um eine weitere Reproduktion der offiziellen [FreeBSD Dokumentation](https://docs.freebsd.org/en/books/handbook/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
 
 Unser BaseSystem wird folgende Dienste umfassen.
 
@@ -413,7 +413,7 @@ EOF
 
 ### Stärkere Passwort-Hashes verwenden
 
-Um Bruteforce-Attacken erheblich auszubremsen setzen wir für die Passworte der Systemuser eine Mindestlänge (minpasswordlen) von 12 Zeichen in einem Mix aus Gross- und Kleinschreibung (mixpasswordcase) fest. Desweiteren lassen wir User nach 30 Minuten Inaktivität automatisch ausloggen (idletime). Wir bearbeiten hierzu mit dem Editor `ee` (`ee /etc/login.conf`) in der Datei `/etc/login.conf` die Login-Klasse `default`, indem wir vor der vorletzten Zeile folgende Zeilen hinzufügen.
+Um Bruteforce-Attacken erheblich auszubremsen setzen wir für die Passwörter der Systemuser eine Mindestlänge (minpasswordlen) von 12 Zeichen in einem Mix aus Gross- und Kleinschreibung (mixpasswordcase) fest. Desweiteren lassen wir User nach 30 Minuten Inaktivität automatisch ausloggen (idletime). Wir bearbeiten hierzu mit dem Editor `ee` (`ee /etc/login.conf`) in der Datei `/etc/login.conf` die Login-Klasse `default`, indem wir vor der vorletzten Zeile folgende Zeilen hinzufügen.
 
 ```text
         :mixpasswordcase=true:\

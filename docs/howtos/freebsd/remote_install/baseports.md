@@ -15,7 +15,7 @@ contributors: []
 date: '2010-08-25'
 lastmod: '2026-02-27'
 title: BasePorts
-description: In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64 Bit BaseSystem auf einem dedizierten Server beschrieben.
+description: In diesem HowTo wird Schritt für Schritt die Installation einiger BasePorts für ein FreeBSD 64 Bit BaseSystem auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []
@@ -31,7 +31,7 @@ search:
 
 ## Einleitung
 
-In diesem HowTo beschreibe ich step-by-step die Installation einiger Ports (Packages / Pakete) welche auf keinem [FreeBSD](https://www.freebsd.org/){: target="\_blank" rel="noopener"} 64 Bit BaseSystem auf einem dedizierten Server fehlen sollten.
+In diesem HowTo beschreibe ich Schritt für Schritt die Installation einiger Ports (Packages / Pakete) welche auf keinem [FreeBSD](https://www.freebsd.org/){: target="\_blank" rel="noopener"} 64 Bit BaseSystem auf einem dedizierten Server fehlen sollten.
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 

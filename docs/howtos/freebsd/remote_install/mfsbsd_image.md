@@ -15,7 +15,7 @@ contributors: []
 date: '2010-08-25'
 lastmod: '2026-02-27'
 title: mfsBSD Image
-description: In diesem HowTo wird step-by-step die Erstellung eines mfsBSD Images zur Remote Installation von FreeBSD 64 Bit auf einem dedizierten Server beschrieben.
+description: In diesem HowTo wird Schritt für Schritt die Erstellung eines mfsBSD Images zur Remote Installation von FreeBSD 64 Bit auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []
@@ -31,7 +31,7 @@ search:
 
 ## Einleitung
 
-In diesem HowTo beschreibe ich step-by-step das Erstellen eines [mfsBSD](https://mfsbsd.vx.sk/) Images mit dem die [Remote Installation](requirements.md) von [FreeBSD 64 Bit](https://www.freebsd.org/){: target="\_blank" rel="noopener"} auf einem dedizierten Server durchgeführt werden kann.
+In diesem HowTo beschreibe ich Schritt für Schritt das Erstellen eines [mfsBSD](https://mfsbsd.vx.sk/) Images mit dem die [Remote Installation](requirements.md) von [FreeBSD 64 Bit](https://www.freebsd.org/){: target="\_blank" rel="noopener"} auf einem dedizierten Server durchgeführt werden kann.
 
 ## Das Referenzsystem
 

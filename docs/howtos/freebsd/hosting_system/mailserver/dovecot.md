@@ -15,7 +15,7 @@ contributors: []
 date: '2010-08-25'
 lastmod: '2026-02-27'
 title: Dovecot
-description: In diesem HowTo wird step-by-step die Installation des Dovecot Mailservers für ein Hosting System auf Basis von FreeBSD 64 Bit auf einem dedizierten Server beschrieben.
+description: In diesem HowTo wird Schritt für Schritt die Installation des Dovecot Mailservers für ein Hosting System auf Basis von FreeBSD 64 Bit auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []

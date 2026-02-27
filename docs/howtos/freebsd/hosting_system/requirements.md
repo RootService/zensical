@@ -15,7 +15,7 @@ contributors: []
 date: '2010-08-25'
 lastmod: '2026-02-27'
 title: Hosting System
-description: In diesem HowTo werden step-by-step die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64 Bit auf einem dedizierten Server beschrieben.
+description: In diesem HowTo werden Schritt für Schritt die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64 Bit auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []
@@ -27,6 +27,15 @@ search:
 
 > **Stand:** 2026-02-27  
 > **Terminologie:** Einheitlich werden die Begriffe **HowTo**, **HowTos**, **BaseSystem**, **BasePorts** und **BaseTools** verwendet.
+
+## Quick-Check vor Start
+
+- [ ] Voraussetzungen aus den Vorseiten erfüllt
+- [ ] DNS/FQDN/IPv4/IPv6 final geprüft
+- [ ] Zugriff auf Konsole/Recovery vorhanden
+- [ ] Platzhalter (`__USERNAME__`, `__PASSWORD__`, `__IPADDR4__`, `__IPADDR6__`) vorbereitet
+
+---
 
 
 Diese HowTos setzen ein wie in [Remote Installation](../remote_install/requirements.md) beschriebenes, installiertes und konfiguriertes FreeBSD Basissystem voraus.
@@ -59,12 +68,12 @@ Folgende Punkte sind in allen folgenden HowTos zu beachten.
 - Alle Dienste werden mit einer möglichst sicheren und dennoch flexiblen Konfiguration versehen.
 - Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
 - Alle Benutzernamen werden als `__USERNAME__` dargestellt und sind selbstständig passend zu ersetzen.
-- Alle Passworte werden als `__PASSWORD__` dargestellt und sind selbstständig durch sichere Passworte zu ersetzen.
+- Alle Passwörter werden als `__PASSWORD__` dargestellt und sind selbstständig durch sichere Passwörter zu ersetzen.
 - Die Domain des Servers lautet `example.com` und ist selbstständig durch die eigene Domain zu ersetzen.
 - Der Hostname des Servers lautet `devnull` und ist selbstständig durch den eigenen Hostnamen zu ersetzen (FQDN=devnull.example.com).
 - Es werden die FQDNs `devnull.example.com`, `mail.example.com` und `www.example.com` verwendet und sind selbstständig im DNS zu registrieren.
-- Die primäre IPv4 Adresse des Systems wird als `__IPADDR4__` dargestellt und ist selbsttändig zu ersetzen.
-- Die primäre IPv6 Adresse des Systems wird als `__IPADDR6__` dargestellt und ist selbsttändig zu ersetzen.
+- Die primäre IPv4 Adresse des Systems wird als `__IPADDR4__` dargestellt und ist selbstständig zu ersetzen.
+- Die primäre IPv6 Adresse des Systems wird als `__IPADDR6__` dargestellt und ist selbstständig zu ersetzen.
 - Postfix und Dovecot teilen sich sowohl den FQDN `mail.example.com` als auch das SSL-Zertifikat.
 
 ## Vorbereitungen

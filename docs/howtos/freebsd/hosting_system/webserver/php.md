@@ -13,9 +13,9 @@ license:
   url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 contributors: []
 date: '2010-08-25'
-lastmod: '2025-06-28'
+lastmod: '2026-02-27'
 title: PHP-FPM
-description: In diesem HowTo wird step-by-step die Installation von PHP-FPM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
+description: In diesem HowTo wird step-by-step die Installation von PHP-FPM für ein Hosting System auf Basis von FreeBSD 64 Bit auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []
@@ -24,6 +24,10 @@ search:
 ---
 
 # PHP-FPM
+
+> **Stand:** 2026-02-27  
+> **Terminologie:** Einheitlich werden die Begriffe **HowTo**, **HowTos**, **BaseSystem**, **BasePorts** und **BaseTools** verwendet.
+
 
 ## Einleitung
 

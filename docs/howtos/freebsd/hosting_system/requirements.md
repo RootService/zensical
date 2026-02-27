@@ -13,9 +13,9 @@ license:
   url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 contributors: []
 date: '2010-08-25'
-lastmod: '2025-06-28'
+lastmod: '2026-02-27'
 title: Hosting System
-description: In diesem HowTo werden step-by-step die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
+description: In diesem HowTo werden step-by-step die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64 Bit auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []
@@ -24,6 +24,10 @@ search:
 ---
 
 # Voraussetzungen
+
+> **Stand:** 2026-02-27  
+> **Terminologie:** Einheitlich werden die Begriffe **HowTo**, **HowTos**, **BaseSystem**, **BasePorts** und **BaseTools** verwendet.
+
 
 Diese HowTos setzen ein wie in [Remote Installation](../remote_install/requirements.md) beschriebenes, installiertes und konfiguriertes FreeBSD Basissystem voraus.
 

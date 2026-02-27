@@ -13,9 +13,9 @@ license:
   url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 contributors: []
 date: '2010-08-25'
-lastmod: '2025-06-28'
+lastmod: '2026-02-27'
 title: BasePorts
-description: In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.
+description: In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64 Bit BaseSystem auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []
@@ -25,17 +25,21 @@ search:
 
 # BasePorts
 
+> **Stand:** 2026-02-27  
+> **Terminologie:** Einheitlich werden die Begriffe **HowTo**, **HowTos**, **BaseSystem**, **BasePorts** und **BaseTools** verwendet.
+
+
 ## Einleitung
 
-In diesem HowTo beschreibe ich step-by-step die Installation einiger Ports (Packages / Pakete) welche auf keinem [FreeBSD](https://www.freebsd.org/){: target="\_blank" rel="noopener"} 64Bit BaseSystem auf einem dedizierten Server fehlen sollten.
+In diesem HowTo beschreibe ich step-by-step die Installation einiger Ports (Packages / Pakete) welche auf keinem [FreeBSD](https://www.freebsd.org/){: target="\_blank" rel="noopener"} 64 Bit BaseSystem auf einem dedizierten Server fehlen sollten.
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
 - Portmaster 3.30
 - Perl 5.42.0
 - OpenSSL 3.5.5
-- LUA 5.4.8
-- TCL 8.6.17
+- Lua 5.4.8
+- Tcl 8.6.17
 - Python 3.11.14
 - Bash 5.3.9
 - cURL 8.17.0

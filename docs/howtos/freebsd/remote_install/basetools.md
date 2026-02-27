@@ -13,9 +13,9 @@ license:
   url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 contributors: []
 date: '2010-08-25'
-lastmod: '2025-06-28'
+lastmod: '2026-02-27'
 title: BaseTools
-description: In diesem HowTo wird step-by-step die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.
+description: In diesem HowTo wird step-by-step die Installation einiger BaseTools für ein FreeBSD 64 Bit BaseSystem auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []
@@ -25,17 +25,21 @@ search:
 
 # BaseTools
 
+> **Stand:** 2026-02-27  
+> **Terminologie:** Einheitlich werden die Begriffe **HowTo**, **HowTos**, **BaseSystem**, **BasePorts** und **BaseTools** verwendet.
+
+
 ## Einleitung
 
-In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Ports / Packages / Pakete) welche auf keinem [FreeBSD](https://www.freebsd.org/){: target="\_blank" rel="noopener"} 64Bit BaseSystem auf einem dedizierten Server fehlen sollten.
+In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Ports / Packages / Pakete) welche auf keinem [FreeBSD](https://www.freebsd.org/){: target="\_blank" rel="noopener"} 64 Bit BaseSystem auf einem dedizierten Server fehlen sollten.
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- Sudo 1.9.17p2
-- Bind-Tools 9.20.18
-- QEmu GuestAgent 10.2.0
-- Cloud-Init 25.2
-- SMARTMonTools 7.5
+- sudo 1.9.17p2
+- bind-tools 9.20.18
+- QEMU GuestAgent 10.2.0
+- cloud-init 25.2
+- smartmontools 7.5
 - wget 1.25.0
 - GIT 2.52.0
 - GnuPG 2.4.9

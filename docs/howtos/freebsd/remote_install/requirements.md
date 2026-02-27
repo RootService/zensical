@@ -13,9 +13,9 @@ license:
   url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 contributors: []
 date: '2010-08-25'
-lastmod: '2025-06-28'
+lastmod: '2026-02-27'
 title: Remote Installation
-description: In diesem HowTo werden step-by-step die Voraussetzungen für die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.
+description: In diesem HowTo werden step-by-step die Voraussetzungen für die Remote Installation des FreeBSD 64 Bit BaseSystem auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []
@@ -25,13 +25,17 @@ search:
 
 # Voraussetzungen
 
+> **Stand:** 2026-02-27  
+> **Terminologie:** Einheitlich werden die Begriffe **HowTo**, **HowTos**, **BaseSystem**, **BasePorts** und **BaseTools** verwendet.
+
+
 Die Installation des FreeBSD BaseSystem setzt ein wie in [mfsBSD Image](mfsbsd_image.md) beschriebenes, bereits fertig erstelltes mfsBSD Image voraus.
 
 ## Einleitung
 
 Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
-- FreeBSD 14.3-RELEASE 64Bit
+- FreeBSD 14.3-RELEASE 64 Bit
 - OpenSSL 3.0.16
 - OpenSSH 9.9p2
 - Unbound 1.22.0
@@ -41,8 +45,8 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 - Portmaster 3.30
 - Perl 5.42.0
 - OpenSSL 3.5.5
-- LUA 5.4.8
-- TCL 8.6.17
+- Lua 5.4.8
+- Tcl 8.6.17
 - Python 3.11.14
 - Bash 5.3.9
 - cURL 8.17.0
@@ -52,11 +56,11 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- Sudo 1.9.17p2
-- Bind-Tools 9.20.18
-- QEmu GuestAgent 10.2.0
-- Cloud-Init 25.2
-- SMARTMonTools 7.5
+- sudo 1.9.17p2
+- bind-tools 9.20.18
+- QEMU GuestAgent 10.2.0
+- cloud-init 25.2
+- smartmontools 7.5
 - wget 1.25.0
 - GIT 2.52.0
 - GnuPG 2.4.9
@@ -91,11 +95,11 @@ devnull.example.com.    IN  AAAA    __IPADDR6__
 
 ## Das Referenzsystem
 
-Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VirtualBox](https://www.virtualbox.org/) unter [Microsoft Windows 11 Pro (64Bit)](https://www.microsoft.com/en-us/windows/windows-11) entschieden. So lässt sich ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
+Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VirtualBox](https://www.virtualbox.org/) unter [Microsoft Windows 11 Pro (64 Bit)](https://www.microsoft.com/en-us/windows/windows-11) entschieden. So lässt sich ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
 
 Trotzdem habe ich dieses HowTo so ausgelegt, dass es sich nahezu unverändert auf handelsübliche dedizierte Server übertragen lässt und dieses auch auf mehreren dedizierten Servern getestet.
 
-Obwohl Microsoft Windows 11 Pro einen eigenen OpenSSH-Client mitbringt, greife ich lieber auf das sehr empfehlenswerte [PuTTY (64Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/) zurück.
+Obwohl Microsoft Windows 11 Pro einen eigenen OpenSSH-Client mitbringt, greife ich lieber auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/) zurück.
 
 VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 

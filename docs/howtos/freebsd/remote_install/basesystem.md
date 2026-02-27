@@ -13,9 +13,9 @@ license:
   url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 contributors: []
 date: '2010-08-25'
-lastmod: '2025-06-28'
+lastmod: '2026-02-27'
 title: BaseSystem
-description: In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.
+description: In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64 Bit BaseSystem auf einem dedizierten Server beschrieben.
 robots: index, follow
 lang: de
 hide: []
@@ -25,13 +25,17 @@ search:
 
 # BaseSystem
 
+> **Stand:** 2026-02-27  
+> **Terminologie:** Einheitlich werden die Begriffe **HowTo**, **HowTos**, **BaseSystem**, **BasePorts** und **BaseTools** verwendet.
+
+
 ## Einleitung
 
-In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD 64Bit](https://www.freebsd.org/){: target="\_blank" rel="noopener"} BaseSystem mittels [mfsBSD](https://mfsbsd.vx.sk/) auf einem dedizierten Server. Um eine weitere Reproduktion der offiziellen [FreeBSD Dokumentation](https://docs.freebsd.org/en/books/handbook/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
+In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD 64 Bit](https://www.freebsd.org/){: target="\_blank" rel="noopener"} BaseSystem mittels [mfsBSD](https://mfsbsd.vx.sk/) auf einem dedizierten Server. Um eine weitere Reproduktion der offiziellen [FreeBSD Dokumentation](https://docs.freebsd.org/en/books/handbook/){: target="\_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
 
 Unser BaseSystem wird folgende Dienste umfassen.
 
-- FreeBSD 14.3-RELEASE 64Bit
+- FreeBSD 14.3-RELEASE 64 Bit
 - OpenSSL 3.0.16
 - OpenSSH 9.9p2
 - Unbound 1.22.0

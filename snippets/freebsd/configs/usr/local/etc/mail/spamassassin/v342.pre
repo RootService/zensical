@@ -1,2 +1,0 @@
-loadplugin Mail::SpamAssassin::Plugin::HashBL
-loadplugin Mail::SpamAssassin::Plugin::FromNameSpoof

@@ -1,2 +1,0 @@
-loadplugin Mail::SpamAssassin::Plugin::ExtractText
-loadplugin Mail::SpamAssassin::Plugin::DMARC

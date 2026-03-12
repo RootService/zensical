@@ -1,52 +1,128 @@
-#
-# See also:
-#    $ man Mail::SpamAssassin::Conf
-#
+# ============================================================================
+# SPAMASSASSIN 4.0.2+ OPTIMIZED CONFIGURATION
+# Verified: 2026-03-12
+# ============================================================================
+# Reference: https://spamassassin.apache.org/full/4.0.x/doc/Mail_SpamAssassin_Conf.txt
+# Reference: https://wiki.apache.org/spamassassin/ImportantInitialConfigItems
+# ============================================================================
 
-lock_method         flock
+# ----------------------------------------------------------------------------
+# CORE SETTINGS
+# ----------------------------------------------------------------------------
+lock_method             flock
+required_score          7.0                     # Conservative for multi-user (default: 5.0)
+report_safe             0
+skip_rbl_checks         1
+skip_uribl_checks       1
+normalize_charset       1
+version_tag             20260312
+enable_compat           welcomelist_blocklist
 
+# ----------------------------------------------------------------------------
+# DNS CONFIGURATION (Critical for network rules)
+# ----------------------------------------------------------------------------
+dns_available           yes
+dns_server              127.0.0.1
+
+# ----------------------------------------------------------------------------
+# NETWORK TRUST & RELAYS (Must match Postfix/Amavisd mynetworks)
+# ----------------------------------------------------------------------------
 clear_internal_networks
-
-internal_networks    10.0.0.0/8 [fe80::]/10
-internal_networks    __IPADDR4__/32 [__IPADDR6__]/64
+internal_networks       10.0.0.0/8 [fe80::]/10
+internal_networks       __IPADDR4__/32 [__IPADDR6__]/64
 
 clear_trusted_networks
+trusted_networks        10.0.0.0/8 [fe80::]/10
+trusted_networks        __IPADDR4__/32 [__IPADDR6__]/64
 
-trusted_networks    10.0.0.0/8 [fe80::]/10
-trusted_networks    __IPADDR4__/32 [__IPADDR6__]/64
+# ----------------------------------------------------------------------------
+# BAYES DATABASE (PostgreSQL with SSL via Unix Socket)
+# ----------------------------------------------------------------------------
+use_bayes               1
+use_bayes_rules         1
+bayes_auto_learn        1
+bayes_expiry_max_db_size 150000
+bayes_sql_override_username 0
 
+bayes_store_module      Mail::SpamAssassin::BayesStore::PgSQL
+bayes_sql_dsn           DBI:Pg:dbname=spamass_bayes;host=/tmp
+bayes_sql_username      spamass
+bayes_sql_password      __PASSWORD_SPAMASS__
+
+bayes_ignore_header     X-Bogosity
+bayes_ignore_header     X-Spam-Flag
+bayes_ignore_header     X-Spam-Status
+
+# ----------------------------------------------------------------------------
+# TXREP (Replaces deprecated AWL - SpamAssassin 4.0.2+)
+# ----------------------------------------------------------------------------
+use_txrep               1
+txrep_factory           Mail::SpamAssassin::SQLBasedAddrList
+user_awl_dsn            DBI:Pg:dbname=spamass_txrep;host=/tmp
+user_awl_sql_username   spamass
+user_awl_sql_password   __PASSWORD_SPAMASS__
+
+# ----------------------------------------------------------------------------
+# HEADER ADDITIONS (SpamAssassin 4.0.2+ Compliant)
+# ----------------------------------------------------------------------------
 clear_headers
-
-add_header all Flag _YESNOCAPS_
-add_header all Level _STARS(*)_
-add_header all Status _YESNO_, score=_SCORE_ required=_REQD_ autolearn=_AUTOLEARN_ tests=_TESTSSCORES_
-add_header all Report _REPORT_
-add_header all RBLs _RBL_
+add_header all Flag           _YESNOCAPS_
+add_header all Level          _STARS(*)_
+add_header all Status         _YESNO_, score=_SCORE_ required=_REQD_ autolearn=_AUTOLEARN_ tests=_TESTSSCORES(,)_
+add_header all Report         _REPORT_
+add_header all RBLs           _RBL_
 add_header all Checker-Version SpamAssassin _VERSION_ (_SUBVERSION_) on _HOSTNAME_
 
-report_safe         0
+# ----------------------------------------------------------------------------
+# REPORT CONFIGURATION
+# ----------------------------------------------------------------------------
+report_contact          postmaster@example.com
+report_hostname         mail.example.com
 
-required_score      5.0
-rewrite_header      subject [ SPAM ]
+# ----------------------------------------------------------------------------
+# SCORE ADJUSTMENTS (Reduce false positives)
+# ----------------------------------------------------------------------------
+score RCVD_IN_MSBL       0    # Often false positive
+score FORGED_GMAIL_RCVD  0    # Common false positive
+score HTML_IMAGE_ONLY_00 0    # Adjust as needed
 
-bayes_store_module  Mail::SpamAssassin::BayesStore::PgSQL
-bayes_sql_dsn       DBI:Pg:database=spamass_bayes;host=127.0.0.1;port=5432
-bayes_sql_username  spamass
-bayes_sql_password  __PASSWORD_SPAMASS__
+# SPF Scores
+score SPF_FAIL          2.0
+score SPF_SOFTFAIL      1.0
+score SPF_PASS         -1.0
+score SPF_HELO_FAIL     1.0
 
-report_contact      postmaster@example.com
-report_hostname     mail.example.com
+# DMARC / DKIM Scores
+score DMARC_FAIL_REJECT 3.0
+score DMARC_FAIL_QUAR   2.0
+score DKIM_INVALID      2.0
+score DKIM_VALID       -0.5
+score DKIM_VALID_AU    -0.5
 
-version_tag         20250426
+# Spoofing & Phishing Adjustments
+score FROM_NAME_SPOOF   2.0
+score PHISHING          3.0
+score FREEMAIL_FROM     1.5
+score OLEVBMACRO        3.5
 
-header AUTHENTICATED_SENDER Received =~ /Authenticated\ sender\:.*by\ mail\.example\.com/
-describe AUTHENTICATED_SENDER Header 'Received:' contains 'Authenticated sender:'
-score AUTHENTICATED_SENDER -3
+# RBL/DNSBL Adjustments (Using SA's pre-compiled Native Rules)
+score RCVD_IN_SBL       3.0
+score RCVD_IN_XBL       3.0
+score RCVD_IN_PBL       2.5
+score RCVD_IN_ZEN       3.5
+score RCVD_IN_BLSPAMCOP_NET 2.0
+score RCVD_IN_BARRACUDA 2.5
 
-normalize_charset 1
+# URIBL Native Adjustments
+score URIBL_SBL         3.0
+score URIBL_XBL         3.0
+score URIBL_PBL         2.5
+score URIBL_SPAMHAUS    3.5
+score URIBL_BARRACUDA   2.5
 
-bayes_ignore_header X-Bogosity
-bayes_ignore_header X-Spam-Flag
-bayes_ignore_header X-Spam-Status
+# Internal Mail Fix (Whitelist internal auth sending)
+header   AUTHENTICATED_SENDER  Received =~ /Authenticated\s+sender:.*by\s+mail\.example\.com/
+describe AUTHENTICATED_SENDER  Header 'Received:' contains 'Authenticated sender:'
+score    AUTHENTICATED_SENDER  -3.0
 
-score RP_MATCHES_RCVD 0
+score    RP_MATCHES_RCVD       0

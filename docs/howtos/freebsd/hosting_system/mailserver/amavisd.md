@@ -397,7 +397,9 @@ mkdir -p /var/amavis/db/keys
 
 amavisd genrsa /var/amavis/db/keys/example.com/20250426.pem 2048
 
-chown -R vscan:vscan /var/amavis
+chown -R vscan:vscan /var/amavis/db/keys
+
+chmod 0600 /var/amavis/db/keys/*/*
 
 amavisd showkeys
 ```

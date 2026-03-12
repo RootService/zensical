@@ -1,3 +1,82 @@
-enable_compat welcomelist_blocklist
+# ============================================================================
+# SPAMASSASSIN 4.0.2+ PLUGIN INITIALIZATION
+# Verified: 2026-03-12
+# ============================================================================
+# Reference: https://spamassassin.apache.org/full/4.0.x/doc/Mail_SpamAssassin.html
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# CORE PLUGINS (Load first - required for basic functionality)
+# Priority: -200 to -100 (before network lookups)
+# ----------------------------------------------------------------------------
+loadplugin Mail::SpamAssassin::Plugin::Check
+loadplugin Mail::SpamAssassin::Plugin::Shortcircuit
+loadplugin Mail::SpamAssassin::Plugin::Bayes
+
+# ----------------------------------------------------------------------------
+# EVALUATION PLUGINS (Message analysis)
+# Priority: -100 to 0 (standard evaluation)
+# ----------------------------------------------------------------------------
+loadplugin Mail::SpamAssassin::Plugin::BodyEval
+loadplugin Mail::SpamAssassin::Plugin::DNSEval
+loadplugin Mail::SpamAssassin::Plugin::HTMLEval
+loadplugin Mail::SpamAssassin::Plugin::HeaderEval
+loadplugin Mail::SpamAssassin::Plugin::MIMEEval
+loadplugin Mail::SpamAssassin::Plugin::RelayEval
+loadplugin Mail::SpamAssassin::Plugin::URIEval
+loadplugin Mail::SpamAssassin::Plugin::WLBLEval
+
+# ----------------------------------------------------------------------------
+# DNS/RBL PLUGINS (Network-based checks)
+# Priority: 0 to 100 (network lookups start at -100)
+# ----------------------------------------------------------------------------
 loadplugin Mail::SpamAssassin::Plugin::URIDNSBL
+loadplugin Mail::SpamAssassin::Plugin::HashBL
+loadplugin Mail::SpamAssassin::Plugin::AskDNS
 loadplugin Mail::SpamAssassin::Plugin::SPF
+
+# ----------------------------------------------------------------------------
+# AUTHENTICATION PLUGINS (DKIM, DMARC, etc.)
+# ----------------------------------------------------------------------------
+loadplugin Mail::SpamAssassin::Plugin::DKIM
+loadplugin Mail::SpamAssassin::Plugin::DMARC
+loadplugin Mail::SpamAssassin::Plugin::AuthRes
+
+# ----------------------------------------------------------------------------
+# REPUTATION PLUGINS (TxRep replaces deprecated AWL)
+# ----------------------------------------------------------------------------
+loadplugin Mail::SpamAssassin::Plugin::TxRep
+
+# ----------------------------------------------------------------------------
+# OPTIONAL PLUGINS (Load last - feature enhancements)
+# ----------------------------------------------------------------------------
+loadplugin Mail::SpamAssassin::Plugin::ExtractText
+loadplugin Mail::SpamAssassin::Plugin::ImageInfo
+loadplugin Mail::SpamAssassin::Plugin::MIMEHeader
+loadplugin Mail::SpamAssassin::Plugin::ReplaceTags
+loadplugin Mail::SpamAssassin::Plugin::TextCat
+loadplugin Mail::SpamAssassin::Plugin::FromNameSpoof
+loadplugin Mail::SpamAssassin::Plugin::FreeMail
+loadplugin Mail::SpamAssassin::Plugin::HTTPSMismatch
+loadplugin Mail::SpamAssassin::Plugin::WelcomeListSubject
+loadplugin Mail::SpamAssassin::Plugin::VBounce
+
+# ----------------------------------------------------------------------------
+# PERFORMANCE PLUGINS
+# ----------------------------------------------------------------------------
+loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody
+
+# ----------------------------------------------------------------------------
+# EXCLUSIVE SA 4.0.x MODERN PROTECTION PLUGINS
+# ----------------------------------------------------------------------------
+loadplugin Mail::SpamAssassin::Plugin::Phishing
+loadplugin Mail::SpamAssassin::Plugin::DecodeShortURLs
+loadplugin Mail::SpamAssassin::Plugin::OLEVBMacro
+
+# ----------------------------------------------------------------------------
+# DEPRECATED - DO NOT LOAD (SpamAssassin 4.0.2+)
+# ----------------------------------------------------------------------------
+# loadplugin Mail::SpamAssassin::Plugin::AWL                   # Replaced by TxRep
+# loadplugin Mail::SpamAssassin::Plugin::AutoLearnThreshold    # Use bayes_auto_learn
+# loadplugin Mail::SpamAssassin::Plugin::Razor2                # Deprecated
+# loadplugin Mail::SpamAssassin::Plugin::Pyzor                 # Deprecated

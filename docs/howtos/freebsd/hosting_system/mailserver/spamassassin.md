@@ -241,8 +241,8 @@ END;
 ' LANGUAGE 'plpgsql';
 EOF
 
-cat <<'EOF' > /tmp/spamass_mail_awl_shema.sql
-CREATE TABLE awl (
+cat <<'EOF' > /tmp/spamass_mail_txrep_shema.sql
+CREATE TABLE txrep (
   username varchar(100) NOT NULL default '',
   email varchar(255) NOT NULL default '',
   ip varchar(40) NOT NULL default '',
@@ -253,9 +253,9 @@ CREATE TABLE awl (
   PRIMARY KEY (username,email,signedby,ip)
 );
 
-create index awl_last_hit on awl (last_hit);
+create index txrep_last_hit on txrep (last_hit);
 
-create OR REPLACE function update_awl_last_hit()
+create OR REPLACE function update_txrep_last_hit()
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.last_hit = CURRENT_TIMESTAMP;
@@ -263,11 +263,11 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
-create TRIGGER update_awl_update_last_hit BEFORE UPDATE
-ON awl FOR EACH ROW EXECUTE PROCEDURE
-update_awl_last_hit();
+create TRIGGER update_txrep_update_last_hit BEFORE UPDATE 
+ON txrep FOR EACH ROW EXECUTE PROCEDURE
+update_txrep_last_hit();
 
-ALTER TABLE awl SET (fillfactor=95);
+ALTER TABLE txrep SET (fillfactor=95);
 EOF
 
 
@@ -280,9 +280,9 @@ cat <<'EOF' >> /data/db/postgres/data17/pg_hba.conf
 local   mail_bayes      spamass                                 scram-sha-256
 host    mail_bayes      spamass         127.0.0.1/32            scram-sha-256
 host    mail_bayes      spamass         ::1/128                 scram-sha-256
-local   mail_awl        spamass                                 scram-sha-256
-host    mail_awl        spamass         127.0.0.1/32            scram-sha-256
-host    mail_awl        spamass         ::1/128                 scram-sha-256
+local   mail_txrep      spamass                                 scram-sha-256
+host    mail_txrep      spamass         127.0.0.1/32            scram-sha-256
+host    mail_txrep      spamass         ::1/128                 scram-sha-256
 #
 EOF
 
@@ -310,14 +310,14 @@ QUIT;
 psql -U spamass mail_bayes < /tmp/spamass_mail_bayes_shema.sql
 
 
-createdb -U postgres -E unicode -O spamass mail_awl
+createdb -U postgres -E unicode -O spamass mail_txrep
 
-psql mail_awl
+psql mail_txrep
 
-GRANT ALL PRIVILEGES ON DATABASE mail_awl TO spamass;
+GRANT ALL PRIVILEGES ON DATABASE mail_txrep TO spamass;
 QUIT;
 
-psql -U spamass mail_awl < /tmp/spamass_mail_awl_shema.sql
+psql -U spamass mail_txrep < /tmp/spamass_mail_txrep_shema.sql
 
 
 exit
@@ -356,46 +356,6 @@ EOF
 
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/init.pre
 --8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/init.pre"
-EOF
-
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/v310.pre
---8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v310.pre"
-EOF
-
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/v312.pre
---8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v312.pre"
-EOF
-
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/v320.pre
---8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v320.pre"
-EOF
-
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/v330.pre
---8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v330.pre"
-EOF
-
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/v340.pre
---8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v340.pre"
-EOF
-
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/v341.pre
---8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v341.pre"
-EOF
-
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/v342.pre
---8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v342.pre"
-EOF
-
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/v343.pre
---8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v343.pre"
-EOF
-
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/v400.pre
---8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v400.pre"
-EOF
-
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/v401.pre
---8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/v401.pre"
 EOF
 
 # IPv4

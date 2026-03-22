@@ -12,9 +12,10 @@ $CONF['smtp_server'] = 'localhost';
 $CONF['smtp_port'] = '465';
 $CONF['smtp_type'] = 'tls';
 $CONF['smtp_client'] = 'mail.example.com';
+$CONF["admin_email"] = "Support Person <support@example.com>";
 $CONF['dovecotpw'] = "/usr/local/sbin/doveadm pw";
-if(@file_exists('/usr/local/bin/doveadm')) { // @ to silence openbase_dir stuff; see https://github.com/postfixadmin/postfixadmin/issues/171
-    $CONF['dovecotpw'] = "/usr/local/bin/doveadm pw"; # debian
+if(@file_exists('/usr/local/bin/doveadm')) {
+    $CONF['dovecotpw'] = "/usr/local/bin/doveadm pw";
 }
 $CONF['password_validation'] = array(
     '/.{5}/'                                         => 'password_too_short 5',      # minimum length 5 characters
@@ -33,14 +34,13 @@ $CONF['default_aliases'] = array (
     'postmaster'  => 'postmaster@example.com',
     'webmaster'   => 'webmaster@example.com',
     'dmarc'       => 'dmarc@example.com'
-    'virusalert'  => 'virusalert@example.com',
 );
 $CONF['aliases'] = '1000';
 $CONF['mailboxes'] = '100';
 $CONF['maxquota'] = '2048';
 $CONF['domain_quota_default'] = '204800';
 $CONF['quota'] = 'YES';
-$CONF['new_quota_table'] = 'YES'
+$CONF['new_quota_table'] = 'YES';
 $CONF['transport'] = 'YES';
 $CONF['transport_options'] = array (
     'virtual',  // for virtual accounts
@@ -49,7 +49,7 @@ $CONF['transport_options'] = array (
     'vacation'  // for vacation
 );
 $CONF['transport_default'] = 'virtual';
-$CONF['vacation'] = 'YES';
+$CONF['vacation'] = 'NO';
 $CONF['vacation_domain'] = 'autoreply.example.com';
 $CONF['special_alias_control'] = 'YES';
 $CONF['backup'] = 'YES';

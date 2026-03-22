@@ -27,6 +27,7 @@ smtpd_client_connection_count_limit = 50
 smtpd_client_connection_rate_limit = 30
 smtpd_client_message_rate_limit = 100
 smtpd_client_recipient_rate_limit = 200
+policyd-spf_time_limit = 3600
 
 # =========================================================================
 # VIRTUAL MAILBOX SETTINGS (PostgreSQL Proxied)
@@ -142,7 +143,7 @@ smtpd_recipient_restrictions =
     reject_non_fqdn_recipient
     reject_unlisted_recipient
     reject_unknown_recipient_domain
-    check_policy_service unix:private/policyd-spf
+#    check_policy_service unix:private/policyd-spf
     reject_rhsbl_sender         zen.spamhaus.org=127.0.1.[2..99]
     reject_rhsbl_helo           zen.spamhaus.org=127.0.1.[2..99]
     reject_rhsbl_reverse_client zen.spamhaus.org=127.0.1.[2..99]
@@ -159,6 +160,9 @@ smtpd_etrn_restrictions = reject
 # =========================================================================
 milter_default_action = accept
 milter_protocol = 6
+milter_connect_macros = j {client_name} {daemon_name} v
+non_smtpd_milters = $smtpd_milters
+smtpd_milters = unix:/var/run/pyspf-milter/pyspf-milter.sock unix:/var/run/milteropendkim/opendkim.sock unix:/var/run/opendmarc/opendmarc.sock unix:/var/run/amavis/amavisd-milter.sock
 alias_database = hash:${config_directory}/aliases
 alias_maps = hash:${config_directory}/aliases
 biff = no

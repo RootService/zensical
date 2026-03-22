@@ -13,7 +13,7 @@ license:
   url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 contributors: []
 date: '2010-08-25'
-lastmod: '2026-02-27'
+lastmod: '2026-03-21'
 title: Remote Installation
 description: In diesem HowTo werden Schritt für Schritt die Voraussetzungen für die Remote Installation des FreeBSD 64 Bit BaseSystem auf einem dedizierten Server beschrieben.
 robots: index, follow
@@ -23,10 +23,7 @@ search:
   exclude: false
 ---
 
-# Voraussetzungen
-
-> **Stand:** 2026-02-27  
-> **Terminologie:** Einheitlich werden die Begriffe **HowTo**, **HowTos**, **BaseSystem**, **BasePorts** und **BaseTools** verwendet.
+# Remote Installation
 
 ## Quick-Check vor Start
 
@@ -44,38 +41,39 @@ Die Installation des FreeBSD BaseSystem setzt ein wie in [mfsBSD Image](mfsbsd_i
 
 Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
-- FreeBSD 14.3-RELEASE 64 Bit
-- OpenSSL 3.0.16
-- OpenSSH 9.9p2
-- Unbound 1.22.0
+- FreeBSD 15.0-RELEASE 64 Bit
+- OpenSSL 3.5.4
+- OpenSSH 10.0p2
+- Unbound 1.24.1
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
-- Portmaster 3.30
-- Perl 5.42.0
+- Portmaster 3.33
+- Perl 5.42.1
 - OpenSSL 3.5.5
+- Python 3.11.15
+- LLVM 19.1.7
 - Lua 5.4.8
 - Tcl 8.6.17
-- Python 3.11.14
 - Bash 5.3.9
 - cURL 8.17.0
-- Rust 1.93.0
+- Rust 1.93.1
 - Ruby 3.3.10
-- Go 1.24.12
+- Go 1.25.8
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
 - sudo 1.9.17p2
-- bind-tools 9.20.18
-- QEMU GuestAgent 10.2.0
+- bind-tools 9.20.20
+- QEMU GuestAgent 10.2.1
 - cloud-init 25.2
 - smartmontools 7.5
 - wget 1.25.0
-- GIT 2.52.0
+- GIT 2.53.0
 - GnuPG 2.4.9
 - SQLite 3.50.4
 - Subversion 1.14.5
-- Nano 8.7
+- Nano 8.7.1
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 
@@ -94,7 +92,7 @@ Folgende Punkte sind in allen folgenden HowTos zu beachten.
 
 Für diese HowTos müssen zuvor folgende DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```dns-zone
+``` dns-zone
 example.com.            IN  A       __IPADDR4__
 example.com.            IN  AAAA    __IPADDR6__
 
@@ -112,14 +110,14 @@ Obwohl Microsoft Windows 11 Pro einen eigenen OpenSSH-Client mitbringt, greife i
 
 VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 
-```powershell
+``` powershell
 winget install PuTTY.PuTTY
 winget install Oracle.VirtualBox
 
 $Env:vbox_ver=((winget show Oracle.VirtualBox) -match '^Version:' -split '\s+' | Select-Object -Last 1)
-curl -o "Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack" -L "https://download.virtualbox.org/virtualbox/${Env:vbox_ver}/Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack"
+curl.exe -o "Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack" "https://download.virtualbox.org/virtualbox/${Env:vbox_ver}/Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack"
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" extpack install --replace Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
-rm Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
+rm .\Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
 $Env:vbox_ver=''
 ```
 
@@ -127,7 +125,7 @@ $Env:vbox_ver=''
 
 Als Erstes öffnen wir eine neue PowerShell und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `FreeBSD` und wird mit einer UEFI-Firmware, einem Quad-Core Prozessor, Intels ICH9-Chipsatz, 8192MB RAM, 64MB VideoRAM, zwei 64GB SSD-Festplatten, einem DVD-Player, einer Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller und einem TPM 2.0 ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
-```powershell
+``` powershell
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" createvm --name "FreeBSD" --ostype FreeBSD_64 --register
 
 cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
@@ -155,3 +153,5 @@ Nachdem die virtuelle Maschine nun konfiguriert ist, wird es Zeit diese zu boote
 Die einzelnen HowTos bauen aufeinander auf, daher sollten sie in der Reihenfolge von oben nach unten bis zum Ende abgearbeitet werden.
 
 Viel Spass und Erfolg
+
+## Referenzen

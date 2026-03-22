@@ -13,7 +13,7 @@ license:
   url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 contributors: []
 date: '2010-08-25'
-lastmod: '2026-02-27'
+lastmod: '2026-03-21'
 title: mfsBSD Image
 description: In diesem HowTo wird Schritt für Schritt die Erstellung eines mfsBSD Images zur Remote Installation von FreeBSD 64 Bit auf einem dedizierten Server beschrieben.
 robots: index, follow
@@ -25,21 +25,17 @@ search:
 
 # mfsBSD Image
 
-> **Stand:** 2026-02-27  
-> **Terminologie:** Einheitlich werden die Begriffe **HowTo**, **HowTos**, **BaseSystem**, **BasePorts** und **BaseTools** verwendet.
-
-
 ## Einleitung
 
-In diesem HowTo beschreibe ich Schritt für Schritt das Erstellen eines [mfsBSD](https://mfsbsd.vx.sk/) Images mit dem die [Remote Installation](requirements.md) von [FreeBSD 64 Bit](https://www.freebsd.org/){: target="\_blank" rel="noopener"} auf einem dedizierten Server durchgeführt werden kann.
+In diesem HowTo beschreibe ich Schritt für Schritt das Erstellen eines [mfsBSD](https://mfsbsd.vx.sk/) Images mit dem die [Remote Installation](requirements.md) von [FreeBSD 64 Bit](https://www.freebsd.org/){: target="_blank" rel="noopener"} auf einem dedizierten Server durchgeführt werden kann.
 
 ## Das Referenzsystem
 
-Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VirtualBox](https://www.virtualbox.org/){: target="\_blank" rel="noopener"} unter [Microsoft Windows 11 Pro (64 Bit)](https://www.microsoft.com/en-us/windows/windows-11){: target="\_blank" rel="noopener"} entschieden. So lässt sich ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
+Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VirtualBox](https://www.virtualbox.org/){: target="_blank" rel="noopener"} unter [Microsoft Windows 11 Pro (64 Bit)](https://www.microsoft.com/en-us/windows/windows-11){: target="_blank" rel="noopener"} entschieden. So lässt sich ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
 
 Trotzdem habe ich dieses HowTo so ausgelegt, dass es sich nahezu unverändert auf handelsübliche dedizierte Server übertragen lässt und dieses auch auf mehreren dedizierten Servern getestet.
 
-Obwohl Microsoft Windows 11 Pro einen eigenen OpenSSH-Client mitbringt, greife ich lieber auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="\_blank" rel="noopener"} zurück.
+Obwohl Microsoft Windows 11 Pro einen eigenen OpenSSH-Client mitbringt, greife ich lieber auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="_blank" rel="noopener"} zurück.
 
 VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 
@@ -48,9 +44,9 @@ winget install PuTTY.PuTTY
 winget install Oracle.VirtualBox
 
 $Env:vbox_ver=((winget show Oracle.VirtualBox) -match '^Version:' -split '\s+' | Select-Object -Last 1)
-curl -o "Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack" -L "https://download.virtualbox.org/virtualbox/${Env:vbox_ver}/Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack"
+curl.exe -o "Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack" "https://download.virtualbox.org/virtualbox/${Env:vbox_ver}/Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack"
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" extpack install --replace Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
-rm Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
+rm .\Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
 $Env:vbox_ver=''
 ```
 
@@ -82,9 +78,9 @@ Als nächstes benötigen wir die FreeBSD 64 Bit Installations-CD, welche wir mit
 ``` powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 
-curl -o "FreeBSD-14.3-RELEASE-amd64-disc1.iso" -L "https://download.freebsd.org/releases/ISO-IMAGES/14.3/FreeBSD-14.3-RELEASE-amd64-disc1.iso"
+curl.exe -o "FreeBSD-15.0-RELEASE-amd64-disc1.iso" "https://download.freebsd.org/releases/ISO-IMAGES/15.0/FreeBSD-15.0-RELEASE-amd64-disc1.iso"
 
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-14.3-RELEASE-amd64-disc1.iso"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-15.0-RELEASE-amd64-disc1.iso"
 ```
 
 Nachdem die virtuelle Maschine nun fertig konfiguriert ist, wird es Zeit diese zu booten.
@@ -107,6 +103,12 @@ Aus diesem Grund werden wir, wenn der Bootvorgang abgeschlossen ist und wir den 
     ```shell
     /usr/sbin/kbdmap -K
     ```
+
+Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf "UTC" (Universal Time Code).
+
+``` shell
+/usr/sbin/tzsetup UTC
+```
 
 ## Minimalsystem installieren
 
@@ -151,10 +153,14 @@ Unser System soll natürlich auch von der Festplatte booten können, weshalb wir
 ``` shell
 newfs_msdos /dev/gpt/efiesp
 
+install -d -m 0755 /mnt/boot/efi
+
 mount -t msdosfs /dev/gpt/efiesp /mnt/boot/efi
 
-mkdir -p /mnt/boot/efi/EFI/BOOT
-cp /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi
+install -d -m 0755 /mnt/boot/efi/EFI
+install -d -m 0755 /mnt/boot/efi/EFI/BOOT
+install /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi
+
 efibootmgr -a -c -l vtbd0p2:/EFI/BOOT/BOOTX64.efi -L FreeBSD
 umount /mnt/boot/efi
 
@@ -168,7 +174,7 @@ cat <<'EOF' > /etc/resolv.conf
 --8<-- "freebsd/configs/etc/resolv.conf"
 EOF
 
-cp /etc/resolv.conf /mnt/etc/resolv.conf
+install /etc/resolv.conf /mnt/etc/resolv.conf
 
 mount -t devfs devfs /mnt/dev
 ```
@@ -176,8 +182,17 @@ mount -t devfs devfs /mnt/dev
 Das neu installierte System selbstverständlich noch konfiguriert werden, bevor wir es nutzen können. Dazu werden wir jetzt in das neue System chrooten und eine minimale Grundkonfiguration vornehmen.
 
 ``` shell
-chroot /mnt /usr/bin/env -i HOME=/root TERM=$TERM /bin/tcsh
+chroot /mnt /usr/bin/env -i HOME=/root TERM=$TERM /bin/sh
 ```
+
+!!! info
+    Diese Shell nutzt das amerikanische Tastaturlayout, welches einige Tasten anders belegt als das deutsche Tastaturlayout.
+
+    Um auf das deutsche Tastaturlayout zu wechseln, wählen wir mittels `kbdmap` das Layout "German (accent keys)" aus:
+
+    ```shell
+    /usr/sbin/kbdmap -K
+    ```
 
 Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf "UTC" (Universal Time Code).
 
@@ -185,141 +200,34 @@ Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf "UTC" (Un
 /usr/sbin/tzsetup UTC
 ```
 
-Wir bringen etwas Farbe in die Console, passen den Prompt an und legen `ee` statt `vi` als Default-Editor fest:
-
-``` shell
-cat <<'EOF' > /usr/share/skel/dot.cshrc
---8<-- "freebsd/configs/usr/share/skel/dot.cshrc"
-EOF
-
-cat <<'EOF' > /usr/share/skel/dot.shrc
---8<-- "freebsd/configs/usr/share/skel/dot.shrc"
-EOF
-
-cat <<'EOF' > /usr/share/skel/dot.mailrc
---8<-- "freebsd/configs/usr/share/skel/dot.mailrc"
-EOF
-
-cat <<'EOF' > /usr/share/skel/dot.profile
---8<-- "freebsd/configs/usr/share/skel/dot.profile"
-EOF
-```
-
-Jetzt nochmal für `root`:
-
-``` shell
-cat <<'EOF' > /root/.cshrc
---8<-- "freebsd/configs/usr/share/skel/dot.cshrc"
-EOF
-
-cat <<'EOF' > /root/.shrc
---8<-- "freebsd/configs/usr/share/skel/dot.shrc"
-EOF
-
-cat <<'EOF' > /root/.mailrc
---8<-- "freebsd/configs/usr/share/skel/dot.mailrc"
-EOF
-
-cat <<'EOF' > /root/.profile
---8<-- "freebsd/configs/usr/share/skel/dot.profile"
-EOF
-```
-
 Wir setzen ein paar Defaults für "root" neu:
 
 ``` shell
 pw useradd -D -g '' -M 0700 -s sh -w no
-pw usermod -n root -s sh -w none
 ```
 
 Das Home-Verzeichnis des Users root ist standardmässig leider nicht ausreichend restriktiv in seinen Zugriffsrechten, was wir mit einem entsprechenden Aufruf von `chmod` schnell ändern. Bevor wir es vergessen, setzen wir bei dieser Gelegenheit gleich ein sicheres Passwort für root.
 
 ``` shell
+install -d -m 0755 /var/db/backups
+install -d -m 0750 /var/db/passwords
+
+# Passwort erzeugen und speichern für den Systembenutzer "root"
+install -b -m 0640 /dev/null /var/db/passwords/system_user_root
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | \
+  cut -c 2-17 | tee /var/db/passwords/system_user_root | \
+  pw usermod -s sh -h 0 -n root
+
+cat /var/db/passwords/system_user_root
+
 chmod 0700 /root
-
-# Password erzeugen und in /root/_passwords speichern
-chmod 0600 /root/_passwords
-newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
-echo "Password for systemuser root: $newpw" >> /root/_passwords
-chmod 0400 /root/_passwords
-echo "Password: $newpw"
-unset newpw
-
-passwd root
-```
-
-Die aliases-Datenbank für FreeBSDs DMA müssen wir mittels `newaliases` anlegen, auch wenn wir später DMA gar nicht verwenden möchten.
-
-``` shell
-cat <<'EOF' > /etc/mail/aliases
---8<-- "freebsd/configs/etc/mail/aliases"
-EOF
-
-newaliases
-```
-
-Die `fstab` ist bei unserem minimalistischen Partitionslayout zwar nicht zwingend nötig, aber wir möchten später keine unerwarteten Überraschungen erleben, also legen wir sie vorsichtshalber an.
-
-``` shell
-cat <<'EOF' > /etc/fstab
---8<-- "freebsd/configs/etc/fstab"
-EOF
-```
-
-In der `rc.conf` werden diverse Grundeinstellungen für das System und die installierten Dienste vorgenommen. Wir legen sie daher mittela `ee /etc/rc.conf` mit folgendem Inhalt an.
-
-``` shell
-cat <<'EOF' > /etc/rc.conf
---8<-- "freebsd/configs/etc/rc.conf"
-EOF
-```
-
-Es folgt ein wenig Voodoo, um die Netzwerkkonfiguration in der `/etc/rc.conf` zu vervollständigen.
-
-``` shell
-# Default Interface
-route -n get -inet default | awk '/interface/ {print $2}' | \
-    xargs -I % sed -e 's|DEFAULT|%|g' -i '' /etc/rc.conf
-
-# IPv4
-route -n get -inet default | awk '/gateway/ {print $2}' | \
-    xargs -I % sed -e 's|__GATEWAY4__|%|g' -i '' /etc/rc.conf
-ifconfig -u -f cidr `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
-    awk 'tolower($0) ~ /inet[\ \t]+((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {if(substr($2,1,3)!=127) print $2}' | \
-    head -n 1 | xargs -I % sed -e 's|__IPADDR4__|%|g' -i '' /etc/rc.conf
-
-# IPv6
-route -n get -inet6 default | awk '/gateway/ {print $2}' | \
-    xargs -I % sed -e 's|__GATEWAY6__|%|g' -i '' /etc/rc.conf
-ifconfig -u -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
-    awk 'tolower($0) ~ /inet6[\ \t]+(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {if(substr($2,1,1)!="f") print $2}' | \
-    head -n 1 | xargs -I % sed -e 's|__IPADDR6__|%|g' -i '' /etc/rc.conf
-```
-
-Wir richten die `/etc/hosts` ein.
-
-``` shell
-# localhost
-sed -e 's|my.domain/example.com/g' -i '' /etc/hosts
-
-# IPv4
-echo '__IPADDR4__   devnull.example.com   devnull' >> /etc/hosts
-ifconfig -u -f cidr `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
-    awk 'tolower($0) ~ /inet[\ \t]+((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {if(substr($2,1,3)!=127) print $2}' | \
-    head -n 1 | xargs -I % sed -e 's|__IPADDR4__|%|g' -i '' /etc/hosts
-
-# IPv6
-echo '__IPADDR6__   devnull.example.com   devnull' >> /etc/hosts
-ifconfig -u -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
-    awk 'tolower($0) ~ /inet6[\ \t]+(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {if(substr($2,1,1)!="f") print $2}' | \
-    head -n 1 | xargs -I % sed -e 's|__IPADDR6__|%|g' -i '' /etc/hosts
 ```
 
 Da dies lediglich ein lokales temporäres System zum Erzeugen unseres mfsBSD-Images wird, können wir den OpenSSH-Dienst bedenkenlos etwas komfortabler aber dadurch zwangsläufig auch etwas unsicherer konfigurieren, indem wir den Login per Passwort zulassen.
 
 ``` shell
 cat <<'EOF' > /etc/ssh/sshd_config
-{{~ include "snippets/configs/etc/ssh/sshd_config"
+--8<-- "freebsd/configs/etc/ssh/sshd_config"
 EOF
 
 rm -f /etc/ssh/ssh_host_*_key*
@@ -338,6 +246,9 @@ ssh-keygen -t ecdsa -b 384 -O clear -O permit-pty -f "/root/.ssh/id_ecdsa" -N ""
 cat /root/.ssh/id_ecdsa.pub >> /root/.ssh/authorized_keys
 ssh-keygen -t rsa -b 4096 -O clear -O permit-pty -f "/root/.ssh/id_rsa" -N ""
 cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+
+
+sed -e "s|^console\([[:space:]].*[[:space:]]\)secure|console\1insecure|g" -i '' /etc/ttys
 ```
 
 Das System ist nun für unsere Zwecke ausreichend konfiguriert, so dass wir das Chroot nun verlassen und die Systempartition unmounten können.
@@ -375,6 +286,8 @@ putty -ssh -P 2222 root@127.0.0.1
 Wir installieren pkg via pkg.
 
 ``` shell
+sed -e "s|quarterly|latest|g" -i '' /etc/pkg/FreeBSD.conf
+
 pkg bootstrap -y
 ```
 
@@ -383,7 +296,7 @@ pkg bootstrap -y
 Wir werden nun unser mfsBSD-Image erzeugen, um damit später unser eigentliches dediziertes System booten und installieren zu können. Hierzu legen uns zunächst ein Arbeitsverzeichnis an.
 
 ``` shell
-mkdir -p /usr/local/mfsbsd
+install -d -m 0755 /usr/local/mfsbsd
 ```
 
 Nun fehlt noch das mfsBSD-Buildscript, welches wir jetzt mittels `fetch` in unserem Arbeitsverzeichnis downloaden und dann entpacken.
@@ -407,13 +320,13 @@ sed -e 's/^#\(mfsbsd.rootpw=\).*$/\1"mfsroot"/' conf/loader.conf.sample > conf/l
 Für unsere Zwecke reicht die Standardkonfiguration des mfsBSD-Buildscripts aus, so dass wir unser mfsBSD-Image direkt erzeugen können.
 
 ``` shell
-make BASE=/usr/freebsd-dist RELEASE=14.3-RELEASE ARCH=amd64 PKG_STATIC=/usr/local/sbin/pkg-static MFSROOT_MAXSIZE=120m
+make BASE=/usr/freebsd-dist RELEASE=15.0-RELEASE ARCH=amd64 PKG_STATIC=/usr/local/sbin/pkg-static MFSROOT_MAXSIZE=120m
 ```
 
-Anschliessend liegt unter `/usr/local/mfsbsd/mfsbsd-master/mfsbsd-14.3-RELEASE-amd64.img` unser fertiges mfsBSD-Image. Dieses kopieren wir nun per PuTTY auf den Windows Host.
+Anschliessend liegt unter `/usr/local/mfsbsd/mfsbsd-master/mfsbsd-15.0-RELEASE-amd64.img` unser fertiges mfsBSD-Image. Dieses kopieren wir nun per PuTTY auf den Windows Host.
 
 ``` powershell
-pscp -P 2222 root@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-14.3-RELEASE-amd64.img "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-14.3-RELEASE-amd64.img"
+pscp -P 2222 root@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-15.0-RELEASE-amd64.img "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-15.0-RELEASE-amd64.img"
 ```
 
 Die virtuelle Maschine können wir an dieser Stelle nun beenden.
@@ -430,3 +343,5 @@ exit
 Fertig.
 
 Viel Spass mit dem neuen mfsBSD Image
+
+## Referenzen

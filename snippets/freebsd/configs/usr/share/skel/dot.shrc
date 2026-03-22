@@ -10,7 +10,7 @@
 
 # file permissions: rwxr-xr-x
 #
-# umask 022
+umask 022
 
 # Uncomment this to enable the builtin vi(1) command line editor in sh(1),
 # e.g. ESC to go into visual mode.
@@ -36,9 +36,11 @@ alias l='ls -FGIPTWahl'
 bind ^[[A ed-search-prev-history
 bind ^[[B ed-search-next-history
 
-# # ctrl+arrow allow to jump from words to words
+# # Ctrl+right arrow: go to the next word
+# # Ctrl+left arrow: go to the previous word
 bind "\\e[1;5C" em-next-word
 bind "\\e[1;5D" ed-prev-word
+
 alias history='fc -l'
 
 # Fix home/del for mobaxterm

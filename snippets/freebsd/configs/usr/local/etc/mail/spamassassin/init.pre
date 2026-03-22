@@ -1,6 +1,6 @@
 # ============================================================================
 # SPAMASSASSIN 4.0.2+ PLUGIN INITIALIZATION
-# Verified: 2026-03-12
+# Verified: 2026-03-21
 # ============================================================================
 # Reference: https://spamassassin.apache.org/full/4.0.x/doc/Mail_SpamAssassin.html
 # ============================================================================
@@ -71,7 +71,7 @@ loadplugin Mail::SpamAssassin::Plugin::Rule2XSBody
 # ----------------------------------------------------------------------------
 loadplugin Mail::SpamAssassin::Plugin::Phishing
 loadplugin Mail::SpamAssassin::Plugin::DecodeShortURLs
-loadplugin Mail::SpamAssassin::Plugin::OLEVBMacro
+#loadplugin Mail::SpamAssassin::Plugin::OLEVBMacro
 
 # ----------------------------------------------------------------------------
 # DEPRECATED - DO NOT LOAD (SpamAssassin 4.0.2+)

@@ -6,7 +6,7 @@
 
 # These are normally set through /etc/login.conf.  You may override them here
 # if wanted.
-# PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:$HOME/bin; export PATH
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:$HOME/bin; export PATH
 
 # Setting TERM is normally done through /etc/ttys.  Do only override
 # if you're sure that you'll never log in via telnet or xterm or a
@@ -16,7 +16,6 @@
 EDITOR=ee;                           export EDITOR
 PAGER=less;                          export PAGER
 CLICOLORS="YES";                     export CLICOLOR
-LSCOLORS="Dxfxcxdxbxegedabagacad";   export LSCOLORS
 COLORFGBG="15;0";                    export COLORFGBG
 COLORTERM=truecolor;                 export COLORTERM
 TERM=${TERM:-xterm-256color};        export TERM

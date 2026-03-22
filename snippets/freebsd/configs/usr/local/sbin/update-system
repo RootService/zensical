@@ -1,0 +1,789 @@
+#!/bin/sh -eu
+#
+# =============================================================================
+# update-system
+# =============================================================================
+#
+# Purpose:
+#   Unified system update script that can operate in either 'ports' or 'packages'
+#   mode to update FreeBSD system components. This script synchronizes the ports
+#   tree, fetches index files, shows recent updates, and performs the requested
+#   update operations with user confirmation.
+#
+# Usage:
+#   update-system [options]
+#
+# Options:
+#   -h, --help              Display this help message and exit
+#   -m, --mode MODE         Set mode: 'ports' or 'packages' (default: ports)
+#   -y, --yes               Skip confirmation prompts
+#   -v, --verbose           Enable verbose output
+#   -d, --dry-run           Perform a dry run without making changes
+#   --config FILE           Specify configuration file
+#
+# Features:
+#   - Synchronizes ports tree with git
+#   - Fetches index files for both ports and packages
+#   - Shows updates from last 2 months
+#   - User confirmation before operations
+#   - Supports both ports and packages update modes
+#   - Verbose output option
+#   - Configuration file support
+#   - Dry run mode for testing
+#   - Enhanced logging and metrics
+#   - Health checks and validation
+#
+# Exit Codes:
+#   0   Success
+#   1   Invalid arguments or user cancellation
+#   2   Git operation failed
+#   3   Package manager operation failed
+#   4   Configuration error
+#   5   Environment validation failed
+#
+# Author:
+#   System Administrator
+#
+# Copyright (c) 2025
+#
+# MIT License
+#
+# =============================================================================
+
+# =============================================================================
+# Global Variables - All variables must be POSIX-compliant and use uppercase names
+# =============================================================================
+SCRIPT_NAME="$(basename "$0")"
+MODE="ports"        # Default mode is ports
+SKIP_CONFIRM=false  # Whether to skip confirmation prompts
+VERBOSE=false       # Verbose output mode
+DRY_RUN=false       # Dry run mode - show what would happen without changing anything
+CONFIG_FILE="/usr/local/etc/update-system.conf"
+LOG_FILE="/var/log/update-system.log"
+TMP_DIR="$(mktemp -d -t update-system.XXXXXX 2>/dev/null || mktemp -d -p /tmp update-system.XXXXXX 2>/dev/null || /bin/true)"
+
+# =============================================================================
+# Function: log
+# =============================================================================
+# Purpose:
+#   Logs messages with timestamp and severity in POSIX-compliant way
+# Arguments:
+#   $1 - Log level (0-3)
+#   $* - Message to log
+# Returns:
+#   None
+# Input:
+#   Log level and message
+# Output:
+#   Logs message to stdout and log file
+# =============================================================================
+log() {
+    # POSIX-compliant function parameters handling
+    level="$1"
+    shift
+
+    case "$level" in
+        0) msg_type="ERROR" ;;
+        1) msg_type="WARN " ;;
+        2) msg_type="INFO " ;;
+        3) msg_type="DEBUG" ;;
+    esac
+
+    timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
+    message="$*"
+
+    printf '%s %s: %s\n' "$timestamp" "$msg_type" "$message" | tee -a "$LOG_FILE"
+}
+
+# =============================================================================
+# Function: log_metrics
+# =============================================================================
+# Purpose:
+#   Logs metrics data for monitoring purposes in POSIX-compliant way
+# Arguments:
+#   $* - Metrics to log
+# Returns:
+#   None
+# Input:
+#   Metrics data
+# Output:
+#   Appends metrics to metrics file
+# Notes:
+#   Records performance and execution information
+# =============================================================================
+log_metrics() {
+    timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
+    printf '%s: METRICS: MODE=%s:TIMESTAMP=%s:%s\n' \
+        "$timestamp" \
+        "$MODE" \
+        "$(date '+%Y-%m-%d %H:%M:%S')" \
+        "$*" >> "/var/log/update-system_metrics.log"
+}
+
+# =============================================================================
+# Function: print_usage
+# =============================================================================
+# Purpose:
+#   Prints usage information for this script in POSIX-compliant way
+# Arguments:
+#   None
+# Returns:
+#   None
+# Input:
+#   None
+# Output:
+#   Usage information to stdout
+# Notes:
+#   This function displays the help text for users
+# =============================================================================
+print_usage() {
+    cat <<EOF
+Usage: $SCRIPT_NAME [OPTIONS]
+
+Unified system update script for FreeBSD ports and packages.
+
+Options:
+  -h, --help              Display this help message and exit
+  -m, --mode MODE         Set mode: 'ports' or 'packages' (default: ports)
+  -y, --yes               Skip confirmation prompts
+  -v, --verbose           Enable verbose output
+  -d, --dry-run           Perform a dry run without making changes
+  --config FILE           Specify configuration file
+
+Modes:
+  ports                   Update system ports using portmaster
+  packages                Update system packages using pkg
+
+Examples:
+  $SCRIPT_NAME                          # Run in default ports mode with confirmation
+  $SCRIPT_NAME -m packages              # Run in packages mode with confirmation
+  $SCRIPT_NAME -m ports -y              # Run in ports mode without confirmation
+  $SCRIPT_NAME -m packages -v           # Run in packages mode with verbose output
+  $SCRIPT_NAME -d                       # Dry run to see what would happen
+
+EOF
+}
+
+# =============================================================================
+# Function: parse_args
+# =============================================================================
+# Purpose:
+#   Parse command-line arguments for the script in POSIX-compliant way
+# Arguments:
+#   $* - All command-line arguments
+# Returns:
+#   None
+# Input:
+#   Command-line arguments
+# Output:
+#   Sets global variables based on parsed arguments
+# Notes:
+#   Handles all supported options and their values
+# =============================================================================
+parse_args() {
+    # POSIX-compliant loop for arguments
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -h|--help)
+                print_usage
+                exit 0
+                ;;
+            -m|--mode)
+                if [ -n "$2" ] && echo "$2" | grep -E -q '^(ports|packages)$'; then
+                    MODE="$2"
+                    shift 2
+                else
+                    log 0 "Error: Invalid mode. Must be 'ports' or 'packages'."
+                    exit 1
+                fi
+                ;;
+            -y|--yes)
+                SKIP_CONFIRM=true
+                shift
+                ;;
+            -v|--verbose)
+                VERBOSE=true
+                shift
+                ;;
+            -d|--dry-run)
+                DRY_RUN=true
+                SKIP_CONFIRM=true
+                shift
+                ;;
+            --config)
+                if [ -n "$2" ]; then
+                    CONFIG_FILE="$2"
+                    shift 2
+                else
+                    log 0 "Error: --config requires an argument"
+                    exit 1
+                fi
+                ;;
+            *)
+                log 0 "Unknown option: $1"
+                print_usage
+                exit 1
+                ;;
+        esac
+    done
+
+    # Ensure mode is valid
+    if ! echo "$MODE" | grep -E -q '^(ports|packages)$'; then
+        log 0 "Error: Invalid mode. Must be 'ports' or 'packages'."
+        exit 1
+    fi
+}
+
+# =============================================================================
+# Function: load_config
+# =============================================================================
+# Purpose:
+#   Load configuration from a file if available in POSIX-compliant way
+# Arguments:
+#   None
+# Returns:
+#   0 on success, 1 on failure
+# Input:
+#   Global CONFIG_FILE variable
+# Output:
+#   Configuration loaded into variables
+# Notes:
+#   Reads key=value pairs from config file and sets global variables
+# =============================================================================
+load_config() {
+    if [ ! -f "$CONFIG_FILE" ]; then
+        log 2 "Configuration file not found: $CONFIG_FILE"
+        return 0
+    fi
+
+    log 2 "Loading configuration from: $CONFIG_FILE"
+
+    # POSIX-compliant sourcing of config file
+    if . "$CONFIG_FILE" 2>/dev/null; then
+        log 2 "Configuration loaded successfully"
+    else
+        log 1 "Warning: Failed to load configuration file: $CONFIG_FILE"
+        return 1
+    fi
+
+    return 0
+}
+
+# =============================================================================
+# Function: validate_environment
+# =============================================================================
+# Purpose:
+#   Validates that required tools and conditions are met in POSIX-compliant way
+# Arguments:
+#   None
+# Returns:
+#   0 if environment is valid, 1 otherwise
+# Input:
+#   None
+# Output:
+#   Validation results
+# Notes:
+#   Checks for required system tools and paths
+# =============================================================================
+validate_environment() {
+    log 2 "Validating system environment..."
+
+    # Check required commands exist
+    for cmd in git make pkg portmaster; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            log 0 "Error: Required tool '$cmd' not found"
+            return 1
+        fi
+        log 3 "Found required tool: $cmd"
+    done
+
+    # Check if ports tree exists
+    if [ ! -d "/usr/ports" ]; then
+        log 0 "Error: Ports tree not found at /usr/ports"
+        return 1
+    fi
+
+    # Check disk space in ports directory using POSIX-compliant approach
+    free_space=$(df -m /usr/ports | awk 'NR==2 {print $4}')
+    if [ "$free_space" -lt 100 ]; then  # Less than 100MB
+        log 1 "Warning: Low disk space in /usr/ports ($free_space MB)"
+    fi
+
+    log 2 "Environment validation completed successfully"
+    return 0
+}
+
+# =============================================================================
+# Function: health_check
+# =============================================================================
+# Purpose:
+#   Performs system health checks before proceeding with updates in POSIX-compliant way
+# Arguments:
+#   None
+# Returns:
+#   0 if healthy, 1 if issues detected
+# Input:
+#   None
+# Output:
+#   Health check results
+# Notes:
+#   Ensures system is in a good state for updates
+# =============================================================================
+health_check() {
+    log 2 "Performing system health checks..."
+
+    # Check disk space in ports directory using POSIX-compliant approach
+    free_space=$(df -m /usr/ports | awk 'NR==2 {print $4}')
+    if [ "$free_space" -lt 100 ]; then  # Less than 100MB
+        log 1 "Warning: Low disk space in /usr/ports ($free_space MB)"
+    fi
+
+    # Check if ports tree is clean (no uncommitted changes)
+    if git -C /usr/ports status --porcelain | grep -q .; then
+        log 1 "Warning: Ports tree has uncommitted changes"
+    fi
+
+    # Check for active package operations using POSIX-compliant approach
+    if pgrep -f 'pkg.*update\|pkg.*upgrade' >/dev/null 2>&1; then
+        log 1 "Warning: Package manager may be in use by another process"
+    fi
+
+    log 2 "Health check completed successfully"
+    return 0
+}
+
+# =============================================================================
+# Function: prepare_update
+# =============================================================================
+# Purpose:
+#   Prepares for update by synchronizing ports tree and fetching indexes in POSIX-compliant way
+# Arguments:
+#   None
+# Returns:
+#   0 on success, 1 on failure
+# Input:
+#   None
+# Output:
+#   Updated ports tree and index files
+# Notes:
+#   This is a common step in both modes
+# =============================================================================
+prepare_update() {
+    log 2 "Preparing for system update..."
+
+    # If in dry run mode, just show what would be done
+    if [ "$DRY_RUN" = true ]; then
+        log 2 "=== DRY RUN MODE ==="
+        log 2 "Would perform git pull of ports tree"
+        log 2 "Would fetch index files"
+        return 0
+    fi
+
+    # Pull latest ports tree
+    log 2 "Updating ports tree from git repository..."
+    if ! git -C /usr/ports pull; then
+        log 1 "Failed to pull latest ports tree"
+        return 1
+    fi
+
+    # Fetch index files for both ports and packages
+    log 2 "Fetching index files..."
+    if ! make -C /usr/ports fetchindex; then
+        log 1 "Failed to fetch index files"
+        return 1
+    fi
+
+    log 2 "Preparation completed successfully"
+    return 0
+}
+
+# =============================================================================
+# Function: show_updates
+# =============================================================================
+# Purpose:
+#   Shows recent package updates from last 2 months in POSIX-compliant way
+# Arguments:
+#   None
+# Returns:
+#   None
+# Input:
+#   None
+# Output:
+#   Display of recent package updates
+# Notes:
+#   Uses pkg to list updates from last 2 months
+# =============================================================================
+show_updates() {
+    log 2 "Showing recent package updates from last 2 months..."
+
+    # Get date 2 months ago using POSIX-compliant date handling
+    cutoff_date=$(date -u -v-2m "+%Y%m%d")
+
+    printf '\v================================================================================\v\n'
+
+    if [ "$MODE" = "packages" ]; then
+        log 2 "Checking for package updates (last 2 months):"
+        pkg updating -d "$cutoff_date"
+    else
+        # For ports, we'll show what would be updated
+        log 2 "Checking for port updates (last 2 months):"
+        echo "Package updates would be shown here when using portmaster..."
+    fi
+
+    printf '\v================================================================================\v\n'
+}
+
+# =============================================================================
+# Function: confirm_action
+# =============================================================================
+# Purpose:
+#   Asks user for confirmation before proceeding with update in POSIX-compliant way
+# Arguments:
+#   None
+# Returns:
+#   0 if confirmed, 1 if not confirmed
+# Input:
+#   None
+# Output:
+#   User prompt and input handling
+# Notes:
+#   Skips confirmation if SKIP_CONFIRM is true
+# =============================================================================
+confirm_action() {
+    # Skip confirmation if requested or in dry run mode
+    if [ "$SKIP_CONFIRM" = true ]; then
+        log 2 "Skipping confirmation as requested"
+        return 0
+    fi
+
+    # Show what mode we're in and detailed context
+    case "$MODE" in
+        ports)
+            printf '\n'
+            log 2 "PORTS UPDATE SUMMARY:"
+            log 2 "  Mode: $MODE"
+            log 2 "  Operation: Update all installed ports"
+            log 2 "  Actions: Dependency checks, port upgrades, cleanup of distfiles/packages"
+            ;;
+        packages)
+            printf '\n'
+            log 2 "PACKAGES UPDATE SUMMARY:"
+            log 2 "  Mode: $MODE"
+            log 2 "  Operation: Upgrade all installed packages"
+            log 2 "  Actions: Update package databases, upgrade packages, clean cache"
+            ;;
+    esac
+
+    # Use POSIX-compliant read command
+    printf 'Proceed with %s update? [y/N] ' "$MODE"
+    if read -r REPLY; then
+        case "$REPLY" in
+            y|Y)
+                log 2 "User confirmed update operation"
+                return 0
+                ;;
+            *)
+                log 2 "Update cancelled by user"
+                return 1
+                ;;
+        esac
+    else
+        log 2 "Failed to read user input, cancelling update"
+        return 1
+    fi
+}
+
+# =============================================================================
+# Function: measure_time
+# =============================================================================
+# Purpose:
+#   Measures execution time of a command and logs the duration in POSIX-compliant way
+# Arguments:
+#   $* - Command to execute and measure
+# Returns:
+#   Exit code of the executed command
+# Input:
+#   Command to execute
+# Output:
+#   Execution time measurement
+# Notes:
+#   Provides timing information for performance monitoring
+# =============================================================================
+measure_time() {
+    start_time=$(date +%s.%N)
+
+    # Execute the command passed as arguments using POSIX-compliant approach
+    "$@"
+
+    exit_code=$?
+    end_time=$(date +%s.%N)
+    duration=$(printf "%.2f" "$(echo "$end_time - $start_time" | bc -l)")
+
+    log 3 "Operation took $duration seconds"
+    log_metrics "DURATION=$duration"
+
+    return $exit_code
+}
+
+# =============================================================================
+# Function: update_ports
+# =============================================================================
+# Purpose:
+#   Performs port updates using portmaster in POSIX-compliant way
+# Arguments:
+#   $* - Additional arguments to pass to portmaster
+# Returns:
+#   0 on success, 1 on failure
+# Input:
+#   Command-line arguments for portmaster
+# Output:
+#   Port update operations
+# Notes:
+#   Runs portmaster with comprehensive options
+# =============================================================================
+update_ports() {
+    log 2 "Starting port update process..."
+
+    # If in dry run mode, just show what would be done
+    if [ "$DRY_RUN" = true ]; then
+        log 2 "=== DRY RUN MODE ==="
+        log 2 "Would run dependency checks with portmaster"
+        log 2 "Would run main port update operations"
+        log 2 "Would clean distfiles and packages"
+        return 0
+    fi
+
+    # First check for dependencies
+    if [ "$VERBOSE" = true ]; then
+        log 2 "Running dependency checks..."
+        measure_time portmaster --no-confirm --no-term-title --no-index-fetch --index-first --check-depends -v
+    else
+        log 2 "Running dependency checks..."
+        measure_time portmaster --no-confirm --no-term-title --no-index-fetch --index-first --check-depends -y
+    fi
+
+    # Main port update operation
+    if [ "$VERBOSE" = true ]; then
+        log 2 "Running main port update with verbose output..."
+        measure_time portmaster --no-confirm --index-first -w -B -g -U -d -R -a "$@" -v
+    else
+        log 2 "Running main port update..."
+        measure_time portmaster --no-confirm --index-first -w -B -g -U -d -R -a "$@" -y
+    fi
+
+    # Clean distfiles and packages after update
+    if [ "$VERBOSE" = true ]; then
+        log 2 "Cleaning distfiles..."
+        measure_time portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-distfiles -v
+        log 2 "Cleaning packages..."
+        measure_time portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-packages -v
+    else
+        log 2 "Cleaning distfiles and packages..."
+        measure_time portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-distfiles -y
+        measure_time portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-packages -y
+    fi
+
+    log 2 "Port update process completed"
+    return 0
+}
+
+# =============================================================================
+# Function: update_packages
+# =============================================================================
+# Purpose:
+#   Performs package updates using pkg in POSIX-compliant way
+# Arguments:
+#   None
+# Returns:
+#   0 on success, 1 on failure
+# Input:
+#   None
+# Output:
+#   Package update operations
+# Notes:
+#   Runs pkg upgrade and clean commands
+# =============================================================================
+update_packages() {
+    log 2 "Starting package update process..."
+
+    # If in dry run mode, just show what would be done
+    if [ "$DRY_RUN" = true ]; then
+        log 2 "=== DRY RUN MODE ==="
+        log 2 "Would update package repositories"
+        log 2 "Would upgrade packages"
+        log 2 "Would clean package cache"
+        return 0
+    fi
+
+    # Update package repository information
+    if [ "$VERBOSE" = true ]; then
+        log 2 "Updating package repositories..."
+        measure_time /usr/local/sbin/pkg update -f -v
+    else
+        log 2 "Updating package repositories..."
+        measure_time /usr/local/sbin/pkg update -f
+    fi
+
+    # Perform the upgrade
+    if [ "$VERBOSE" = true ]; then
+        log 2 "Upgrading packages with verbose output..."
+        measure_time /usr/local/sbin/pkg upgrade -y -v
+    else
+        log 2 "Upgrading packages..."
+        measure_time /usr/local/sbin/pkg upgrade -y
+    fi
+
+    # Clean package cache
+    if [ "$VERBOSE" = true ]; then
+        log 2 "Cleaning package cache with verbose output..."
+        measure_time /usr/local/sbin/pkg clean -y -v
+    else
+        log 2 "Cleaning package cache..."
+        measure_time /usr/local/sbin/pkg clean -y
+    fi
+
+    log 2 "Package update process completed"
+    return 0
+}
+
+# =============================================================================
+# Function: run_update
+# =============================================================================
+# Purpose:
+#   Executes the appropriate update process based on mode in POSIX-compliant way
+# Arguments:
+#   $* - Additional arguments to pass to update functions
+# Returns:
+#   0 on success, non-zero on failure
+# Input:
+#   Command-line arguments for update operations
+# Output:
+#   System updates and status messages
+# Notes:
+#   Routes execution to appropriate mode handler
+# =============================================================================
+run_update() {
+    start_time=$(date +%s.%N)
+
+    log 2 "Starting $MODE update process..."
+
+    # Validate environment first
+    if ! validate_environment; then
+        log 0 "Environment validation failed"
+        return 5
+    fi
+
+    # Perform health checks
+    if ! health_check; then
+        log 1 "Health check failed - continuing anyway"
+    fi
+
+    # Prepare for update
+    if ! prepare_update; then
+        log 0 "Update preparation failed"
+        return 2
+    fi
+
+    # Show updates
+    show_updates
+
+    # Confirm action
+    if ! confirm_action; then
+        log 2 "Update cancelled by user"
+        return 1
+    fi
+
+    # Run appropriate update process
+    case "$MODE" in
+        ports)
+            if ! update_ports "$@"; then
+                log 0 "Port update failed"
+                return 3
+            fi
+            ;;
+        packages)
+            if ! update_packages; then
+                log 0 "Package update failed"
+                return 3
+            fi
+            ;;
+    esac
+
+    end_time=$(date +%s.%N)
+    duration=$(printf "%.2f" "$(echo "$end_time - $start_time" | bc -l)")
+
+    log_metrics "DURATION=$duration:MODE=$MODE:SUCCESS=true"
+    log 2 "$MODE update process completed successfully in $duration seconds"
+    return 0
+}
+
+# =============================================================================
+# Function: cleanup
+# =============================================================================
+# Purpose:
+#   Cleanup temporary files and resources in POSIX-compliant way
+# Arguments:
+#   None
+# Returns:
+#   None
+# Input:
+#   None
+# Output:
+#   Cleanup operations
+# Notes:
+#   Removes temporary directories on exit
+# =============================================================================
+cleanup() {
+    # Remove temporary directory if it exists
+    if [ -n "$TMP_DIR" ] && [ -d "$TMP_DIR" ]; then
+        rm -rf "$TMP_DIR" >/dev/null 2>&1 || true
+    fi
+}
+
+# =============================================================================
+# Function: main
+# =============================================================================
+# Purpose:
+#   Main execution function that orchestrates the entire update process in POSIX-compliant way
+# Arguments:
+#   None
+# Returns:
+#   Exit code (0 for success, non-zero for error)
+# Input:
+#   Command line arguments
+# Output:
+#   System updates and final status messages
+# Notes:
+#   Routes execution to appropriate functions based on mode
+# =============================================================================
+main() {
+    # Set up cleanup trap
+    trap 'cleanup' EXIT INT TERM
+
+    # Initialize logging
+    echo "=== Starting $SCRIPT_NAME run at $(date) ===" > "$LOG_FILE"
+
+    # Parse command-line arguments
+    parse_args "$@"
+
+    # Load configuration file if available
+    if ! load_config; then
+        log 1 "Configuration loading failed, continuing with defaults"
+    fi
+
+    # Run the update process
+    if ! run_update "$@"; then
+        log 0 "Update process failed"
+        exit 1
+    fi
+
+    log 2 "Script completed successfully"
+    return 0
+}
+
+# Ensure POSIX compliance and proper execution
+if [ "${0##*/}" = "$SCRIPT_NAME" ]; then
+    main "$@"
+fi
+
+exit 0

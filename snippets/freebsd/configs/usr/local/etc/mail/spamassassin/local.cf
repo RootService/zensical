@@ -1,6 +1,6 @@
 # ============================================================================
 # SPAMASSASSIN 4.0.2+ OPTIMIZED CONFIGURATION
-# Verified: 2026-03-12
+# Verified: 2026-03-21
 # ============================================================================
 # Reference: https://spamassassin.apache.org/full/4.0.x/doc/Mail_SpamAssassin_Conf.txt
 # Reference: https://wiki.apache.org/spamassassin/ImportantInitialConfigItems
@@ -15,7 +15,7 @@ report_safe             0
 skip_rbl_checks         1
 skip_uribl_checks       1
 normalize_charset       1
-version_tag             20260312
+version_tag             20260321
 enable_compat           welcomelist_blocklist
 
 # ----------------------------------------------------------------------------

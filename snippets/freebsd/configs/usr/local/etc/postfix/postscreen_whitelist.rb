@@ -26,7 +26,7 @@ DEFAULT_DOMAINS = [
   # Bulk sender / misc
   "github.com", "openwall.com", "freebsd.org"
 ]
-DEFAULT_OUTPUT = "/usr/local/etc/postfix/postscreen_whitelist.cidr"
+DEFAULT_OUTPUT = "postscreen_whitelist.cidr"
 
 # Option parsing
 options = {

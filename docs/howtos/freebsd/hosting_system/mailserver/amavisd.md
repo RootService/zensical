@@ -85,14 +85,14 @@ Für die **optionale DKIM-Signierung** wird später jedoch ein TXT-Record für d
 
 Für diese HowTos müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -d -m 0700 /var/db/passwords
 install -d -m 0750 -o vscan -g vscan /var/amavis/tmp
 ```
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_vscan
 ```
 
@@ -108,7 +108,7 @@ Der Amavisd-Port verwendet auf FreeBSD die bestehenden Amavis-Benutzer- und Grup
 
 ### Wir installieren `security/amavisd-new` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/archivers_7-zip
 cat <<'EOF' > /var/db/ports/archivers_7-zip/options
 --8<-- "freebsd/ports/archivers_7-zip/options"
@@ -156,7 +156,7 @@ Seit dem Port-Update 2022 verwendet Amavis auf FreeBSD **`archivers/7-zip`** und
 
 ### Wir installieren `security/amavisd-milter` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/security_amavisd-milter
 cat <<'EOF' > /var/db/ports/security_amavisd-milter/options
 --8<-- "freebsd/ports/security_amavisd-milter/options"
@@ -169,7 +169,7 @@ portmaster -w -B -g -U --force-config security/amavisd-milter -n
 
 Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Systemstart automatisch gestartet.
 
-```sh
+``` sh
 sysrc amavisd_enable="YES"
 sysrc amavisd_pidfile="/var/amavis/var/amavisd.pid"
 ```
@@ -178,7 +178,7 @@ sysrc amavisd_pidfile="/var/amavis/var/amavisd.pid"
 
 Das FreeBSD-rc-Skript heißt **`amavisd-milter`**, die `rc.conf`-Variable dazu heißt aber **`amavisd_milter_enable`**. Zusätzlich kennt das Skript unter anderem die Variablen `amavisd_milter_socket`, `amavisd_milter_socket_perm`, `amavisd_am_pdp_socket` und optional `amavisd_milter_pidfile`. Die Standardwerte sind `/var/run/amavis/amavisd-milter.sock`, `0666`, `/var/amavis/var/amavisd.sock` und `/var/run/amavis/amavisd-milter.pid`. ([GitHub][15])
 
-```sh
+``` sh
 sysrc amavisd_milter_enable="YES"
 sysrc amavisd_milter_socket="local:/var/run/amavis/amavisd-milter.sock"
 sysrc amavisd_milter_socket_perm="0666"
@@ -193,7 +193,7 @@ sysrc amavisd_am_pdp_socket="local:/var/amavis/var/amavisd.sock"
 
 Der Port installiert die Vorlagen `amavisd.conf.sample`, `amavisd.conf-default` und `amavisd-custom.conf.sample` unter `/usr/local/etc`. Für dieses Setup verwenden wir die produktive Konfigurationsdatei `/usr/local/etc/amavisd.conf`. ([FreeBSD Git][6])
 
-```shell
+``` sh
 install -b -m 0644 /usr/local/etc/amavisd.conf.sample /usr/local/etc/amavisd.conf
 cat <<'EOF' > /usr/local/etc/amavisd.conf
 --8<-- "freebsd/configs/usr/local/etc/amavisd.conf"
@@ -218,7 +218,7 @@ cat /var/db/passwords/postgresql_user_vscan | xargs -I % \
 
 Amavis kann selbst DKIM-Schlüssel erzeugen, öffentliche Schlüssel für DNS ausgeben und veröffentlichte Schlüssel testen. Upstream empfiehlt für DKIM-Signing mindestens **1024 Bit**; 2048 Bit ist heute der saubere Standard. `genrsa` erzeugt den privaten Schlüssel, `showkeys` erzeugt den DNS-geeigneten Public-Key-Output, und `testkeys` prüft die Veröffentlichung gegen DNS. ([Amavis][3])
 
-```shell
+``` sh
 install -d -m 0755 -o vscan -g vscan /var/amavis/db/keys
 install -d -m 0755 -o vscan -g vscan /var/amavis/db/keys/example.com
 
@@ -229,7 +229,7 @@ amavisd showkeys
 
 Wenn der DNS-Record veröffentlicht ist, kann die DKIM-Konfiguration anschließend geprüft werden.
 
-```shell
+``` sh
 amavisd testkeys
 ```
 
@@ -239,7 +239,7 @@ amavisd testkeys
 
 Optional:
 
-```sh
+``` sh
 sysrc amavisd_milter_flags="-B"
 ```
 
@@ -248,7 +248,7 @@ sysrc amavisd_milter_flags="-B"
 Für den ersten Test empfiehlt die offizielle Installationsanleitung ausdrücklich einen Start im Debug-Modus. Das ist der saubere Weg, um Konfigurations- oder Rechteprobleme vor dem produktiven Daemon-Start zu sehen. ([Amavis][7])
 Vor dem ersten Start sollte geprüft werden, ob `amavisd-new` läuft, der AM.PDP-Socket erreichbar ist und Postfix den Milter-Socket korrekt eingetragen hat.
 
-```sh
+``` sh
 postconf smtpd_milters non_smtpd_milters
 /usr/local/sbin/amavisd debug
 service amavisd status
@@ -267,7 +267,7 @@ Amavis trennt SQL-seitig zwischen **Lookups** und **Storage**.
 
 ### PostgreSQL-Benutzer `vscan` anlegen
 
-```shell
+``` sh
 # Passwort für PostgreSQL-Benutzer "vscan" erzeugen und
 # in /var/db/passwords/postgresql_user_vscan speichern
 install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_vscan
@@ -290,7 +290,7 @@ Das Passwort bitte **sicher** notieren, du wirst es bei jeder externen Verbindun
 
 Die Lookup-Datenbank enthält die Tabellen für Richtlinien, Benutzer und White-/Blacklist-Zuordnungen. Das ist der read-only Teil des von Amavis dokumentierten SQL-Schemas. ([GitHub][8])
 
-```shell
+``` sh
 su -l postgres -c "psql <<'EOF'
 DROP DATABASE IF EXISTS \"mail_prefs\";
 CREATE DATABASE \"mail_prefs\";
@@ -453,7 +453,7 @@ EOF"
 
 ### Verbindung als `vscan` testen
 
-```shell
+``` sh
 psql -h 127.0.0.1 -U vscan -d mail_prefs -c 'SELECT current_user, current_database();'
 ```
 
@@ -461,7 +461,7 @@ psql -h 127.0.0.1 -U vscan -d mail_prefs -c 'SELECT current_user, current_databa
 
 Die Storage-Datenbank ist der Schreibteil des Amavis-Schemas und wird für Logging, Reporting und optional Quarantäne verwendet. Upstream weist ausdrücklich darauf hin, dass dieser Teil Transaktionen und Schreibrechte benötigt. ([GitHub][8])
 
-```shell
+``` sh
 su -l postgres -c "psql <<'EOF'
 DROP DATABASE IF EXISTS \"mail_log\";
 CREATE DATABASE \"mail_log\";
@@ -576,7 +576,7 @@ EOF"
 
 ### Verbindung als `vscan` testen
 
-```shell
+``` sh
 psql -h 127.0.0.1 -U vscan -d mail_log -c 'SELECT current_user, current_database();'
 ```
 
@@ -588,7 +588,7 @@ psql -h 127.0.0.1 -U vscan -d mail_log -c 'SELECT current_user, current_database
 
 Der aktuelle Port liefert ein separates rc.d-Skript **`amavis_p0fanalyzer`** mit. Dieses ist optional und nur sinnvoll, wenn dein Port auch wirklich mit **`P0F`** gebaut wurde. Das rc.d-Skript verwendet die Variablen `amavis_p0fanalyzer_enable`, `amavis_p0fanalyzer_p0f_filter` und optional `amavis_p0fanalyzer_flags`. ([FreeBSD Git][9])
 
-```sh
+``` sh
 sysrc amavis_p0fanalyzer_enable="YES"
 sysrc amavis_p0fanalyzer_p0f_filter="tcp dst port 25"
 ```
@@ -619,7 +619,7 @@ Nicht erforderlich.
 
 Wichtig ist die Reihenfolge: zuerst `amavisd-new`, danach `amavisd-milter`, anschließend Postfix neu laden.
 
-```sh
+``` sh
 service amavisd start
 service amavisd-milter start
 service postfix reload
@@ -627,7 +627,7 @@ service postfix reload
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service amavisd restart
 service amavisd-milter restart
 service postfix reload
@@ -635,7 +635,7 @@ service postfix reload
 
 Optional bei aktiviertem p0f-Analyzer:
 
-```sh
+``` sh
 service amavisd start
 service amavis_p0fanalyzer start
 service amavisd-milter start
@@ -644,7 +644,7 @@ service postfix reload
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service amavisd restart
 service amavis_p0fanalyzer restart
 service amavisd-milter restart

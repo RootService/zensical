@@ -81,7 +81,7 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 
 ### Wir installieren `lang/php84` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/lang_php84
 cat <<'EOF' > /var/db/ports/lang_php84/options
 --8<-- "freebsd/ports/lang_php84/options"
@@ -96,7 +96,7 @@ Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Sy
 
 Wichtig: Der FreeBSD-Dienst heißt **`php_fpm`**. Die frühere Schreibweise `php-fpm` wurde in den Ports-Startskripten umbenannt; die rc.conf-Variable bleibt dabei `php_fpm_enable`. ([FreeBSD Git][3])
 
-```sh
+``` sh
 sysrc php_fpm_enable=YES
 ```
 
@@ -110,7 +110,7 @@ sysrc php_fpm_enable=YES
 
 #### `php.ini` einrichten
 
-```sh
+``` sh
 install -b -m 0644 /usr/local/etc/php.ini-production /usr/local/etc/php.ini
 
 cat <<'EOF' > /usr/local/etc/php.ini
@@ -120,7 +120,7 @@ EOF
 
 #### `php-fpm.conf` einrichten
 
-```sh
+``` sh
 install -b -m 0644 /usr/local/etc/php-fpm.conf.default /usr/local/etc/php-fpm.conf
 ```
 
@@ -128,7 +128,7 @@ install -b -m 0644 /usr/local/etc/php-fpm.conf.default /usr/local/etc/php-fpm.co
 
 Für Unix-Sockets sind `listen.owner`, `listen.group` und `listen.mode` die richtigen Parameter. Genau diese Direktiven sind in der PHP-Dokumentation für Socket-Rechte vorgesehen. Außerdem ist `pm.max_requests` sinnvoll, wenn du Worker nach einer bestimmten Anzahl Requests neu starten willst, um Speicherlecks in Drittbibliotheken abzufangen. ([PHP][4])
 
-```sh
+``` sh
 install -b -m 0644 /usr/local/etc/php-fpm.d/www.conf.default /usr/local/etc/php-fpm.d/www.conf
 
 cat <<'EOF' > /usr/local/etc/php-fpm.d/www.conf
@@ -138,7 +138,7 @@ EOF
 
 #### Logdateien anlegen
 
-```sh
+``` sh
 install -m 0664 -g www /dev/null /var/log/php_error.log
 install -m 0664 -g www /dev/null /var/log/php_opcache.log
 install -m 0664 -g www /dev/null /var/log/php_sendmail.log
@@ -148,7 +148,7 @@ install -m 0664 -g www /dev/null /var/log/php_sendmail.log
 
 Vor dem ersten Start sollte die Konfiguration immer geprüft werden. `php-fpm -t` ist genau dafür gedacht und testet die FPM-Konfigurationsdatei, ohne den Dienst produktiv zu starten. ([man.freebsd.org][2])
 
-```sh
+``` sh
 php -v
 php-fpm -t
 service php_fpm start
@@ -171,7 +171,7 @@ Mögliche Zusatzsoftware wird hier installiert und konfiguriert.
 
 `lang/php84-extensions` ist ein **Meta-Port**. Er installiert standardmäßig nur einen Kernsatz an Erweiterungen. Zusätzliche Module wie `mbstring`, `gd`, `pdo_mysql` oder anwendungsspezifische Module müssen bewusst über Portoptionen oder eigene Slave-Ports ergänzt werden. ([FreshPorts][5])
 
-```sh
+``` sh
 install -d -m 0755 /var/db/ports/converters_php84-mbstring
 cat <<'EOF' > /var/db/ports/converters_php84-mbstring/options
 --8<-- "freebsd/ports/converters_php84-mbstring/options"
@@ -313,7 +313,7 @@ Die IMAP-Erweiterung ist auf FreeBSD als eigener Port `mail/pecl-imap` verfügba
 
 Composer ist ein **Dependency-Manager für PHP** und damit nützlich, aber **kein Pflichtbestandteil** von PHP-FPM selbst. ([PHP][7])
 
-```sh
+``` sh
 install -d -m 0755 /var/db/ports/devel_php-composer
 cat <<'EOF' > /var/db/ports/devel_php-composer/options
 --8<-- "freebsd/ports/devel_php-composer/options"
@@ -326,7 +326,7 @@ portmaster -w -B -g -U --force-config devel/php-composer -n
 
 PEAR ist das klassische **PHP Extension and Application Repository** und bleibt vor allem für ältere oder legacy-lastige Workflows relevant. Für moderne Anwendungen ist es meist optional. ([FreshPorts][8])
 
-```sh
+``` sh
 install -d -m 0755 /var/db/ports/devel_pear
 cat <<'EOF' > /var/db/ports/devel_pear/options
 --8<-- "freebsd/ports/devel_pear/options"
@@ -339,7 +339,7 @@ portmaster -w -B -g -U --force-config devel/pear -n
 
 Wenn Anwendungen YAML direkt in PHP benötigen, ist `textproc/pecl-yaml` der passende Port. Auf PHP 8.4 heißt das resultierende Paket **`php84-pecl-yaml`**. Auch das ist **optional** und anwendungsabhängig. ([FreshPorts][9])
 
-```sh
+``` sh
 portmaster -w -B -g -U --force-config textproc/pecl-yaml -n
 ```
 
@@ -363,13 +363,13 @@ Nicht erforderlich.
 
 PHP-FPM kann nun gestartet werden.
 
-```sh
+``` sh
 service php_fpm start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service php_fpm reload
 service php_fpm restart
 ```

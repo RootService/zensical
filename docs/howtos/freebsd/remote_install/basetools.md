@@ -53,7 +53,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](requ
 putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_ed25519.ppk" admin@127.0.0.1
 ```
 
-``` shell
+``` sh
 su - root
 ```
 
@@ -61,7 +61,7 @@ su - root
 
 ### Wir installieren `security/sudo` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/security_sudo
 cat <<'EOF' > /var/db/ports/security_sudo/options
 --8<-- "freebsd/ports/security_sudo/options"
@@ -72,7 +72,7 @@ portmaster -w -B -g -U --force-config security/sudo  -n
 
 Wir konfigurieren `sudo` und erlauben Mitgliedern der Gruppe `wheel` beliebige Kommandos als beliebiger User auszuführen.
 
-``` shell
+``` sh
 cat <<'EOF' > /usr/local/etc/sudoers
 # ------------------------------
 # Secure sudoers for FreeBSD 15 Hardened
@@ -126,7 +126,7 @@ chmod 0440 /usr/local/etc/sudoers.d/*
 
 ### Wir installieren `dns/bind-tools` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/devel_fstrm
 cat <<'EOF' > /var/db/ports/devel_fstrm/options
 --8<-- "freebsd/ports/devel_fstrm/options"
@@ -157,7 +157,7 @@ portmaster -w -B -g -U --force-config dns/bind-tools  -n
 
 ### Wir installieren `emulators/qemu@guestagent` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/devel_glib20
 cat <<'EOF' > /var/db/ports/devel_glib20/options
 --8<-- "freebsd/ports/devel_glib20/options"
@@ -178,7 +178,7 @@ portmaster -w -B -g -U --force-config emulators/qemu@guestagent  -n
 
 ### Wir installieren `net/cloud-init` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/devel_py-babel
 cat <<'EOF' > /var/db/ports/devel_py-babel/options
 --8<-- "freebsd/ports/devel_py-babel/options"
@@ -234,7 +234,7 @@ portmaster -w -B -g -U --force-config net/cloud-init  -n
 
 ### Wir installieren `sysutils/smartmontools` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/sysutils_smartmontools
 cat <<'EOF' > /var/db/ports/sysutils_smartmontools/options
 --8<-- "freebsd/ports/sysutils_smartmontools/options"
@@ -245,7 +245,7 @@ portmaster -w -B -g -U --force-config sysutils/smartmontools  -n
 
 Wir konfigurieren `smartmontools`.
 
-``` shell
+``` sh
 sed -e 's/^DEVICESCAN/#DEVICESCAN/' /usr/local/etc/smartd.conf.sample > /usr/local/etc/smartd.conf
 echo '/dev/nvme0 -d nvme -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /usr/local/etc/smartd.conf
 echo '/dev/nvme1 -d nvme -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /usr/local/etc/smartd.conf
@@ -255,7 +255,7 @@ sysrc smartd_enable=YES
 
 Die `/etc/periodic.conf` wird um folgenden Inhalt erweitert.
 
-``` shell
+``` sh
 cat <<'EOF' >> /etc/periodic.conf
 daily_status_smart_enable="YES"
 daily_status_smart_devices="/dev/nvme0 /dev/nvme1"
@@ -264,13 +264,13 @@ EOF
 
 ### Wir installieren `security/expiretable` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 portmaster -w -B -g -U --force-config security/expiretable  -n
 ```
 
 ### Wir installieren `ftp/wget` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/ftp_wget
 cat <<'EOF' > /var/db/ports/ftp_wget/options
 --8<-- "freebsd/ports/ftp_wget/options"
@@ -281,7 +281,7 @@ portmaster -w -B -g -U --force-config ftp/wget  -n
 
 ### Wir installieren `databases/sqlite3` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/databases_sqlite3
 cat <<'EOF' > /var/db/ports/databases_sqlite3/options
 --8<-- "freebsd/ports/databases_sqlite3/options"
@@ -292,7 +292,7 @@ portmaster -w -B -g -U --force-config databases/sqlite3  -n
 
 ### Wir installieren `devel/git` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/security_p5-Authen-SASL
 cat <<'EOF' > /var/db/ports/security_p5-Authen-SASL/options
 --8<-- "freebsd/ports/security_p5-Authen-SASL/options"
@@ -373,7 +373,7 @@ portmaster -w -B -g -U --force-config devel/git  -n
 
 ### Wir installieren `security/gnupg` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/security_pinentry
 cat <<'EOF' > /var/db/ports/security_pinentry/options
 --8<-- "freebsd/ports/security_pinentry/options"
@@ -394,7 +394,7 @@ portmaster -w -B -g -U --force-config security/gnupg  -n
 
 ### Wir installieren `devel/subversion` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/archivers_liblz4
 cat <<'EOF' > /var/db/ports/archivers_liblz4/options
 --8<-- "freebsd/ports/archivers_liblz4/options"
@@ -425,7 +425,7 @@ portmaster -w -B -g -U --force-config devel/subversion  -n
 
 ### Wir installieren `editors/nano` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/editors_nano
 cat <<'EOF' > /var/db/ports/editors_nano/options
 --8<-- "freebsd/ports/editors_nano/options"
@@ -447,7 +447,7 @@ Wenn wir ein Programm nicht kennen, dann finden wir zu jedem Port eine Datei `pk
 - Aktualisieren der Ports und Abhängigkeiten mittels portmaster
 - Aufräumen des Portstree und der Distfiles mittels portmaster
 
-``` shell
+``` sh
 cat <<'EOF' > /usr/local/sbin/update-ports
 --8<-- "freebsd/configs/usr/local/sbin/update-ports"
 EOF

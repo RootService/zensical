@@ -106,7 +106,7 @@ Aus diesem Grund werden wir, wenn der Bootvorgang abgeschlossen ist und wir den 
 
 Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf "UTC" (Universal Time Code).
 
-``` shell
+``` sh
 /usr/sbin/tzsetup UTC
 ```
 
@@ -116,7 +116,7 @@ Als Erstes müssen wir die Festplatte partitionieren, was wir mittels `gpart` er
 
 Wir werden vier Partitionen anlegen, die Erste für den GPT-Bootcode, die Zweite für den EFI-Bootcode, die Dritte als Swap und die Vierte als Systempartition. Dabei werden wir die Partitionen auch gleich für modernere Festplatten mit 4K-Sektoren optimieren und statt den veralteten "MBR Partition Tables" die aktuelleren "GUID Partition Tables (GPT)" verwenden.
 
-``` shell
+``` sh
 sysctl kern.geom.debugflags=0x10
 
 gpart create -s gpt nvd0
@@ -131,13 +131,13 @@ gpart set -a bootme -i 4 nvd0
 
 Nun müssen wir noch die Systempartition mit "UFS2" und einer 4K-Blockgrösse formatieren und aktivieren auch gleich die "soft-updates".
 
-``` shell
+``` sh
 newfs -U -l -t /dev/gpt/rootfs
 ```
 
 Die Systempartition mounten wir nach `/mnt` und entpacken darauf ein FreeBSD-Minimalsystem mit dem wir problemlos weiterarbeiten können.
 
-``` shell
+``` sh
 mount -t ufs /dev/gpt/rootfs /mnt
 
 tar Jxpvf /usr/freebsd-dist/base.txz   -C /mnt/
@@ -150,7 +150,7 @@ cp -a /usr/freebsd-dist /mnt/usr/
 
 Unser System soll natürlich auch von der Festplatte booten können, weshalb wir jetzt den Bootcode und Bootloader in der Bootpartittion installieren.
 
-``` shell
+``` sh
 newfs_msdos /dev/gpt/efiesp
 
 install -d -m 0755 /mnt/boot/efi
@@ -169,7 +169,7 @@ gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd0
 
 Vor dem Wechsel in die Chroot-Umgebung müssen wir noch die `resolv.conf` erstellen und in die Chroot-Umgebung kopieren und das Device-Filesysteme dorthin mounten.
 
-``` shell
+``` sh
 cat <<'EOF' > /etc/resolv.conf
 --8<-- "freebsd/configs/etc/resolv.conf"
 EOF
@@ -181,7 +181,7 @@ mount -t devfs devfs /mnt/dev
 
 Das neu installierte System selbstverständlich noch konfiguriert werden, bevor wir es nutzen können. Dazu werden wir jetzt in das neue System chrooten und eine minimale Grundkonfiguration vornehmen.
 
-``` shell
+``` sh
 chroot /mnt /usr/bin/env -i HOME=/root TERM=$TERM /bin/sh
 ```
 
@@ -196,19 +196,19 @@ chroot /mnt /usr/bin/env -i HOME=/root TERM=$TERM /bin/sh
 
 Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf "UTC" (Universal Time Code).
 
-``` shell
+``` sh
 /usr/sbin/tzsetup UTC
 ```
 
 Wir setzen ein paar Defaults für "root" neu:
 
-``` shell
+``` sh
 pw useradd -D -g '' -M 0700 -s sh -w no
 ```
 
 Das Home-Verzeichnis des Users root ist standardmässig leider nicht ausreichend restriktiv in seinen Zugriffsrechten, was wir mit einem entsprechenden Aufruf von `chmod` schnell ändern. Bevor wir es vergessen, setzen wir bei dieser Gelegenheit gleich ein sicheres Passwort für root.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/backups
 install -d -m 0750 /var/db/passwords
 
@@ -225,7 +225,7 @@ chmod 0700 /root
 
 Da dies lediglich ein lokales temporäres System zum Erzeugen unseres mfsBSD-Images wird, können wir den OpenSSH-Dienst bedenkenlos etwas komfortabler aber dadurch zwangsläufig auch etwas unsicherer konfigurieren, indem wir den Login per Passwort zulassen.
 
-``` shell
+``` sh
 cat <<'EOF' > /etc/ssh/sshd_config
 --8<-- "freebsd/configs/etc/ssh/sshd_config"
 EOF
@@ -253,7 +253,7 @@ sed -e "s|^console\([[:space:]].*[[:space:]]\)secure|console\1insecure|g" -i '' 
 
 Das System ist nun für unsere Zwecke ausreichend konfiguriert, so dass wir das Chroot nun verlassen und die Systempartition unmounten können.
 
-``` shell
+``` sh
 exit
 
 umount /mnt/dev
@@ -285,7 +285,7 @@ putty -ssh -P 2222 root@127.0.0.1
 
 Wir installieren pkg via pkg.
 
-``` shell
+``` sh
 sed -e "s|quarterly|latest|g" -i '' /etc/pkg/FreeBSD.conf
 
 pkg bootstrap -y
@@ -295,13 +295,13 @@ pkg bootstrap -y
 
 Wir werden nun unser mfsBSD-Image erzeugen, um damit später unser eigentliches dediziertes System booten und installieren zu können. Hierzu legen uns zunächst ein Arbeitsverzeichnis an.
 
-``` shell
+``` sh
 install -d -m 0755 /usr/local/mfsbsd
 ```
 
 Nun fehlt noch das mfsBSD-Buildscript, welches wir jetzt mittels `fetch` in unserem Arbeitsverzeichnis downloaden und dann entpacken.
 
-``` shell
+``` sh
 cd /usr/local/mfsbsd
 
 fetch -4 -q -o "mfsbsd-master.tar.gz" --no-verify-peer "https://github.com/mmatuska/mfsbsd/archive/master.tar.gz"
@@ -313,13 +313,13 @@ cd mfsbsd-master
 
 Um uns später per SSH in unserem mfsBSD-Image einloggen zu können, legen wir das Passwort `mfsroot` für root fest.
 
-``` shell
+``` sh
 sed -e 's/^#\(mfsbsd.rootpw=\).*$/\1"mfsroot"/' conf/loader.conf.sample > conf/loader.conf
 ```
 
 Für unsere Zwecke reicht die Standardkonfiguration des mfsBSD-Buildscripts aus, so dass wir unser mfsBSD-Image direkt erzeugen können.
 
-``` shell
+``` sh
 make BASE=/usr/freebsd-dist RELEASE=15.0-RELEASE ARCH=amd64 PKG_STATIC=/usr/local/sbin/pkg-static MFSROOT_MAXSIZE=120m
 ```
 
@@ -331,7 +331,7 @@ pscp -P 2222 root@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-15.0-RELEASE-
 
 Die virtuelle Maschine können wir an dieser Stelle nun beenden.
 
-``` shell
+``` sh
 exit
 ```
 

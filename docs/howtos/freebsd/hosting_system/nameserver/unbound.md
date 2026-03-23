@@ -79,7 +79,7 @@ Für dieses HowTo müssen **keine zusätzlichen Systemgruppen, Systembenutzer od
 
 ### Wir installieren `dns/unbound` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/security_libsodium
 cat <<'EOF' > /var/db/ports/security_libsodium/options
 --8<-- "freebsd/ports/security_libsodium/options"
@@ -97,7 +97,7 @@ portmaster -w -B -g -U --force-config dns/unbound -n
 
 Anschließend deaktivieren wir `local_unbound` aus dem Basissystem und aktivieren die Ports-Version `unbound`. Genau diese Trennung ist auf FreeBSD für Resolver-Dienste über die lokale Maschine hinaus vorgesehen. Das Ports-`rc.d`-Skript unterstützt außerdem explizit `unbound_enable` und optional `unbound_config`. ([FreeBSD Dokumentation][3])
 
-```sh
+``` sh
 sysrc local_unbound_enable=NO
 sysrc unbound_enable=YES
 sysrc unbound_config="/usr/local/etc/unbound/unbound.conf"
@@ -111,7 +111,7 @@ sysrc unbound_config="/usr/local/etc/unbound/unbound.conf"
 
 Die Konfigurationsdatei wird unter `/usr/local/etc/unbound/unbound.conf` abgelegt.
 
-```sh
+``` sh
 install -b -m 0644 /dev/null /usr/local/etc/unbound/unbound.conf
 cat <<'EOF' > /usr/local/etc/unbound/unbound.conf
 --8<-- "freebsd/configs/usr/local/etc/unbound/unbound.conf"
@@ -124,7 +124,7 @@ Unbound kann ohne separate `root.hints`-Datei mit **eingebauten Root Hints** arb
 
 Wenn deine `unbound.conf` eine Root-Hints-Datei verwendet:
 
-```sh
+``` sh
 fetch -o "/usr/local/etc/unbound/root.hints" "https://www.internic.net/domain/named.root"
 chown root:wheel /usr/local/etc/unbound/root.hints
 chmod 0644 /usr/local/etc/unbound/root.hints
@@ -136,7 +136,7 @@ Für DNSSEC ist `unbound-anchor` der richtige Weg. `unbound-anchor(8)` beschreib
 
 Optional vor dem ersten Start:
 
-```sh
+``` sh
 su -m unbound -c 'unbound-anchor -a "/usr/local/etc/unbound/root.key"'
 ```
 
@@ -146,7 +146,7 @@ su -m unbound -c 'unbound-anchor -a "/usr/local/etc/unbound/root.key"'
 
 Wenn du `remote-control` aktiv nutzt:
 
-```sh
+``` sh
 su -m unbound -c 'unbound-control-setup -d /usr/local/etc/unbound'
 ```
 
@@ -154,7 +154,7 @@ su -m unbound -c 'unbound-control-setup -d /usr/local/etc/unbound'
 
 Vor dem ersten Start sollte die Konfiguration immer geprüft werden. `unbound-checkconf` ist genau dafür vorgesehen. Das Ports-`rc.d`-Skript prüft die Konfiguration zusätzlich ebenfalls vor dem Start und vor `reload`. ([unbound.docs.nlnetlabs.nl][4])
 
-```sh
+``` sh
 unbound-checkconf /usr/local/etc/unbound/unbound.conf
 ```
 
@@ -196,14 +196,14 @@ Nicht erforderlich.
 
 Falls `local_unbound` aus dem Basissystem aktuell noch läuft, stoppen wir es einmalig. Danach starten wir die Ports-Version von Unbound.
 
-```sh
+``` sh
 service local_unbound onestatus >/dev/null 2>&1 && service local_unbound onestop
 service unbound start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service unbound reload
 service unbound restart
 ```

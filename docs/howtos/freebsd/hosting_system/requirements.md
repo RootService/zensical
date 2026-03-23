@@ -93,7 +93,7 @@ Für dieses Hosting System ist eine konsequente Linie sinnvoll:
 
 Wenn das offizielle FreeBSD-Repository bewusst deaktiviert werden soll, reicht dafür eine kleine Override-Datei.
 
-``` shell
+``` sh
 sed -e "s|quarterly|latest|g" -i '' /etc/pkg/FreeBSD.conf
 
 install -d -m 0755 /usr/local/etc/pkg
@@ -107,7 +107,7 @@ EOF
 
 Vor Installationen und Updates sollte der Systemzustand auf bekannte Schwachstellen geprüft werden:
 
-``` shell
+``` sh
 pkg audit -F
 ```
 
@@ -117,7 +117,7 @@ pkg audit -F
 
 Da die Nutzdaten in den folgenden HowTos weitgehend unter `/var/db` abgelegt werden, werden die Basisverzeichnisse vorbereitet. Für wiederholbare Anleitungen ist `install -d` sauberer als eine Mischung aus `mkdir`, `chmod` und `chown`.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/backups
 install -d -m 0755 /var/db/passwords
 ```
@@ -162,7 +162,7 @@ www.example.com.                 IN  A       __IPADDR4__
 www.example.com.                 IN  AAAA    __IPADDR6__
 ```
 
-``` shell
+``` sh
 install -d -m 0755 /usr/local/www
 install -d -m 0755 /usr/local/www/apps
 
@@ -212,7 +212,7 @@ Für ausgehende Mailzustellung reichen MX, SPF und DMARC allein nicht. Die sende
 
 Für die Maildaten werden eigene Systemkonten angelegt. Die Anlage sollte idempotent formuliert sein, damit die Befehle bei einer späteren Wiederholung nicht unnötig scheitern.
 
-``` shell
+``` sh
 pw groupshow vmail >/dev/null 2>&1 || pw groupadd -n vmail -g 5000
 id -u vmail >/dev/null 2>&1 || \
   pw useradd -n vmail -u 5000 -g vmail -c 'Virtual Mailuser' -d /nonexistent -s /usr/sbin/nologin -w no
@@ -224,7 +224,7 @@ id -u vacation >/dev/null 2>&1 || \
 
 ### Passwörter für den Abschnitt Mailserver
 
-``` shell
+``` sh
 # Passwort für den PostgreSQL-User "postfix" erzeugen und
 # in /var/db/passwords/user_postgresql_postfix speichern
 install -b -m 0600 /dev/null /var/db/passwords/user_postgresql_postfix
@@ -234,7 +234,7 @@ openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | \
 
 Das Basisverzeichnis für virtuelle Maildaten wird anschließend mit passenden Rechten angelegt:
 
-``` shell
+``` sh
 install -d -m 0750 -o vmail -g vmail /var/vmail
 ```
 

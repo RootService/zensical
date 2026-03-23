@@ -70,14 +70,14 @@ Wenn du für deine eigene Domain zusätzlich eine DMARC-Policy veröffentlichen 
 
 Für diese HowTos müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-``` shell
+``` sh
 install -d -m 0755 -o mailnull -g mailnull /var/run/opendmarc
 install -d -m 0755 -o mailnull -g mailnull /var/db/opendmarc
-````
+```
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -b -m 0644 /dev/null /usr/local/etc/mail/opendmarc.conf
 install -b -m 0644 /dev/null /var/db/opendmarc/ignorehosts
 ```
@@ -92,7 +92,7 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 
 ### Wir installieren `mail/opendmarc` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/databases_p5-DBI
 cat <<'EOF' > /var/db/ports/databases_p5-DBI/options
 --8<-- "freebsd/ports/databases_p5-DBI/options"
@@ -112,7 +112,7 @@ Der Port hat aktuell keine Flavors. Relevante Portoptionen sind vor allem `DOCS`
 
 Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Systemstart automatisch gestartet.
 
-```sh
+``` sh
 sysrc opendmarc_enable=YES
 sysrc opendmarc_socketspec="local:/var/run/opendmarc/opendmarc.sock"
 sysrc opendmarc_pidfile="/var/run/opendmarc/opendmarc.pid"
@@ -126,7 +126,7 @@ sysrc opendmarc_pidfile="/var/run/opendmarc/opendmarc.pid"
 
 Die Beispielkonfiguration wird vom Port unter `etc/mail/opendmarc.conf.sample` installiert. Für dieses Setup verwenden wir die produktive Datei unter `/usr/local/etc/mail/opendmarc.conf`. Außerdem sollte in der Konfiguration ein gültiger `PublicSuffixList`-Pfad gesetzt sein, weil OpenDMARC sonst die Organizational Domain nicht korrekt bestimmen kann. ([FreshPorts][1])
 
-```shell
+``` sh
 cat <<'EOF' > /usr/local/etc/mail/opendmarc.conf
 --8<-- "freebsd/configs/usr/local/etc/mail/opendmarc.conf"
 EOF
@@ -136,7 +136,7 @@ EOF
 
 `IgnoreHosts` ist in OpenDMARC der richtige Mechanismus, um lokale oder vertrauenswürdige Quellhosts von der DMARC-Prüfung auszunehmen. Laut `opendmarc.conf(5)` akzeptiert die Datei Hostnamen, IP-Adressen und CIDR-Ausdrücke. Wenn nichts gesetzt ist, wird standardmäßig nur `127.0.0.1` ignoriert. ([FreeBSD Manual Pages][2])
 
-```shell
+``` sh
 cat <<'EOF' > /var/db/opendmarc/ignorehosts
 ::1
 127.0.0.1
@@ -164,7 +164,7 @@ IP6="$(ifconfig "$DEF_IF" inet6 | awk '/inet6 / && $2 !~ /^fe80:/ && $2 !~ /^::1
 
 ### Rechte setzen
 
-```shell
+``` sh
 chown -R mailnull:mailnull /var/db/opendmarc
 ```
 
@@ -172,7 +172,7 @@ chown -R mailnull:mailnull /var/db/opendmarc
 
 Vor dem ersten Start sollte die Konfiguration immer geprüft werden. `opendmarc -n` parst Konfigurationsdatei und Kommandozeilenoptionen, meldet Fehler und beendet sich danach wieder. Das ist der saubere Vorab-Check. Zusätzlich kann OpenDMARC im Testmodus mit `-t` komplette Nachrichten aus Dateien prüfen, ohne den Dienst zu starten. ([FreeBSD Manual Pages][3])
 
-```sh
+``` sh
 opendmarc -n -c /usr/local/etc/mail/opendmarc.conf
 service opendmarc start
 sockstat -4 -6 -l | egrep 'opendmarc|milter'
@@ -216,13 +216,13 @@ Nicht erforderlich.
 
 OpenDMARC kann nun gestartet werden.
 
-```sh
+``` sh
 service opendmarc start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service opendmarc restart
 ```
 

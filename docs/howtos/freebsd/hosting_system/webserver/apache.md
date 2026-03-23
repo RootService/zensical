@@ -65,7 +65,7 @@ Zusätzlich gilt für dieses HowTo:
 
 Für dieses HowTo müssen zuvor folgende DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```dns-zone
+``` dns-zone
 example.com.            IN  A       __IPADDR4__
 example.com.            IN  AAAA    __IPADDR6__
 
@@ -82,7 +82,7 @@ Namensbasierte VirtualHosts sind hier die richtige Basis: Apache unterscheidet s
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -d -m 0755 /usr/local/www
 install -d -m 0755 /usr/local/www/.well-known
 install -d -m 0755 /usr/local/www/.well-known/acme-challenge
@@ -113,7 +113,7 @@ install -d -m 0755 /usr/local/etc/newsyslog.conf.d
 
 Für dieses HowTo müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -b -m 0644 /dev/null /usr/local/etc/newsyslog.conf.d/apache24.conf
 ```
 
@@ -131,7 +131,7 @@ Die Verzeichnisse für Webinhalte und Caches werden in diesem Setup mit dem vorh
 
 ### Wir installieren `www/apache24` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/www_apache24
 cat <<'EOF' > /var/db/ports/www_apache24/options
 --8<-- "freebsd/ports/www_apache24/options"
@@ -144,14 +144,14 @@ portmaster -w -B -g -U --force-config www/apache24 -n
 
 Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Systemstart automatisch gestartet.
 
-```sh
+``` sh
 sysrc apache24_enable=YES
 sysrc apache24limits_enable=YES
 ```
 
 ### Logrotation einrichten
 
-```sh
+``` sh
 cat <<'EOF' > /usr/local/etc/newsyslog.conf.d/apache24.conf
 --8<-- "freebsd/configs/usr/local/etc/newsyslog.conf.d/apache24"
 EOF
@@ -167,7 +167,7 @@ Der FreeBSD-Port verwendet den Dienstnamen `apache24`. Zusätzlich weist der Por
 
 Apache wird über Textdateien konfiguriert. Die Hauptkonfiguration liegt in `httpd.conf`; weitere Dateien können per `Include` oder `IncludeOptional` eingebunden werden. Änderungen an diesen Dateien werden erst wirksam, wenn Apache neu geladen oder neu gestartet wird. Für namensbasierte VirtualHosts sollten `ServerName` und `DocumentRoot` pro Host immer explizit gesetzt werden. ([httpd.apache.org][8])
 
-```sh
+``` sh
 install -b -m 0644 /dev/null /usr/local/etc/apache24/httpd.conf
 cat <<'EOF' > /usr/local/etc/apache24/httpd.conf
 --8<-- "freebsd/configs/usr/local/etc/apache24/httpd.conf"
@@ -202,7 +202,7 @@ Apache verlangt für HTTP/2 die Aktivierung per `Protocols`; für TLS-VHosts ist
 
 Für einen ersten Funktionstest reicht eine statische Datei im Webroot völlig aus.
 
-```sh
+``` sh
 install -b -m 0644 /dev/null /usr/local/www/vhosts/www.example.com/data/index.html
 cat <<'EOF' > /usr/local/www/vhosts/www.example.com/data/index.html
 <!doctype html>
@@ -221,7 +221,7 @@ EOF
 
 ### `fixperms.sh` einrichten
 
-```sh
+``` sh
 install -b -m 0750 /dev/null /usr/local/www/vhosts/0default0/cron/fixperms.sh
 cat <<'EOF' > /usr/local/www/vhosts/0default0/cron/fixperms.sh
 --8<-- "freebsd/configs/usr/local/www/vhosts/0default0/cron/fixperms.sh"
@@ -242,7 +242,7 @@ EOF
 
 Vor dem ersten Start sollte die Konfiguration immer geprüft werden. Apache dokumentiert `apachectl configtest` genau für die Syntaxprüfung. Zusätzlich sind `httpd -M` für geladene Module und `httpd -S` für die ausgewerteten VirtualHosts die passenden Kontrollen. ([httpd.apache.org][8])
 
-```sh
+``` sh
 apachectl configtest
 /usr/local/sbin/httpd -M | egrep 'mpm_event|http2|brotli|proxy_fcgi|ssl'
 /usr/local/sbin/httpd -S
@@ -250,7 +250,7 @@ apachectl configtest
 
 ### ACME-Webroot testen
 
-```sh
+``` sh
 echo "ok" > /usr/local/www/.well-known/acme-challenge/test.txt
 fetch -qo - http://www.example.com/.well-known/acme-challenge/test.txt
 rm -f /usr/local/www/.well-known/acme-challenge/test.txt
@@ -290,7 +290,7 @@ Nicht erforderlich.
 
 Optionale Testdatei wieder entfernen, wenn sie nicht dauerhaft benötigt wird:
 
-```sh
+``` sh
 rm -f /usr/local/www/vhosts/www.example.com/data/index.html
 ```
 
@@ -300,20 +300,20 @@ rm -f /usr/local/www/vhosts/www.example.com/data/index.html
 
 Apache kann nun gestartet werden.
 
-```sh
+``` sh
 service apache24 start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service apache24 reload
 service apache24 restart
 ```
 
 Für den abschließenden TLS-/ACME-Test:
 
-```sh
+``` sh
 certbot renew --dry-run
 ```
 

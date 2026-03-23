@@ -64,7 +64,7 @@ Die offiziellen Installationshinweise nennen genau diese Basis: Webserver, PHP, 
 
 Für dieses HowTo müssen zuvor folgende DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```dns-zone
+``` dns-zone
 mail.example.com.       IN  A       __IPADDR4__
 mail.example.com.       IN  AAAA    __IPADDR6__
 ```
@@ -73,7 +73,7 @@ mail.example.com.       IN  AAAA    __IPADDR6__
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -d -m 0755 /usr/local/www/apps
 install -d -m 0700 /var/db/passwords
 ```
@@ -84,7 +84,7 @@ Für dieses HowTo müssen **keine zusätzlichen** Systemgruppen oder Systembenut
 
 Für dieses HowTo müssen zuvor folgende Passwörter angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 # Passwortdatei für PostgreSQL-Benutzer "postfix"
 install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_postfix
 
@@ -100,7 +100,7 @@ install -b -m 0600 /dev/null /var/db/passwords/postfixadmin_setup_hash
 
 Der FreeBSD-Port ist aktuell PHP-geflavored. Für dein PHP-8.4-Setup ist deshalb `mail/postfixadmin@php84` die saubere Portangabe. In den Portoptionen ist **PGSQL** die relevante Datenbankoption. ([FreshPorts][4])
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/mail_postfixadmin
 cat <<'EOF' > /var/db/ports/mail_postfixadmin/options
 --8<-- "freebsd/ports/mail_postfixadmin/options"
@@ -119,7 +119,7 @@ PostfixAdmin ist **kein eigener Systemdienst** mit rc.d-Skript, sondern eine PHP
 
 Upstream empfiehlt für stabile Git-Deployments den Branch `postfixadmin_4.0`. Seit PostfixAdmin 4.0 muss danach zusätzlich `install.sh` ausgeführt werden, um Composer und die benötigten Drittbibliotheken lokal zu installieren. ([GitHub][2])
 
-```shell
+``` sh
 git clone -o postfixadmin -b postfixadmin_4.0 --depth 1 https://github.com/postfixadmin/postfixadmin.git /usr/local/www/apps/postfixadmin
 git -C /usr/local/www/apps/postfixadmin pull --rebase
 
@@ -140,7 +140,7 @@ sed -e 's|\(/bin/bash.*\)$|/usr/local\1|' \
 
 Laut offizieller Installationsanleitung soll der Webserver **nicht** auf das Projektwurzelverzeichnis zeigen, sondern auf `public/`. Schreibzugriff braucht PostfixAdmin im Normalfall nur auf `templates_c`; die übrigen Dateien können lesbar bleiben. ([GitHub][3])
 
-```shell
+``` sh
 chmod 0750 /usr/local/www/apps/postfixadmin/templates_c
 chown www:www /usr/local/www/apps/postfixadmin/templates_c
 
@@ -151,7 +151,7 @@ chown -R www:www /usr/local/www/apps/postfixadmin/public
 
 Die offizielle Konfiguration sagt klar: **`config.inc.php` nicht direkt ändern**. Eigene Einstellungen gehören in **`config.local.php`** im PostfixAdmin-Webroot. ([GitHub][5])
 
-```shell
+``` sh
 install -b -m 0640 -o www -g www /dev/null /usr/local/www/apps/postfixadmin/config.local.php
 cat <<'EOF' > /usr/local/www/apps/postfixadmin/config.local.php
 --8<-- "freebsd/configs/usr/local/www/apps/postfixadmin/config.local.php"
@@ -162,7 +162,7 @@ EOF
 
 `setup.php` wird laut Upstream für Installation und Setup verwendet. Dafür braucht PostfixAdmin einen gültigen `setup_password`-Hash in `config.local.php`. ([GitHub][6])
 
-```shell
+``` sh
 # Passwort für PostfixAdmin "setup_hash" erzeugen und
 # in /var/db/passwords/postfixadmin_setup_hash speichern
 install -b -m 0600 /dev/null /var/db/passwords/postfixadmin_setup_hash
@@ -174,7 +174,7 @@ openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | \
 
 ### PostgreSQL-Passwort in `config.local.php` eintragen
 
-```shell
+``` sh
 cat /var/db/passwords/postgresql_user_postfix | xargs -I % \
   sed -e "s|__PASSWORD_POSTFIX__|%|g" -i '' /usr/local/www/apps/postfixadmin/config.local.php
 ```
@@ -183,7 +183,7 @@ cat /var/db/passwords/postgresql_user_postfix | xargs -I % \
 
 Vor dem ersten Browser-Setup sollte zumindest geprüft werden, ob die lokale Konfigurationsdatei existiert und die Anwendung vollständig ausgerollt wurde.
 
-```shell
+``` sh
 test -f /usr/local/www/apps/postfixadmin/config.local.php && echo OK
 test -d /usr/local/www/apps/postfixadmin/public && echo OK
 test -d /usr/local/www/apps/postfixadmin/templates_c && echo OK
@@ -197,7 +197,7 @@ test -d /usr/local/www/apps/postfixadmin/templates_c && echo OK
 
 Für PostgreSQL reicht hier ein normaler Login-Role-User. Zusätzliche Rechte wie `CREATEROLE` oder `CREATEDB` sind für PostfixAdmin selbst nicht nötig. Die offizielle Installationsanleitung verlangt nur Benutzer plus Datenbank. ([GitHub][3])
 
-```shell
+``` sh
 # Passwort für PostgreSQL-Benutzer "postfix" erzeugen und
 # in /var/db/passwords/postgresql_user_postfix speichern
 install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_postfix
@@ -218,7 +218,7 @@ EOF"
 
 Die offizielle Anleitung zeigt für PostgreSQL genau das Muster „Benutzer anlegen, Datenbank anlegen, Owner setzen“. ([GitHub][3])
 
-```shell
+``` sh
 su -l postgres -c "psql <<'EOF'
 DROP DATABASE IF EXISTS \"postfixadmin\";
 CREATE DATABASE \"postfixadmin\";
@@ -228,7 +228,7 @@ EOF"
 
 ### PostgreSQL-Verbindung als `postfix` testen
 
-```shell
+``` sh
 psql -h 127.0.0.1 -U postfix -d postfixadmin -c 'SELECT current_user, current_database();'
 ```
 
@@ -268,13 +268,13 @@ Das PostfixAdmin-Setup muss nun im Browser gestartet und abgeschlossen werden.
 
 Voraussetzung dafür ist, dass dein Webserver die URL `/postfixadmin` auf `/usr/local/www/apps/postfixadmin/public` abbildet. Genau diesen Aufbau beschreibt die offizielle Installationsanleitung. `setup.php` ist dabei der vorgesehene Einstieg für Installation und Setup. ([GitHub][3])
 
-```shell
+``` sh
 https://mail.example.com/postfixadmin/setup.php
 ```
 
 Für spätere Schema-Updates:
 
-```shell
+``` sh
 https://mail.example.com/postfixadmin/upgrade.php
 ```
 

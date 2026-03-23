@@ -77,7 +77,7 @@ Der Dienst verwendet den Systembenutzer `mysql`. ([GitHub][4])
 
 ### Wir installieren `databases/mysql80-server` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/comms_hidapi
 cat <<'EOF' > /var/db/ports/comms_hidapi/options
 --8<-- "freebsd/ports/comms_hidapi/options"
@@ -117,7 +117,7 @@ Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Sy
 
 Das FreeBSD-rc-Skript unterstützt hier unter anderem `mysql_enable`, `mysql_dbdir` und `mysql_optfile`. Es initialisiert ein noch leeres Datenverzeichnis beim ersten Start außerdem automatisch mit `mysqld --initialize-insecure`. ([GitHub][4])
 
-```sh
+``` sh
 sysrc mysql_enable=YES
 sysrc mysql_dbdir="/var/db/mysql"
 sysrc mysql_optfile="/usr/local/etc/mysql/my.cnf"
@@ -131,7 +131,7 @@ sysrc mysql_optfile="/usr/local/etc/mysql/my.cnf"
 
 Für Passwortdateien und Backups legen wir die benötigten Verzeichnisse jetzt an.
 
-```shell
+``` sh
 install -d -m 0700 -o mysql -g mysql /var/db/passwords
 install -d -m 0750 -o mysql -g mysql /var/db/backups/mysql
 ```
@@ -140,7 +140,7 @@ install -d -m 0750 -o mysql -g mysql /var/db/backups/mysql
 
 MySQL sollte dauerhaft über eine Option-Datei konfiguriert werden. Das rc-Skript verwendet standardmäßig `/usr/local/etc/mysql/my.cnf`, wenn dort eine Datei vorhanden ist; alternativ sucht es im Datenverzeichnis. Der Port liefert dafür bereits `my.cnf.sample` mit. ([GitHub][4])
 
-```sh
+``` sh
 install -b -m 0644 /usr/local/etc/mysql/my.cnf.sample /usr/local/etc/mysql/my.cnf
 cat <<'EOF' > /usr/local/etc/mysql/my.cnf
 --8<-- "freebsd/configs/usr/local/etc/mysql/my.cnf"
@@ -153,13 +153,13 @@ Falls deine `my.cnf` selbst eine `datadir`-Direktive enthält, muss sie zur `rc.
 
 Wenn das Datenverzeichnis noch nicht initialisiert ist, erzeugt das FreeBSD-rc-Skript es beim ersten Start mit `--initialize-insecure`. Danach existiert der initiale `root`-Account **ohne Passwort**, bis du es selbst setzt. Genau dafür ist der erste Start hier absichtlich getrennt vom nächsten Schritt. ([GitHub][4])
 
-```sh
+``` sh
 service mysql-server start
 ```
 
 Erster Funktionstest:
 
-```sh
+``` sh
 mysql --protocol=socket -u root --skip-password -e "SELECT VERSION();"
 ```
 
@@ -167,7 +167,7 @@ mysql --protocol=socket -u root --skip-password -e "SELECT VERSION();"
 
 Nach einer Initialisierung mit `--initialize-insecure` setzt du das Root-Passwort sauber mit `ALTER USER`. Für MySQL 8.0 ist `caching_sha2_password` der moderne Standard-Mechanismus; Legacy-Authentifizierung mit `mysql_native_password` solltest du nur noch für nachweislich alte Clients überhaupt in Betracht ziehen. In MySQL 8.4 ist `mysql_native_password` bereits **nicht mehr standardmäßig aktiviert**. ([dev.mysql.com][5])
 
-```shell
+``` sh
 # Passwort für den MySQL-Superuser "root" erzeugen und
 # in /var/db/passwords/mysql_superuser_root speichern
 install -b -m 0600 -o mysql -g mysql /dev/null /var/db/passwords/mysql_superuser_root
@@ -188,7 +188,7 @@ cat /var/db/passwords/mysql_superuser_root
 * Test-Datenbank entfernen
 * Privilegien neu laden
 
-```sh
+``` sh
 mysql_secure_installation
 ```
 
@@ -198,7 +198,7 @@ Das Root-Passwort ist in diesem HowTo bereits gesetzt. In `mysql_secure_installa
 
 Ein Login-Path in `.mylogin.cnf` kann nur **einen** Satz aus `host`, `user`, `password`, `port` und `socket` speichern. Genau diese Felder schreibt `mysql_config_editor`. Auf Unix verwendet `localhost` ohne explizites TCP-Protokoll standardmäßig den **Unix-Socket**. Für lokale Root-Administration reicht deshalb zuerst ein einzelner Socket-Login-Path. ([dev.mysql.com][6])
 
-```shell
+``` sh
 mysql_config_editor set \
   --login-path=root-local \
   --socket=/tmp/mysql.sock \
@@ -212,7 +212,7 @@ Falls dein `my.cnf` einen anderen Socket-Pfad setzt, musst du hier denselben Pfa
 
 Eine klassische `configtest`-Funktion wie bei manchen anderen Diensten gibt es hier nicht. Für die Prüfung ist deshalb sinnvoll, sich zuerst die aus Option-Dateien gelesenen Werte anzeigen zu lassen und anschließend die Erreichbarkeit des laufenden Dienstes zu testen. `my_print_defaults` ist genau für das Auslesen solcher Optionen vorgesehen. ([dev.mysql.com][8])
 
-```sh
+``` sh
 my_print_defaults mysqld
 mysqladmin --login-path=root-local ping
 ```
@@ -221,7 +221,7 @@ mysqladmin --login-path=root-local ping
 
 **GTID** ist in dieser Anleitung absichtlich **nicht standardmäßig aktiv**. Für GTID-basierte Replikation muss die Konfiguration bewusst vorbereitet werden. Oracle dokumentiert dafür insbesondere: **Binary Logging muss aktiv sein**, `enforce_gtid_consistency` muss gesetzt werden und `gtid_mode=ON` ist **nicht** der Default. Das hier ist nur die Grundrichtung, **keine vollständige Replikationsanleitung**. ([dev.mysql.com][3])
 
-```ini
+``` ini
 [mysqld]
 # log_bin                     = mysql-bin
 # server_id                   = 1
@@ -238,7 +238,7 @@ mysqladmin --login-path=root-local ping
 
 MySQL-Konten sind immer an **Benutzer + Host** gebunden. Für dieses HowTo legen wir deshalb drei lokale Administrationskonten an: für Socket, IPv4 und IPv6. Das passt sauber zu den späteren Login-Paths. ([dev.mysql.com][2])
 
-```shell
+``` sh
 # Passwort für den MySQL-Benutzer "admin" erzeugen und
 # in /var/db/passwords/mysql_user_admin speichern
 install -b -m 0600 -o mysql -g mysql /dev/null /var/db/passwords/mysql_user_admin
@@ -261,7 +261,7 @@ cat /var/db/passwords/mysql_user_admin
 
 Passende Login-Paths:
 
-```shell
+``` sh
 mysql_config_editor set \
   --login-path=admin-local \
   --socket=/tmp/mysql.sock \
@@ -287,7 +287,7 @@ mysql_config_editor set \
 
 MySQL 8.0 verwendet `utf8mb4` als Standardzeichensatzlinie. Für neue Datenbanken ist das die richtige Basis. Dieses Beispiel bleibt bewusst bei **InnoDB**. ([dev.mysql.com][9])
 
-```shell
+``` sh
 cat <<'EOF' > /tmp/test_db.sql
 DROP DATABASE IF EXISTS test_db;
 CREATE DATABASE test_db CHARACTER SET utf8mb4;
@@ -311,7 +311,7 @@ mysql --login-path=admin-local < /tmp/test_db.sql
 
 Einfacher Funktionstest:
 
-```shell
+``` sh
 mysql --login-path=admin-local -e "SHOW DATABASES;"
 mysql --login-path=admin-local -e "USE test_db; SHOW TABLES;"
 mysql --login-path=admin-tcp4 -e "SELECT CURRENT_USER(), @@hostname;"
@@ -321,7 +321,7 @@ mysql --login-path=admin-tcp4 -e "SELECT CURRENT_USER(), @@hostname;"
 
 Für InnoDB ist `mysqldump --single-transaction` die richtige logische Backup-Basis, weil dabei ein konsistenter Snapshot für transaktionale Tabellen erzeugt wird, ohne normale Lese-/Schreibvorgänge unnötig hart zu blockieren. `mysqlpump` solltest du für neue Setups nicht mehr einplanen; es ist seit **8.0.34 deprecated**. ([dev.mysql.com][10])
 
-```shell
+``` sh
 mysqldump \
   --login-path=admin-local \
   --single-transaction \
@@ -333,14 +333,14 @@ mysqldump \
 
 Wiederherstellung:
 
-```shell
+``` sh
 mysql --login-path=admin-local -e "CREATE DATABASE test_db_restore CHARACTER SET utf8mb4;"
 mysql --login-path=admin-local test_db_restore < /var/db/backups/mysql/test_db-2026-03-21.sql
 ```
 
 ### Einzelne Tabelle sichern
 
-```shell
+``` sh
 mysqldump \
   --login-path=admin-local \
   --single-transaction \
@@ -349,13 +349,13 @@ mysqldump \
 
 Wiederherstellung:
 
-```shell
+``` sh
 mysql --login-path=admin-local test_db_restore < /var/db/backups/mysql/test_db-kunden-2026-03-21.sql
 ```
 
 ### Alle Datenbanken logisch sichern
 
-```shell
+``` sh
 mysqldump \
   --login-path=admin-local \
   --single-transaction \
@@ -367,7 +367,7 @@ mysqldump \
 
 Wiederherstellung:
 
-```shell
+``` sh
 mysql --login-path=admin-local < /var/db/backups/mysql/all-databases-2026-03-21.sql
 ```
 
@@ -395,7 +395,7 @@ Nicht erforderlich.
 
 Temporäre Testdatei entfernen:
 
-```shell
+``` sh
 rm -f /tmp/test_db.sql
 ```
 
@@ -405,14 +405,14 @@ rm -f /tmp/test_db.sql
 
 Abschließend den Dienst einmal sauber neu starten und die Erreichbarkeit prüfen:
 
-```sh
+``` sh
 service mysql-server restart
 mysql --login-path=admin-local -e "SELECT VERSION();"
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service mysql-server restart
 mysqladmin --login-path=root-local ping
 ```

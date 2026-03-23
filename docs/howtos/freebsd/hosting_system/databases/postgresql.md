@@ -73,7 +73,7 @@ Der Ports-Tree arbeitet hier mit dem Systembenutzer `postgres`.
 
 ### Wir installieren `databases/postgresql18-server` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/databases_postgresql18-client
 cat <<'EOF' > /var/db/ports/databases_postgresql18-client/options
 --8<-- "freebsd/ports/databases_postgresql18-client/options"
@@ -86,13 +86,13 @@ EOF
 
 portmaster -w -B -g -U --force-config databases/postgresql18-server -n
 portmaster -w -B -g -U --force-config databases/postgresql18-contrib -n
-````
+```
 
 ### Dienst in `rc.conf` eintragen
 
 Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Systemstart automatisch gestartet.
 
-```sh
+``` sh
 sysrc postgresql_enable=YES
 sysrc postgresql_login_class="postgres"
 sysrc postgresql_data="/var/db/postgres/data18"
@@ -107,7 +107,7 @@ sysrc postgresql_initdb_flags="--locale=C.UTF-8 --encoding=UTF8 --auth=scram-sha
 
 Die Login-Klasse `postgres` ist in diesem Setup sinnvoll, damit Locale- und Collation-Vorgaben sauber an den PostgreSQL-Dienst übergeben werden.
 
-```shell
+``` sh
 cat <<'EOF' >> /etc/login.conf
 
 postgres:\
@@ -121,14 +121,14 @@ cap_mkdb /etc/login.conf
 
 ### Verzeichnisse für Backups und Passwortdateien anlegen
 
-```shell
+``` sh
 install -d -m 0700 -o postgres -g postgres /var/db/passwords
 install -d -m 0750 -o postgres -g postgres /var/db/backups/postgresql
 ```
 
 ### Passwort für den PostgreSQL-Superuser `postgres` erzeugen
 
-```shell
+``` sh
 install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_superuser_postgres
 openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | \
   cut -c 2-17 | tee /var/db/passwords/postgresql_superuser_postgres
@@ -136,14 +136,14 @@ openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | \
 
 ### Cluster initialisieren und Dienst starten
 
-```shell
+``` sh
 service postgresql initdb
 service postgresql start
 ```
 
 ### Funktionstest
 
-```shell
+``` sh
 su -l postgres -c "psql -d postgres -c 'SELECT version();'"
 ```
 
@@ -157,7 +157,7 @@ Ohne weitere Änderungen lauscht PostgreSQL standardmäßig nur auf `localhost`.
 
 Rollen sind in PostgreSQL clusterweit. Ein „Benutzer“ ist praktisch eine Rolle mit `LOGIN`.
 
-```shell
+``` sh
 # Passwort für PostgreSQL-Benutzer "admin" erzeugen und
 # in /var/db/passwords/postgresql_user_admin speichern
 install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_admin
@@ -178,7 +178,7 @@ Das Passwort bitte **sicher** notieren, du wirst es bei jeder externen Verbindun
 
 ### PostgreSQL-Datenbank `test_db` für `admin` anlegen
 
-```shell
+``` sh
 su -l postgres -c "psql <<'EOF'
 DROP DATABASE IF EXISTS \"test_db\";
 CREATE DATABASE \"test_db\";
@@ -207,32 +207,32 @@ EOF"
 
 Weil `--auth-local=peer` gesetzt wurde, nutzt eine Verbindung **ohne** `-h` normalerweise den Unix-Domain-Socket und damit lokale Peer-Authentifizierung. Für einen echten Passworttest wird deshalb bewusst TCP gegen `127.0.0.1` verwendet.
 
-```shell
+``` sh
 psql -h 127.0.0.1 -U admin -d test_db -W -c 'SELECT current_user, current_database();'
 ```
 
 ### Einzelne Datenbank sichern
 
-```shell
+``` sh
 su -l postgres -c "pg_dump -Fc -f /var/db/backups/postgresql/test_db-$(date +%F).dump test_db"
 ```
 
 Wiederherstellung:
 
-```shell
+``` sh
 su -l postgres -c "createdb -O admin test_db_restore"
 su -l postgres -c "pg_restore -d test_db_restore /var/db/backups/postgresql/test_db-2026-03-21.dump"
 ```
 
 ### Einzelne Tabelle sichern
 
-```shell
+``` sh
 su -l postgres -c "pg_dump -Fc -t public.kunden -f /var/db/backups/postgresql/kunden-$(date +%F).dump test_db"
 ```
 
 Wiederherstellung:
 
-```shell
+``` sh
 su -l postgres -c "pg_restore -d test_db_restore -t public.kunden /var/db/backups/postgresql/kunden-2026-03-21.dump"
 ```
 
@@ -240,25 +240,25 @@ su -l postgres -c "pg_restore -d test_db_restore -t public.kunden /var/db/backup
 
 `pg_dump` sichert Rollen nicht mit. Dafür ist `pg_dumpall --globals-only` da.
 
-```shell
+``` sh
 su -l postgres -c "pg_dumpall --clean --column-inserts --attribute-inserts --if-exists --inserts --no-table-access-method --no-tablespaces --no-toast-compression --no-unlogged-table-data --quote-all-identifiers --rows-per-insert=1 --globals-only > /var/db/backups/postgresql/globals-$(date +%F).sql"
 ```
 
 Wiederherstellung:
 
-```shell
+``` sh
 su -l postgres -c "psql -X -v ON_ERROR_STOP=1 -d postgres -f /var/db/backups/postgresql/globals-2026-03-21.sql"
 ```
 
 ### Gesamten Cluster logisch sichern
 
-```shell
+``` sh
 su -l postgres -c "pg_dumpall --clean --column-inserts --attribute-inserts --if-exists --inserts --no-table-access-method --no-tablespaces --no-toast-compression --no-unlogged-table-data --quote-all-identifiers --rows-per-insert=1 > /var/db/backups/postgresql/cluster-$(date +%F).sql"
 ```
 
 Wiederherstellung:
 
-```shell
+``` sh
 su -l postgres -c "psql -X -v ON_ERROR_STOP=1 -d postgres -f /var/db/backups/postgresql/cluster-2026-03-21.sql"
 ```
 
@@ -266,7 +266,7 @@ su -l postgres -c "psql -X -v ON_ERROR_STOP=1 -d postgres -f /var/db/backups/pos
 
 `pg_basebackup` arbeitet immer auf Clusterebene. Für produktive Nutzung braucht der verwendete Benutzer passende Rechte und eine passende `pg_hba.conf`-Regel für Replikationsverbindungen.
 
-```shell
+``` sh
 su -l postgres -c "pg_basebackup -D /var/db/backups/postgresql/basebackup-$(date +%F_%H%M) -Fp -X stream -c fast"
 ```
 
@@ -306,13 +306,13 @@ Nicht erforderlich.
 
 Zum Schluss den Dienst einmal sauber neu starten:
 
-```sh
+``` sh
 service postgresql restart
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service postgresql reload
 service postgresql restart
 ```

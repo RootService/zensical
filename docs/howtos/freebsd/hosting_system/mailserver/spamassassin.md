@@ -70,13 +70,13 @@ Für dieses HowTo sind **keine zusätzlichen DNS-Records** erforderlich.
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -d -m 0700 /var/db/passwords
 ```
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_spamass
 ```
 
@@ -88,7 +88,7 @@ Der Port bringt den Systembenutzer **`spamd`** selbst mit; im Paketinhalt ist au
 
 Für dieses HowTo muss zuvor folgendes Passwort angelegt werden, sofern es noch nicht existiert, oder entsprechend geändert werden, sofern es bereits existiert.
 
-```shell
+``` sh
 # Passwortdatei für PostgreSQL-Benutzer "spamass"
 install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_spamass
 ```
@@ -101,7 +101,7 @@ install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresq
 
 Für PostgreSQL-Bayes ist die Portoption **`PGSQL`** relevant. Der aktuelle Port bietet außerdem unter anderem die Optionen `SPF_QUERY`, `DKIM`, `DMARC` und `GNUPG2`. ([FreshPorts][1])
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/databases_p5-DBD-SQLite
 cat <<'EOF' > /var/db/ports/databases_p5-DBD-SQLite/options
 --8<-- "freebsd/ports/databases_p5-DBD-SQLite/options"
@@ -161,7 +161,7 @@ Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Sy
 
 Das rc.d-Skript heißt **`sa-spamd`**, die passende `rc.conf`-Variable bleibt aber **`spamd_enable`**. ([FreshPorts][1])
 
-```sh
+``` sh
 sysrc spamd_enable="YES"
 sysrc spamd_flags="-c -u spamd -H /var/spool/spamd"
 ```
@@ -176,7 +176,7 @@ Der Port liefert die Sample-Dateien `local.cf.sample` und `init.pre.sample` bere
 
 #### `local.cf` einrichten
 
-```shell
+``` sh
 install -b -m 0644 /usr/local/etc/mail/spamassassin/local.cf.sample /usr/local/etc/mail/spamassassin/local.cf
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/local.cf
 --8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/local.cf"
@@ -185,7 +185,7 @@ EOF
 
 #### `init.pre` einrichten
 
-```shell
+``` sh
 install -b -m 0644 /usr/local/etc/mail/spamassassin/init.pre.sample /usr/local/etc/mail/spamassassin/init.pre
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/init.pre
 --8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/init.pre"
@@ -196,7 +196,7 @@ Für PostgreSQL-Bayes muss in `local.cf` das PostgreSQL-spezifische Backend verw
 
 #### Platzhalter in `local.cf` ersetzen
 
-```shell
+``` sh
 # 1. Get Default Interface
 DEF_IF="$(route -n get -inet default | awk '/interface:/ {print $2}')"
 
@@ -216,7 +216,7 @@ cat /var/db/passwords/postgresql_user_spamass | xargs -I % \
 
 `sa-update` lädt und installiert aktualisierte Regeln. Der Standardkanal ist **`updates.spamassassin.org`**. `sa-update` startet `spamd` danach **nicht** neu. `sa-compile` kompiliert Regeln, lädt sie aber ebenfalls nicht automatisch neu; zusätzlich muss dafür das Plugin `Rule2XSBody` aktiv sein. Auf FreeBSD gilt außerdem der aktuelle Port-Hinweis: Nach einem Port-Update zuerst `sa-update` laufen lassen und **danach** erst `sa-spamd` neu starten. ([spamassassin.apache.org][4])
 
-```shell
+``` sh
 /usr/local/bin/sa-update --channel updates.spamassassin.org --refreshmirrors --verbose
 /usr/local/bin/sa-update --channel updates.spamassassin.org --verbose
 /usr/local/bin/sa-compile --quiet
@@ -226,7 +226,7 @@ Zusätzliche Drittanbieter-Regelkanäle sind möglich, gehören aber nicht in di
 
 ### Wartungsscript für Updates
 
-```shell
+``` sh
 install -b -m 0755 /dev/null /usr/local/sbin/update-spamassassin
 cat <<'EOF' > /usr/local/sbin/update-spamassassin
 --8<-- "freebsd/configs/usr/local/sbin/update-spamassassin"
@@ -237,7 +237,7 @@ EOF
 
 Vor dem ersten Start sollte die Konfiguration immer geprüft werden.
 
-```sh
+``` sh
 spamassassin --lint
 service sa-spamd start
 sockstat -4 -6 -l | egrep 'spamd|783'
@@ -251,7 +251,7 @@ sockstat -4 -6 -l | egrep 'spamd|783'
 
 Für SpamAssassin reicht ein normaler Login-Benutzer. Zusätzliche Rechte wie `CREATEROLE` oder `CREATEDB` sind dafür nicht erforderlich.
 
-```shell
+``` sh
 # Passwort für PostgreSQL-Benutzer "spamass" erzeugen und
 # in /var/db/passwords/postgresql_user_spamass speichern
 install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_spamass
@@ -274,7 +274,7 @@ Das Passwort bitte **sicher** notieren, du wirst es bei jeder externen Verbindun
 
 Für PostgreSQL-Bayes ist das PostgreSQL-spezifische Bayes-Backend zuständig. Das ist genau für BYTEA-basierte Token-Speicherung in PostgreSQL gedacht. ([spamassassin.apache.org][2])
 
-```shell
+``` sh
 su -l postgres -c "psql <<'EOF'
 DROP DATABASE IF EXISTS \"mail_bayes\";
 CREATE DATABASE \"mail_bayes\";
@@ -284,7 +284,7 @@ EOF"
 
 ### Schema für `mail_bayes` einspielen
 
-```shell
+``` sh
 su -l postgres -c "psql <<'EOF'
 \connect \"mail_bayes\"
 
@@ -438,7 +438,7 @@ EOF"
 
 ### Verbindung als `spamass` testen
 
-```shell
+``` sh
 psql -h 127.0.0.1 -U spamass -d mail_bayes -c 'SELECT current_user, current_database();'
 ```
 
@@ -446,7 +446,7 @@ psql -h 127.0.0.1 -U spamass -d mail_bayes -c 'SELECT current_user, current_data
 
 TxRep verwendet dieselbe SQL-Architektur wie das frühere AWL-Plugin, erwartet aber standardmäßig eine Tabelle mit dem Namen **`txrep`**. Für PostgreSQL beschreibt die offizielle Dokumentation dazu den Import über ein PostgreSQL-Schema und empfiehlt außerdem, alte Einträge regelmäßig zu bereinigen. ([spamassassin.apache.org][5])
 
-```shell
+``` sh
 su -l postgres -c "psql <<'EOF'
 DROP DATABASE IF EXISTS \"mail_txrep\";
 CREATE DATABASE \"mail_txrep\";
@@ -456,7 +456,7 @@ EOF"
 
 ### Schema für `mail_txrep` einspielen
 
-```shell
+``` sh
 su -l postgres -c "psql <<'EOF'
 \connect \"mail_txrep\"
 
@@ -495,7 +495,7 @@ EOF"
 
 ### Verbindung als `spamass` testen
 
-```shell
+``` sh
 psql -h 127.0.0.1 -U spamass -d mail_txrep -c 'SELECT current_user, current_database();'
 ```
 
@@ -509,7 +509,7 @@ Mögliche Zusatzsoftware wird hier installiert und konfiguriert.
 
 `mail/spamass-milter` bringt auf FreeBSD ein eigenes rc.d-Skript **`spamass-milter`** mit. Der aktuelle Portstand ist **0.4.0_5**. ([FreshPorts][6])
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/mail_spamass-milter
 cat <<'EOF' > /var/db/ports/mail_spamass-milter/options
 --8<-- "freebsd/ports/mail_spamass-milter/options"
@@ -520,7 +520,7 @@ portmaster -w -B -g -U --force-config mail/spamass-milter -n
 
 ### Dienst in `rc.conf` eintragen
 
-```sh
+``` sh
 sysrc spamass_milter_enable="YES"
 sysrc spamass_milter_user="spamd"
 sysrc spamass_milter_group="spamd"
@@ -533,7 +533,7 @@ sysrc spamass_milter_localflags="-r 15 -f -u spamd -- -u spamd"
 
 ### Zusatzsoftware Konfiguration prüfen
 
-```sh
+``` sh
 install -d -m 0755 -o spamd -g spamd /var/run/spamass-milter
 service spamass-milter start
 service spamass-milter status
@@ -559,21 +559,21 @@ Nicht erforderlich.
 
 SpamAssassin kann nun gestartet werden.
 
-```sh
+``` sh
 service sa-spamd start
 service spamass-milter start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service sa-spamd restart
 service spamass-milter restart
 ```
 
 Für Funktionstests danach:
 
-```sh
+``` sh
 sockstat -4 -6 -l | egrep 'spamd|spamass-milter'
 spamc -R < /path/to/testmail.eml
 ```

@@ -60,7 +60,7 @@ Optional sollte der Servername bereits sauber per DNS auflösbar sein, damit SSH
 ``` dns-zone
 server.example.com.      IN  A       __IPADDR4__
 server.example.com.      IN  AAAA    __IPADDR6__
-````
+```
 
 ### Verzeichnisse / Dateien
 
@@ -78,7 +78,7 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 
 ### Wir installieren `security/openssh-portable` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/dns_ldns
 cat <<'EOF' > /var/db/ports/dns_ldns/options
 --8<-- "freebsd/ports/dns_ldns/options"
@@ -98,7 +98,7 @@ Der Ports-Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch b
 
 Wichtig ist hier die saubere Trennung zwischen **Ports-OpenSSH** und dem **OpenSSH aus dem FreeBSD-Basissystem**.
 
-```sh
+``` sh
 sysrc sshd_enable=NO
 sysrc openssh_enable=YES
 ```
@@ -111,7 +111,7 @@ sysrc openssh_enable=YES
 
 Die Ports-Version verwendet ihr eigenes Konfigurationsverzeichnis unter `/usr/local/etc/ssh`. Dort legen wir die Konfigurationsdatei `sshd_config` ab.
 
-```sh
+``` sh
 install -b -m 0644 /usr/local/etc/ssh/sshd_config.sample /usr/local/etc/ssh/sshd_config
 cat <<'EOF' > /usr/local/etc/ssh/sshd_config
 --8<-- "freebsd/configs/usr/local/etc/ssh/sshd_config"
@@ -122,7 +122,7 @@ EOF
 
 Falls bereits alte oder unerwünschte Host Keys vorhanden sind, können diese entfernt und anschließend gezielt neu erzeugt werden.
 
-```sh
+``` sh
 rm -f /usr/local/etc/ssh/ssh_host_rsa_key /usr/local/etc/ssh/ssh_host_rsa_key.pub
 rm -f /usr/local/etc/ssh/ssh_host_ecdsa_key /usr/local/etc/ssh/ssh_host_ecdsa_key.pub
 rm -f /usr/local/etc/ssh/ssh_host_ed25519_key /usr/local/etc/ssh/ssh_host_ed25519_key.pub
@@ -141,7 +141,7 @@ ssh-keygen -l -f "/usr/local/etc/ssh/ssh_host_ed25519_key.pub"
 
 Vor dem ersten Start sollte die Konfiguration immer geprüft werden.
 
-```sh
+``` sh
 service openssh configtest
 /usr/local/sbin/sshd -t
 ```
@@ -178,13 +178,13 @@ Nicht erforderlich.
 
 OpenSSH kann nun gestartet werden.
 
-```sh
+``` sh
 service openssh start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service openssh reload
 service openssh restart
 ```

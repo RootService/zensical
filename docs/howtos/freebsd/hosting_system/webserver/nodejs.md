@@ -77,14 +77,14 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 
 ### Wir installieren `www/node24` und dessen Abhängigkeiten.
 
-``` shell
+``` sh
 install -d -m 0755 /var/db/ports/www_node24
 cat <<'EOF' > /var/db/ports/www_node24/options
 --8<-- "freebsd/ports/www_node24/options"
 EOF
 
 portmaster -w -B -g -U --force-config www/node -n
-````
+```
 
 `www/node24` installiert die eigentliche Laufzeit `node`. Der Port hat auf FreeBSD 15 aktuell zusätzlich eine Runtime-Abhängigkeit auf **`www/corepack`**. In der pkg-message des Ports wird außerdem ausdrücklich darauf hingewiesen, dass für `npm` der separate Port **`www/npm`** installiert werden soll. ([FreshPorts][2])
 
@@ -106,7 +106,7 @@ Die eigentliche Konfiguration liegt später in den jeweiligen Projekten, zum Bei
 
 ### Installation prüfen
 
-```shell
+``` sh
 node -v
 which node
 ```
@@ -115,7 +115,7 @@ which node
 
 Corepack ist auf Node-24-Basis verfügbar. Laut Node-Dokumentation ist Corepack seit **Node 14.19 / 16.9** vorhanden und bleibt bis **unter Node 25** Teil der Standardverteilung. Yarn empfiehlt Corepack heute als bevorzugten Weg, um Paketmanager-Versionen **pro Projekt** zu steuern. Corepack ist dabei weiterhin als **experimental** markiert und muss zunächst aktiviert werden. ([Node.js][3])
 
-```shell
+``` sh
 corepack enable
 corepack --version
 ```
@@ -138,7 +138,7 @@ Mögliche Zusatzsoftware wird hier installiert und konfiguriert.
 
 Wenn `npm` systemweit verfügbar sein soll, installieren wir den zu Node 24 passenden Port **`www/npm`**. Der Port hat keine eigenen Optionen und hängt zur Laufzeit von `www/node` ab. ([FreshPorts][5])
 
-```shell
+``` sh
 portmaster -w -B -g -U --force-config www/npm -n
 ```
 
@@ -146,7 +146,7 @@ portmaster -w -B -g -U --force-config www/npm -n
 
 Falls im Projekt **bewusst Yarn Classic 1.x** benötigt wird, installieren wir **`www/yarn`**. Aktuell steht dieser Port auf **1.22.19**. Yarn selbst empfiehlt heute für neue projektbezogene Setups eher **Corepack** statt einer globalen Yarn-Installation. ([FreshPorts][6])
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/www_yarn-node24
 cat <<'EOF' > /var/db/ports/www_yarn-node24/options
 --8<-- "freebsd/ports/www_yarn-node24/options"
@@ -161,7 +161,7 @@ Corepack ist für neue projektbezogene Paketmanager-Setups in der Regel die saub
 
 Beispiel:
 
-```shell
+``` sh
 corepack enable
 corepack --version
 ```
@@ -186,13 +186,13 @@ Nicht erforderlich.
 
 Node.js ist nun als Laufzeitumgebung installiert.
 
-```sh
+``` sh
 node -v
 ```
 
 Für npm, npx, Yarn und Corepack:
 
-```sh
+``` sh
 npm -v
 npx -v
 yarn -v

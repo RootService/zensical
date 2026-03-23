@@ -65,7 +65,7 @@ Was muss vor der Installation vorbereitet werden?
 
 Für dieses HowTo müssen zuvor folgende DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```dns-zone
+``` dns-zone
 devnull.example.com.     IN  A       __IPADDR4__
 devnull.example.com.     IN  AAAA    __IPADDR6__
 
@@ -80,13 +80,13 @@ mail.example.com.        IN  AAAA    __IPADDR6__
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -d -m 0750 /usr/local/etc/letsencrypt/certs
 ```
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -b -m 0640 /dev/null /usr/local/etc/letsencrypt/certs/crt-list.txt
 ```
 
@@ -102,7 +102,7 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 
 ### Wir installieren `net/haproxy` und dessen Abhängigkeiten.
 
-```sh
+``` sh
 install -d -m 0755 /var/db/ports/net_haproxy
 cat <<'EOF' > /var/db/ports/net_haproxy/options
 --8<-- "freebsd/ports/net_haproxy/options"
@@ -115,7 +115,7 @@ portmaster -w -B -g -U --force-config net/haproxy -n
 
 Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Systemstart automatisch gestartet.
 
-```sh
+``` sh
 sysrc haproxy_enable=YES
 sysrc haproxy_config="/usr/local/etc/haproxy.conf"
 ```
@@ -130,7 +130,7 @@ Das FreeBSD-rc-Skript verwendet den Dienstnamen `haproxy`. Standardmäßig erwar
 
 HAProxy braucht im Kern nur das Binary und eine Konfigurationsdatei. Die Konfiguration wird vor dem Start vollständig eingelesen; fehlerhafte Konfigurationen oder nicht bindbare Listener verhindern den Start. Genau deshalb gehört ein sauberer Konfigurationstest vor jeden Start oder Reload. ([FreeBSD Git][3])
 
-```sh
+``` sh
 install -b -m 0644 /dev/null /usr/local/etc/haproxy.conf
 cat <<'EOF' > /usr/local/etc/haproxy.conf
 --8<-- "freebsd/configs/usr/local/etc/haproxy.conf"
@@ -141,7 +141,7 @@ EOF
 
 Für HAProxy werden die vorhandenen Let’s-Encrypt-Dateien je Domain zu einer PEM-Datei zusammengeführt. Anschließend werden diese Dateien über eine `crt-list` eingebunden.
 
-```sh
+``` sh
 cat /usr/local/etc/letsencrypt/live/devnull.example.com/fullchain.pem \
     /usr/local/etc/letsencrypt/live/devnull.example.com/privkey.pem \
     > /usr/local/etc/letsencrypt/certs/devnull.example.com.pem
@@ -192,7 +192,7 @@ Wichtig bleibt dabei:
 
 Vor dem ersten Start sollte die Konfiguration immer geprüft werden.
 
-```sh
+``` sh
 service haproxy configtest
 haproxy -c -f /usr/local/etc/haproxy.conf
 haproxy -vv | egrep 'OpenSSL|PCRE2|Lua|Prometheus|QUIC'
@@ -234,20 +234,20 @@ Nicht erforderlich.
 
 HAProxy kann nun gestartet werden.
 
-```sh
+``` sh
 service haproxy start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service haproxy reload
 service haproxy restart
 ```
 
 Funktionstest:
 
-```sh
+``` sh
 fetch -qo - http://127.0.0.1:8404/.well-known/haproxy-stats >/dev/null && echo OK
 sockstat -4 -6 -l | egrep 'haproxy|nginx'
 ```

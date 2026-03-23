@@ -66,7 +66,7 @@ Für dieses HowTo müssen zuvor folgende DNS-Records angelegt werden, sofern sie
 ``` dns-zone
 mail.example.com.        IN  A       __IPADDR4__
 mail.example.com.        IN  AAAA    __IPADDR6__
-````
+```
 
 Der eigentliche DKIM-Selector-Record wird erst **nach** der Schlüsselerzeugung veröffentlicht, weil er direkt aus dem generierten öffentlichen Schlüssel entsteht. `opendkim-genkey` erzeugt dafür bereits eine passende TXT-Datei. ([FreeBSD Manual Pages][2])
 
@@ -74,7 +74,7 @@ Der eigentliche DKIM-Selector-Record wird erst **nach** der Schlüsselerzeugung 
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -d -m 0750 -o mailnull -g mailnull /var/db/opendkim
 install -d -m 0750 -o mailnull -g mailnull /var/db/opendkim/keys
 install -d -m 0750 -o mailnull -g mailnull /var/db/opendkim/keys/example.com
@@ -82,7 +82,7 @@ install -d -m 0750 -o mailnull -g mailnull /var/db/opendkim/keys/example.com
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -b -m 0640 /dev/null /usr/local/etc/mail/opendkim.conf
 install -b -m 0640 -o mailnull -g mailnull /dev/null /var/db/opendkim/keytable
 install -b -m 0640 -o mailnull -g mailnull /dev/null /var/db/opendkim/signingtable
@@ -101,7 +101,7 @@ Das FreeBSD-rc-Skript verwendet standardmäßig den Benutzer und die Gruppe **`m
 
 ### Wir installieren `mail/opendkim` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/mail_opendkim
 cat <<'EOF' > /var/db/ports/mail_opendkim/options
 --8<-- "freebsd/ports/mail_opendkim/options"
@@ -114,7 +114,7 @@ portmaster -w -B -g -U --force-config mail/opendkim -n
 
 Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Systemstart automatisch gestartet.
 
-```sh
+``` sh
 sysrc milteropendkim_enable=YES
 sysrc milteropendkim_socket="local:/var/run/milteropendkim/opendkim.sock"
 sysrc milteropendkim_pidfile="/var/run/milteropendkim/opendkim.pid"
@@ -128,7 +128,7 @@ Das FreeBSD-rc-Skript verwendet den Dienstnamen **`milter-opendkim`**, die `rc.c
 
 ### Konfigurationsdatei
 
-```shell
+``` sh
 cat <<'EOF' > /usr/local/etc/mail/opendkim.conf
 --8<-- "freebsd/configs/usr/local/etc/mail/opendkim.conf"
 EOF
@@ -138,7 +138,7 @@ EOF
 
 `opendkim-genkey` erzeugt sowohl den privaten Schlüssel als auch direkt die passende DNS-TXT-Datei. Standardmäßig wären **1024 Bit** voreingestellt; für dieses Setup werden bewusst **2048 Bit** verwendet. Mit `-r` wird der Schlüssel auf E-Mail-Signing beschränkt. ([FreeBSD Manual Pages][2])
 
-```shell
+``` sh
 opendkim-genkey \
   --append-domain \
   --bits=2048 \
@@ -153,7 +153,7 @@ opendkim-genkey \
 
 ### KeyTable anlegen
 
-```shell
+``` sh
 cat <<'EOF' > /var/db/opendkim/keytable
 20260321._domainkey.example.com    example.com:20260321:/var/db/opendkim/keys/example.com/20260321.private
 EOF
@@ -161,7 +161,7 @@ EOF
 
 ### SigningTable anlegen
 
-```shell
+``` sh
 cat <<'EOF' > /var/db/opendkim/signingtable
 *@example.com      20260321._domainkey.example.com
 *@*.example.com    20260321._domainkey.example.com
@@ -170,7 +170,7 @@ EOF
 
 ### TrustedHosts anlegen
 
-```shell
+``` sh
 cat <<'EOF' > /var/db/opendkim/trustedhosts
 ::1
 127.0.0.1
@@ -200,7 +200,7 @@ IP6="$(ifconfig "$DEF_IF" inet6 | awk '/inet6 / && $2 !~ /^fe80:/ && $2 !~ /^::1
 
 `opendkim-testkey` meldet ausdrücklich, wenn eine private Schlüsseldatei für andere Benutzer lesbar ist. Deshalb sollten die Schlüsseldateien nicht unnötig offen liegen. ([FreeBSD Manual Pages][4])
 
-```shell
+``` sh
 chown -R mailnull:mailnull /var/db/opendkim
 chmod 0600 /var/db/opendkim/keys/example.com/20260321.private
 chmod 0644 /var/db/opendkim/keys/example.com/20260321.txt
@@ -215,7 +215,7 @@ chmod 0640 /var/db/opendkim/trustedhosts
 
 Es muss noch ein DNS-Record angelegt werden, sofern er noch nicht existiert, oder entsprechend geändert werden, sofern er bereits existiert.
 
-``` shell
+``` sh
 /usr/local/bin/openssl pkey -pubout -outform pem -in /var/db/opendkim/keys/example.com/20260321.private | \
     awk '\!/^-----/ {printf $0}' | awk 'BEGIN{n=1}\
         {printf "\n20260321._domainkey.example.com.    IN  TXT    ( \"v=DKIM1; h=shs256; k=rsa; s=*; t=*; p=\"";\
@@ -243,7 +243,7 @@ Die Ausgabe sieht ungefähr so aus und muss als DNS-Record für die Domain verö
 
 Vor dem ersten Start sollte die Konfiguration immer geprüft werden. `opendkim-testkey` ist genau für diesen Zweck gedacht: Es prüft Domain, Selector, öffentlichen DNS-Key und bei Bedarf auch den privaten Schlüssel. ([FreeBSD Manual Pages][4])
 
-```sh
+``` sh
 opendkim-testkey -d example.com -s 20260321 -k /var/db/opendkim/keys/example.com/20260321.private -vvv
 service milter-opendkim start
 sockstat -4 -6 -l | egrep 'opendkim|milter'
@@ -285,13 +285,13 @@ Nicht erforderlich.
 
 OpenDKIM kann nun gestartet werden.
 
-```sh
+``` sh
 service milter-opendkim start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service milter-opendkim reload
 service milter-opendkim restart
 ```

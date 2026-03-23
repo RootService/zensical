@@ -78,13 +78,13 @@ mail.example.com.        IN  AAAA    __IPADDR6__
 
 devnull.example.com.     IN  A       __IPADDR4__
 devnull.example.com.     IN  AAAA    __IPADDR6__
-````
+```
 
 ### Verzeichnisse / Dateien
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/letsencrypt
 install -d -m 0700 /var/log/letsencrypt
 
@@ -113,7 +113,7 @@ Für dieses HowTo sind **keine** zusätzlichen Systemgruppen, Systembenutzer ode
 
 ### Wir installieren `security/py-certbot` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/textproc_py-snowballstemmer
 cat <<'EOF' > /var/db/ports/textproc_py-snowballstemmer/options
 --8<-- "freebsd/ports/textproc_py-snowballstemmer/options"
@@ -141,7 +141,7 @@ Certbot ist kein dauerhaft laufender Dienst mit eigenem `rc.d`-Service. Die auto
 
 Die zentrale Certbot-Konfiguration liegt unter `/usr/local/etc/letsencrypt/cli.ini`. Für dieses Setup ist **Webroot** die richtige Standardwahl.
 
-```shell
+``` sh
 install -b -m 0644 /dev/null /usr/local/etc/letsencrypt/cli.ini
 cat <<'EOF' > /usr/local/etc/letsencrypt/cli.ini
 --8<-- "freebsd/configs/usr/local/etc/letsencrypt/cli.ini"
@@ -154,7 +154,7 @@ ECDSA ist für dieses Setup die sinnvolle Standardwahl, solange keine bewusst se
 
 Der Deploy-Hook wird nur nach erfolgreicher Zertifikatserneuerung ausgeführt. In diesem HowTo übernimmt er das Neubauen der benötigten PEM-Dateien und das anschließende Neuladen der betroffenen TLS-Dienste.
 
-```shell
+``` sh
 install -b -m 0750 /dev/null /usr/local/etc/letsencrypt/renewal-hooks/deploy/hook.sh
 cat <<'EOF' > /usr/local/etc/letsencrypt/renewal-hooks/deploy/hook.sh
 --8<-- "freebsd/configs/usr/local/etc/letsencrypt/renewal-hooks/deploy/hook.sh"
@@ -165,7 +165,7 @@ EOF
 
 Für dieses Webroot-Setup genügt der Weekly-Periodic-Job mit Deploy-Hook und den gewünschten Certbot-Argumenten.
 
-```shell
+``` sh
 cat <<'EOF' >> /etc/periodic.conf
 weekly_certbot_enable="YES"
 weekly_certbot_deploy_hook="/usr/local/etc/letsencrypt/renewal-hooks/deploy/hook.sh"
@@ -177,7 +177,7 @@ EOF
 
 Vor der ersten Zertifikatsausstellung muss geprüft werden, ob Apache die ACME-Challenge-Dateien wirklich ausliefert.
 
-```shell
+``` sh
 apachectl configtest
 service apache24 reload
 
@@ -196,7 +196,7 @@ Für dieses Beispiel bleiben die Zertifikatsgruppen wie folgt aufgeteilt:
 * `mail.example.com`
 * `www.example.com` zusammen mit `example.com`
 
-```shell
+``` sh
 certbot register
 
 certbot certonly -d devnull.example.com
@@ -210,7 +210,7 @@ certbot certonly -d www.example.com -d example.com
 
 Vor dem produktiven Einsatz sollte zuerst ein trockener Erneuerungstest durchgeführt werden.
 
-```shell
+``` sh
 certbot renew --dry-run
 certbot certificates
 ```
@@ -229,7 +229,7 @@ Für dieses HowTo sind **keine Datenbanken** erforderlich.
 
 Falls vorübergehend noch kein Webserver auf Port 80 betrieben wird, kann Certbot im Standalone-Modus verwendet werden.
 
-```shell
+``` sh
 certbot register --standalone
 certbot certonly --standalone -d subdomain.example.com
 ```
@@ -262,14 +262,14 @@ Nicht erforderlich.
 
 Certbot ist nun eingerichtet und kann für Ausstellung, Prüfung und Erneuerung von Zertifikaten verwendet werden.
 
-```sh
+``` sh
 certbot certificates
 periodic weekly
 ```
 
 Für spätere Änderungen und Funktionstests:
 
-```sh
+``` sh
 certbot renew --dry-run
 certbot renew
 service apache24 reload

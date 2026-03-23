@@ -66,7 +66,7 @@ Zusätzlich gilt für dieses HowTo:
 
 Für dieses HowTo müssen zuvor folgende DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```dns-zone
+``` dns-zone
 example.com.            IN  A       __IPADDR4__
 example.com.            IN  AAAA    __IPADDR6__
 
@@ -81,7 +81,7 @@ mail.example.com.       IN  AAAA    __IPADDR6__
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -d -m 1777 -o www -g www /usr/local/www/cache
 install -d -m 1777 -o www -g www /usr/local/www/tmp
 
@@ -108,7 +108,7 @@ install -d -m 0755 /usr/local/etc/newsyslog.conf.d
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -b -m 0644 /dev/null /usr/local/etc/newsyslog.conf.d/nginx.conf
 ```
 
@@ -122,7 +122,7 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 
 ### Wir installieren `www/nginx` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/devel_google-perftools
 cat <<'EOF' > /var/db/ports/devel_google-perftools/options
 --8<-- "freebsd/ports/devel_google-perftools/options"
@@ -140,14 +140,14 @@ portmaster -w -B -g -U --force-config www/nginx -n
 
 Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Systemstart automatisch gestartet.
 
-```sh
+``` sh
 sysrc nginx_enable=YES
 sysrc nginxlimits_enable=YES
 ```
 
 ### Logrotation einrichten
 
-```sh
+``` sh
 cat <<'EOF' > /usr/local/etc/newsyslog.conf.d/nginx.conf
 --8<-- "freebsd/configs/usr/local/etc/newsyslog.conf.d/nginx"
 EOF
@@ -161,7 +161,7 @@ EOF
 
 Der Port liefert bereits Beispielkonfigurationen mit. Die zentrale Konfiguration liegt unter `/usr/local/etc/nginx/nginx.conf`; zusätzliche Dateien wie `vhosts.conf` und `vhosts-ssl.conf` können über `include` eingebunden werden. Änderungen werden erst nach `reload` oder `restart` wirksam. ([freshports.org][1])
 
-```sh
+``` sh
 install -b -m 0644 /usr/local/etc/nginx/nginx.conf-dist /usr/local/etc/nginx/nginx.conf
 cat <<'EOF' > /usr/local/etc/nginx/nginx.conf
 --8<-- "freebsd/configs/usr/local/etc/nginx/nginx.conf"
@@ -194,7 +194,7 @@ Für PHP-FPM ist die FastCGI-Anbindung per Unix-Socket fachlich korrekt. Nginx u
 
 ### `fixperms.sh` einrichten
 
-```sh
+``` sh
 install -b -m 0750 /dev/null /usr/local/www/vhosts/0default0/cron/fixperms.sh
 cat <<'EOF' > /usr/local/www/vhosts/0default0/cron/fixperms.sh
 --8<-- "freebsd/configs/usr/local/www/vhosts/0default0/cron/fixperms.sh"
@@ -215,7 +215,7 @@ EOF
 
 Vor dem ersten Start sollte die Konfiguration immer geprüft werden. `nginx -t` prüft Syntax und grundlegende Konsistenz. Änderungen an der Konfiguration werden von Nginx erst nach Reload oder Restart übernommen; beim Reload validiert der Master-Prozess die neue Konfiguration zuerst und rollt bei Fehlern auf die alte zurück. ([Nginx][2])
 
-```sh
+``` sh
 nginx -t
 service nginx restart
 sockstat -4 -6 -l | egrep 'nginx|php-fpm'
@@ -259,13 +259,13 @@ Nicht erforderlich.
 
 Nginx kann nun gestartet werden.
 
-```sh
+``` sh
 service nginx start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service nginx reload
 service nginx restart
 ```

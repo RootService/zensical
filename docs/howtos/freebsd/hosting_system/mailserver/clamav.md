@@ -77,7 +77,7 @@ Für dieses HowTo müssen **keine zusätzlichen Systemgruppen, Systembenutzer od
 
 ### Wir installieren `security/clamav` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/security_clamav
 cat <<'EOF' > /var/db/ports/security_clamav/options
 --8<-- "freebsd/ports/security_clamav/options"
@@ -92,7 +92,7 @@ Der Port bietet aktuell unter anderem die Optionen **`MILTER=on`**, **`UNRAR=on`
 
 Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Systemstart automatisch gestartet.
 
-```sh
+``` sh
 sysrc clamav_clamd_enable="YES"
 sysrc clamav_freshclam_enable="YES"
 ```
@@ -107,7 +107,7 @@ Seit der Umstellung im Ports-Tree heißen die Dienste auf FreeBSD **mit Unterstr
 
 ClamAV liefert die Beispielkonfiguration bereits mit. Laut offizieller Dokumentation kannst du entweder die Sample-Datei kopieren oder `clamconf -g` zum Erzeugen verwenden. ([ClamAV Documentation][3])
 
-```sh
+``` sh
 install -b -m 0644 /usr/local/etc/clamd.conf.sample /usr/local/etc/clamd.conf
 cat <<'EOF' > /usr/local/etc/clamd.conf
 --8<-- "freebsd/configs/usr/local/etc/clamd.conf"
@@ -118,7 +118,7 @@ EOF
 
 `freshclam` liest seine Einstellungen aus `freshclam.conf`. Genau dafür liefert ClamAV ebenfalls eine Sample-Datei mit. ([FreeBSD Manual Pages][2])
 
-```sh
+``` sh
 install -b -m 0644 /usr/local/etc/freshclam.conf.sample /usr/local/etc/freshclam.conf
 cat <<'EOF' > /usr/local/etc/freshclam.conf
 --8<-- "freebsd/configs/usr/local/etc/freshclam.conf"
@@ -129,7 +129,7 @@ EOF
 
 Eine klassische `configtest`-Subcommand-Struktur wie bei anderen Diensten gibt es hier nicht. Für ClamAV ist **`clamconf`** das passende Prüfwerkzeug: Es zeigt die Werte aus `clamd.conf` und `freshclam.conf` an und prüft deren Gültigkeit. ([ClamAV Documentation][4])
 
-```sh
+``` sh
 clamconf
 freshclam --verbose
 ```
@@ -150,7 +150,7 @@ Mögliche Zusatzsoftware wird hier installiert und konfiguriert.
 
 Der Port `security/clamav` bringt bei aktivierter Standardoption **`MILTER=on`** bereits **`clamav-milter`**, die zugehörige Manpage sowie die Sample-Datei `clamav-milter.conf.sample` mit. `clamav-milter` arbeitet direkt mit `clamd` zusammen und setzt deshalb einen funktionierenden `clamd`-Dienst voraus. ([FreshPorts][1])
 
-```sh
+``` sh
 install -b -m 0644 /usr/local/etc/clamav-milter.conf.sample /usr/local/etc/clamav-milter.conf
 cat <<'EOF' > /usr/local/etc/clamav-milter.conf
 --8<-- "freebsd/configs/usr/local/etc/clamav-milter.conf"
@@ -161,7 +161,7 @@ sysrc clamav_milter_enable="YES"
 
 ### Zusatzsoftware Konfiguration prüfen
 
-```sh
+``` sh
 clamconf
 ```
 
@@ -187,7 +187,7 @@ ClamAV kann nun gestartet werden.
 
 Zuerst sollten die Signaturdaten geladen werden, danach werden die Dienste gestartet.
 
-```sh
+``` sh
 freshclam --verbose
 service clamav_freshclam start
 service clamav_clamd start
@@ -195,13 +195,13 @@ service clamav_clamd start
 
 Falls die Milter-Unterstützung aktiviert wurde:
 
-```sh
+``` sh
 service clamav_milter start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service clamav_freshclam restart
 service clamav_clamd restart
 service clamav_milter restart

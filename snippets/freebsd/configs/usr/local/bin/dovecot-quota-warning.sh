@@ -63,9 +63,9 @@ QUOTA_CONFIG="dict:storage=2G quota::proxy::quota"
 send_user_warning() {
     local user="${1}"
     local percent="${2}"
-    
+
     log_message "INFO" "Sending quota warning to ${user} (${percent}%)"
-    
+
     if ! ${DOVECOT_LDA} -d "${user}" -o "plugin/quota=${QUOTA_CONFIG}" << EOF
 From: no-reply@${HOSTNAME_FQDN}
 To: ${user}
@@ -89,7 +89,7 @@ EOF
         log_message "ERROR" "Failed to send quota warning to ${user}"
         return 1
     fi
-    
+
     log_message "INFO" "Quota warning sent successfully to ${user}"
     return 0
 }
@@ -101,12 +101,12 @@ send_postmaster_warning() {
     local user="${1}"
     local percent="${2}"
     local domain
-    
+
     domain="$(echo "${user}" | awk -F'@' '{print $2}')"
     local postmaster="postmaster@${domain}"
-    
+
     log_message "INFO" "Sending postmaster notification for ${user} (${percent}%)"
-    
+
     if ! ${DOVECOT_LDA} -d "${postmaster}" -o "plugin/quota=${QUOTA_CONFIG}" << EOF
 From: no-reply@${HOSTNAME_FQDN}
 To: ${postmaster}
@@ -141,7 +141,7 @@ EOF
         log_message "ERROR" "Failed to send postmaster notification for ${user}"
         return 1
     fi
-    
+
     log_message "INFO" "Postmaster notification sent successfully for ${user}"
     return 0
 }
@@ -152,13 +152,13 @@ EOF
 main() {
     # Ensure log directory exists
     mkdir -p "$(dirname "${LOG_FILE}")"
-    
+
     # Send warning to user (all thresholds)
     if ! send_user_warning "${USER}" "${PERCENT}"; then
         log_message "ERROR" "User warning delivery failed"
         exit 1
     fi
-    
+
     # Send postmaster copy only for critical thresholds
     if [[ "${PERCENT}" -ge "${POSTMASTER_NOTIFY_THRESHOLD}" ]]; then
         if ! send_postmaster_warning "${USER}" "${PERCENT}"; then
@@ -166,7 +166,7 @@ main() {
             # Don't exit - user warning was successful
         fi
     fi
-    
+
     log_message "INFO" "Quota warning processing completed for ${USER}"
 }
 

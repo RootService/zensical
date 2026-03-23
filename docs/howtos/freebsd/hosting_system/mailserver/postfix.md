@@ -67,7 +67,7 @@ Für Dovecot-SASL und Dovecot-LMTP ist genau dieser Aufbau üblich: Postfix grei
 
 Für dieses HowTo müssen zuvor folgende DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```dns-zone
+``` dns-zone
 example.com.            IN  MX      10 mail.example.com.
 mail.example.com.       IN  A       __IPADDR4__
 mail.example.com.       IN  AAAA    __IPADDR6__
@@ -77,14 +77,14 @@ mail.example.com.       IN  AAAA    __IPADDR6__
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -d -m 0755 /usr/local/etc/mail
 install -d -m 0755 -g postfix /usr/local/etc/postfix/pgsql
 ```
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -b -m 0640 -g postfix /etc/mail/aliases /usr/local/etc/postfix/aliases
 install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/postscreen_access.cidr
 install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/postscreen_whitelist.cidr
@@ -106,7 +106,7 @@ Für dieses HowTo sind keine zusätzlichen Systemgruppen oder Systembenutzer erf
 
 Für dieses HowTo muss jedoch das Passwort für den PostgreSQL-Benutzer `postfix` bereits vorhanden sein, da die `pgsql:`-Maps in den Konfigurationsdateien darauf zugreifen.
 
-```shell
+``` sh
 # Passwort für PostgreSQL-Benutzer "postfix" prüfen
 cat /var/db/passwords/user_postgresql_postfix
 ```
@@ -117,7 +117,7 @@ cat /var/db/passwords/user_postgresql_postfix
 
 ### Wir installieren `mail/postfix@pgsql` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/mail_postfix
 cat <<'EOF' > /var/db/ports/mail_postfix/options
 --8<-- "freebsd/ports/mail_postfix/options"
@@ -130,13 +130,13 @@ portmaster -w -B -g -U --force-config mail/postfix@pgsql -n
 
 Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Systemstart automatisch gestartet.
 
-```sh
+``` sh
 sysrc postfix_enable=YES
 ```
 
 ### Mailwrapper auf Postfix umstellen
 
-```shell
+``` sh
 install -d -m 0755 /usr/local/etc/mail
 install -b -m 0644 /usr/local/share/postfix/mailer.conf.postfix /usr/local/etc/mail/mailer.conf
 ```
@@ -149,7 +149,7 @@ Das FreeBSD-Handbook beschreibt für Postfix genau diesen Schritt mit `/usr/loca
 
 ### Konfigurationsdatei `main.cf`
 
-```shell
+``` sh
 install -b -m 0644 -g postfix /dev/null /usr/local/etc/postfix/main.cf
 cat <<'EOF' > /usr/local/etc/postfix/main.cf
 --8<-- "freebsd/configs/usr/local/etc/postfix/main.cf"
@@ -169,7 +169,7 @@ IP6="$(ifconfig "$DEF_IF" inet6 | awk '/inet6 / && $2 !~ /^fe80:/ && $2 !~ /^::1
 
 ### Konfigurationsdatei `master.cf`
 
-```shell
+``` sh
 install -b -m 0644 -g postfix /dev/null /usr/local/etc/postfix/master.cf
 cat <<'EOF' > /usr/local/etc/postfix/master.cf
 --8<-- "freebsd/configs/usr/local/etc/postfix/master.cf"
@@ -178,7 +178,7 @@ EOF
 
 ### PostgreSQL-Lookup-Dateien `pgsql/*.cf`
 
-```shell
+``` sh
 install -d -m 0755 -g postfix /usr/local/etc/postfix/pgsql
 
 install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/recipient_bcc_maps.cf
@@ -257,7 +257,7 @@ Postfix beschreibt `pgsql:`-Maps offiziell als passenden Weg, Postfix mit Postgr
 
 ### Restriktionen und Lookup-Dateien
 
-```shell
+``` sh
 install -b -m 0640 -g postfix /etc/mail/aliases /usr/local/etc/postfix/aliases
 install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/postscreen_access.cidr
 install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/postscreen_whitelist.cidr
@@ -344,7 +344,7 @@ postmap /usr/local/etc/postfix/mx_access
 
 Vor dem ersten Start sollte die Konfiguration immer geprüft werden. Bei Postfix ist dafür `postfix check` der passende Weg. Zusätzlich ist `postconf -n` sinnvoll, um die aktiven Nicht-Default-Parameter auszugeben. Für Dovecot-SASL ist `postconf -a` nützlich, weil damit die unterstützten SASL-Servertypen sichtbar werden. ([postfix.org][7])
 
-```sh
+``` sh
 postconf -a
 postconf -n
 postfix check
@@ -366,7 +366,7 @@ Mögliche Zusatzsoftware wird hier installiert und konfiguriert.
 
 ### Postscreen-Whitelist-Helfer
 
-```shell
+``` sh
 portmaster -w -B -g -U --force-config dns/rubygem-dnsruby -n
 portmaster -w -B -g -U --force-config net/rubygem-ipaddress -n
 portmaster -w -B -g -U --force-config devel/rubygem-optparse -n
@@ -384,7 +384,7 @@ EOF
 
 `mail/py-pymilter`, das von `mail/py-spf-engine` verwendet wird, hängt auf FreeBSD standardmäßig an `mail/libmilter`. Daher ist diese Installation in deinem Aufbau fachlich konsistent. ([FreshPorts][8])
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/mail_libmilter
 cat <<'EOF' > /var/db/ports/mail_libmilter/options
 --8<-- "freebsd/ports/mail_libmilter/options"
@@ -398,7 +398,7 @@ portmaster -w -B -g -U --force-config mail/libmilter -n
 `mail/py-spf-engine` liefert zwei Betriebsarten:
 den **Policy-Service** `policyd-spf` und den **Milter** `pyspf-milter`. Auf FreeBSD installiert der Port ein rc.d-Skript für **`pyspf-milter`**; der Policy-Service wird laut pkg-message typischerweise direkt aus `master.cf` heraus von Postfix gespawnt. ([FreshPorts][2])
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/mail_py-pymilter
 cat <<'EOF' > /var/db/ports/mail_py-pymilter/options
 --8<-- "freebsd/ports/mail_py-pymilter/options"
@@ -439,13 +439,13 @@ portmaster -w -B -g -U --force-config mail/py-spf-engine -n
 
 ### Dienst in `rc.conf` eintragen
 
-```sh
+``` sh
 sysrc pyspf_milter_enable=YES
 ```
 
 ### Konfigurationsdateien für SPF einrichten
 
-```shell
+``` sh
 install -d -m 0755 /usr/local/etc/pyspf-milter
 install -d -m 0755 /usr/local/etc/python-policyd-spf
 
@@ -464,7 +464,7 @@ Wichtig: Der FreeBSD-Port hat 2023 den Standardpfad für `pyspf-milter` geänder
 
 ### Zusatzsoftware Konfiguration prüfen
 
-```sh
+``` sh
 service pyspf-milter start
 service pyspf-milter status
 ```
@@ -489,14 +489,14 @@ Nicht erforderlich.
 
 Postfix kann nun gestartet werden.
 
-```sh
+``` sh
 service pyspf-milter start
 service postfix start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service pyspf-milter restart
 service postfix reload
 service postfix restart
@@ -504,7 +504,7 @@ service postfix restart
 
 Für Funktionstests danach:
 
-```sh
+``` sh
 sockstat -4 -6 -l | egrep 'master|smtpd|submission|pyspf'
 postqueue -p
 ```

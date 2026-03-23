@@ -62,7 +62,7 @@ Zusätzlich wird vorausgesetzt:
 
 Für dieses HowTo müssen zuvor folgende DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```dns-zone
+``` dns-zone
 mail.example.com.       IN  A       __IPADDR4__
 mail.example.com.       IN  AAAA    __IPADDR6__
 ```
@@ -71,13 +71,13 @@ mail.example.com.       IN  AAAA    __IPADDR6__
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -d -m 0755 -o vmail /var/log/dovecot
 ```
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-```shell
+``` sh
 install -b -m 0640 -o vmail -g vmail /dev/null /var/log/dovecot/quota-warnings.log
 install -b -m 0750 -g vmail /dev/null /usr/local/bin/dovecot-quota-warning.sh
 install -b -m 0640 /dev/null /usr/local/etc/dovecot/dovecot-master-users
@@ -89,14 +89,14 @@ Für dieses HowTo müssen **keine zusätzlichen** Systemgruppen oder Systembenut
 
 Vorausgesetzt wird der bereits vorhandene Systembenutzer `vmail` mit UID/GID 5000.
 
-```shell
+``` sh
 pw groupshow vmail
 id vmail
 ```
 
 Für dieses HowTo wird zusätzlich ein Passwort für den Dovecot-Master-User erzeugt und unter `/var/db/passwords/user_dovecot_superuser` gespeichert.
 
-```shell
+``` sh
 install -b -m 0640 /dev/null /var/db/passwords/user_dovecot_superuser
 ```
 
@@ -106,7 +106,7 @@ install -b -m 0640 /dev/null /var/db/passwords/user_dovecot_superuser
 
 ### Wir installieren `mail/dovecot@pgsql` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/textproc_libexttextcat
 cat <<'EOF' > /var/db/ports/textproc_libexttextcat/options
 --8<-- "freebsd/ports/textproc_libexttextcat/options"
@@ -122,7 +122,7 @@ portmaster -w -B -g -U --force-config mail/dovecot@pgsql -n
 
 ### Wir installieren `mail/dovecot-pigeonhole@pgsql` und dessen Abhängigkeiten.
 
-```shell
+``` sh
 install -d -m 0755 /var/db/ports/mail_dovecot-pigeonhole
 cat <<'EOF' > /var/db/ports/mail_dovecot-pigeonhole/options
 --8<-- "freebsd/ports/mail_dovecot-pigeonhole/options"
@@ -137,7 +137,7 @@ Die Ports und Flavors passen genau zu diesem Setup: `mail/dovecot` liefert den r
 
 Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Systemstart automatisch gestartet.
 
-```sh
+``` sh
 sysrc dovecot_enable=YES
 ```
 
@@ -147,7 +147,7 @@ sysrc dovecot_enable=YES
 
 ### Konfigurationsdateien
 
-```shell
+``` sh
 install -b -m 0644 /dev/null /usr/local/etc/dovecot/dovecot.conf
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot.conf
 --8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot.conf"
@@ -183,7 +183,7 @@ Dovecot liest seine Konfiguration aus `dovecot.conf`; für virtuelle Benutzer si
 
 ### Platzhalter in den Konfigurationsdateien ersetzen
 
-```shell
+``` sh
 # Standard-Interface ermitteln
 DEF_IF="$(route -n get -inet default | awk '/interface:/ {print $2}')"
 
@@ -205,7 +205,7 @@ cat /var/db/passwords/user_postgresql_postfix
 
 ### Quota-Warning-Script einrichten
 
-```shell
+``` sh
 cat <<'EOF' > /usr/local/bin/dovecot-quota-warning.sh
 --8<-- "freebsd/configs/usr/local/bin/dovecot-quota-warning.sh"
 EOF
@@ -216,7 +216,7 @@ install -b -m 0640 -o vmail -g vmail /dev/null /var/log/dovecot/quota-warnings.l
 
 ### Master User einrichten
 
-```shell
+``` sh
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-master-users
 --8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-master-users"
 EOF
@@ -234,7 +234,7 @@ openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | \
 
 Vor dem ersten Start sollte die effektive Konfiguration geprüft werden. Dovecot empfiehlt dafür `doveconf`, weil damit sichtbar wird, was der Dienst nach dem Parsen der Konfiguration tatsächlich verwendet. ([Dovecot Pro][2])
 
-```sh
+``` sh
 doveconf -n
 service dovecot start
 sockstat -4 -6 -l | egrep 'dovecot|imap|lmtp|sieve'
@@ -248,7 +248,7 @@ sockstat -4 -6 -l | egrep 'dovecot|imap|lmtp|sieve'
 
 Bei virtuellen Benutzern sind SQL-Backends üblich. Dovecot nutzt dabei typischerweise SQL für `passdb` und `userdb`; die Datenbank liefert dabei unter anderem Benutzername, Passwort, UID, GID und Mailpfad. Genau dafür ist das folgende Hilfsscript in diesem Setup vorgesehen. ([Dovecot][3])
 
-```shell
+``` sh
 install -b -m 0755 /dev/null /usr/local/etc/dovecot/create_mailuser.sh
 cat <<'EOF' > /usr/local/etc/dovecot/create_mailuser.sh
 --8<-- "freebsd/configs/usr/local/etc/dovecot/create_mailuser.sh"
@@ -257,7 +257,7 @@ EOF
 
 Beispiel zum Anlegen eines neuen Mailusers:
 
-```shell
+``` sh
 /usr/local/etc/dovecot/create_mailuser.sh admin@example.com
 ```
 
@@ -293,13 +293,13 @@ Nicht erforderlich.
 
 Dovecot kann nun gestartet werden.
 
-```sh
+``` sh
 service dovecot start
 ```
 
 Für spätere Änderungen:
 
-```sh
+``` sh
 service dovecot reload
 service dovecot restart
 ```

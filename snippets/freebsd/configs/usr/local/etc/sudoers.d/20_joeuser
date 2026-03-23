@@ -1,1 +1,1 @@
-joeuser ALL = (ALL:ALL) NOPASSWD: ALL
+joeuser ALL = (ALL:ALL) NOPASSWD:ALL

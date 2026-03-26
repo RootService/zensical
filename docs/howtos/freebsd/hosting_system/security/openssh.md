@@ -62,15 +62,15 @@ server.example.com.      IN  A       __IPADDR4__
 server.example.com.      IN  AAAA    __IPADDR6__
 ```
 
+### Gruppen / Benutzer / Passwörter
+
+Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** erforderlich.
+
 ### Verzeichnisse / Dateien
 
 Für dieses HowTo müssen vor der Installation in der Regel **keine zusätzlichen Verzeichnisse oder Dateien manuell angelegt** werden.
 
 Das Konfigurationsverzeichnis `/usr/local/etc/ssh` sowie die mitgelieferte Beispieldatei `sshd_config.sample` werden durch den Port bereitgestellt.
-
-### Gruppen / Benutzer / Passwörter
-
-Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** erforderlich.
 
 ---
 
@@ -79,12 +79,12 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 ### Wir installieren `security/openssh-portable` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/dns_ldns
+mkdir -p /var/db/ports/dns_ldns
 cat <<'EOF' > /var/db/ports/dns_ldns/options
 --8<-- "freebsd/ports/dns_ldns/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_openssh-portable
+mkdir -p /var/db/ports/security_openssh-portable
 cat <<'EOF' > /var/db/ports/security_openssh-portable/options
 --8<-- "freebsd/ports/security_openssh-portable/options"
 EOF
@@ -112,7 +112,6 @@ sysrc openssh_enable=YES
 Die Ports-Version verwendet ihr eigenes Konfigurationsverzeichnis unter `/usr/local/etc/ssh`. Dort legen wir die Konfigurationsdatei `sshd_config` ab.
 
 ``` sh
-install -b -m 0644 /usr/local/etc/ssh/sshd_config.sample /usr/local/etc/ssh/sshd_config
 cat <<'EOF' > /usr/local/etc/ssh/sshd_config
 --8<-- "freebsd/configs/usr/local/etc/ssh/sshd_config"
 EOF

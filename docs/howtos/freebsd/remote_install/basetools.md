@@ -62,7 +62,7 @@ su - root
 ### Wir installieren `security/sudo` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/security_sudo
+mkdir -p /var/db/ports/security_sudo
 cat <<'EOF' > /var/db/ports/security_sudo/options
 --8<-- "freebsd/ports/security_sudo/options"
 EOF
@@ -121,33 +121,33 @@ cat <<'EOF' > /usr/local/etc/sudoers.d/20_joeuser
 joeuser ALL = (ALL:ALL) NOPASSWD:ALL
 EOF
 
-chmod 0440 /usr/local/etc/sudoers.d/*
+chmod 440 /usr/local/etc/sudoers.d/*
 ```
 
 ### Wir installieren `dns/bind-tools` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_fstrm
+mkdir -p /var/db/ports/devel_fstrm
 cat <<'EOF' > /var/db/ports/devel_fstrm/options
 --8<-- "freebsd/ports/devel_fstrm/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_libevent
+mkdir -p /var/db/ports/devel_libevent
 cat <<'EOF' > /var/db/ports/devel_libevent/options
 --8<-- "freebsd/ports/devel_libevent/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_protobuf-c
+mkdir -p /var/db/ports/devel_protobuf-c
 cat <<'EOF' > /var/db/ports/devel_protobuf-c/options
 --8<-- "freebsd/ports/devel_protobuf-c/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_liburcu
+mkdir -p /var/db/ports/devel_liburcu
 cat <<'EOF' > /var/db/ports/devel_liburcu/options
 --8<-- "freebsd/ports/devel_liburcu/options"
 EOF
 
-install -d -m 0755 /var/db/ports/dns_bind-tools
+mkdir -p /var/db/ports/dns_bind-tools
 cat <<'EOF' > /var/db/ports/dns_bind-tools/options
 --8<-- "freebsd/ports/dns_bind-tools/options"
 EOF
@@ -158,17 +158,17 @@ portmaster -w -B -g -U --force-config dns/bind-tools  -n
 ### Wir installieren `emulators/qemu@guestagent` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_glib20
+mkdir -p /var/db/ports/devel_glib20
 cat <<'EOF' > /var/db/ports/devel_glib20/options
 --8<-- "freebsd/ports/devel_glib20/options"
 EOF
 
-install -d -m 0755 /var/db/ports/textproc_py-docutils
+mkdir -p /var/db/ports/textproc_py-docutils
 cat <<'EOF' > /var/db/ports/textproc_py-docutils/options
 --8<-- "freebsd/ports/textproc_py-docutils/options"
 EOF
 
-install -d -m 0755 /var/db/ports/emulators_qemu
+mkdir -p /var/db/ports/emulators_qemu
 cat <<'EOF' > /var/db/ports/emulators_qemu/options
 --8<-- "freebsd/ports/emulators_qemu/options"
 EOF
@@ -179,52 +179,52 @@ portmaster -w -B -g -U --force-config emulators/qemu@guestagent  -n
 ### Wir installieren `net/cloud-init` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_py-babel
+mkdir -p /var/db/ports/devel_py-babel
 cat <<'EOF' > /var/db/ports/devel_py-babel/options
 --8<-- "freebsd/ports/devel_py-babel/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_py-Jinja2
+mkdir -p /var/db/ports/devel_py-Jinja2
 cat <<'EOF' > /var/db/ports/devel_py-Jinja2/options
 --8<-- "freebsd/ports/devel_py-Jinja2/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_py-pyyaml
+mkdir -p /var/db/ports/devel_py-pyyaml
 cat <<'EOF' > /var/db/ports/devel_py-pyyaml/options
 --8<-- "freebsd/ports/devel_py-pyyaml/options"
 EOF
 
-install -d -m 0755 /var/db/ports/www_py-requests
+mkdir -p /var/db/ports/www_py-requests
 cat <<'EOF' > /var/db/ports/www_py-requests/options
 --8<-- "freebsd/ports/www_py-requests/options"
 EOF
 
-install -d -m 0755 /var/db/ports/net_py-urllib3
+mkdir -p /var/db/ports/net_py-urllib3
 cat <<'EOF' > /var/db/ports/net_py-urllib3/options
 --8<-- "freebsd/ports/net_py-urllib3/options"
 EOF
 
-install -d -m 0755 /var/db/ports/comms_py-pyserial
+mkdir -p /var/db/ports/comms_py-pyserial
 cat <<'EOF' > /var/db/ports/comms_py-pyserial/options
 --8<-- "freebsd/ports/comms_py-pyserial/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_py-oauthlib
+mkdir -p /var/db/ports/security_py-oauthlib
 cat <<'EOF' > /var/db/ports/security_py-oauthlib/options
 --8<-- "freebsd/ports/security_py-oauthlib/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_py-cryptography
+mkdir -p /var/db/ports/security_py-cryptography
 cat <<'EOF' > /var/db/ports/security_py-cryptography/options
 --8<-- "freebsd/ports/security_py-cryptography/options"
 EOF
 
-install -d -m 0755 /var/db/ports/www_py-pyjwt
+mkdir -p /var/db/ports/www_py-pyjwt
 cat <<'EOF' > /var/db/ports/www_py-pyjwt/options
 --8<-- "freebsd/ports/www_py-pyjwt/options"
 EOF
 
-install -d -m 0755 /var/db/ports/net_py-urllib3
+mkdir -p /var/db/ports/net_py-urllib3
 cat <<'EOF' > /var/db/ports/net_py-urllib3/options
 --8<-- "freebsd/ports/net_py-urllib3/options"
 EOF
@@ -235,7 +235,7 @@ portmaster -w -B -g -U --force-config net/cloud-init  -n
 ### Wir installieren `sysutils/smartmontools` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/sysutils_smartmontools
+mkdir -p /var/db/ports/sysutils_smartmontools
 cat <<'EOF' > /var/db/ports/sysutils_smartmontools/options
 --8<-- "freebsd/ports/sysutils_smartmontools/options"
 EOF
@@ -271,7 +271,7 @@ portmaster -w -B -g -U --force-config security/expiretable  -n
 ### Wir installieren `ftp/wget` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/ftp_wget
+mkdir -p /var/db/ports/ftp_wget
 cat <<'EOF' > /var/db/ports/ftp_wget/options
 --8<-- "freebsd/ports/ftp_wget/options"
 EOF
@@ -282,7 +282,7 @@ portmaster -w -B -g -U --force-config ftp/wget  -n
 ### Wir installieren `databases/sqlite3` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/databases_sqlite3
+mkdir -p /var/db/ports/databases_sqlite3
 cat <<'EOF' > /var/db/ports/databases_sqlite3/options
 --8<-- "freebsd/ports/databases_sqlite3/options"
 EOF
@@ -293,77 +293,77 @@ portmaster -w -B -g -U --force-config databases/sqlite3  -n
 ### Wir installieren `devel/git` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/security_p5-Authen-SASL
+mkdir -p /var/db/ports/security_p5-Authen-SASL
 cat <<'EOF' > /var/db/ports/security_p5-Authen-SASL/options
 --8<-- "freebsd/ports/security_p5-Authen-SASL/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_p5-IO-Socket-SSL
+mkdir -p /var/db/ports/security_p5-IO-Socket-SSL
 cat <<'EOF' > /var/db/ports/security_p5-IO-Socket-SSL/options
 --8<-- "freebsd/ports/security_p5-IO-Socket-SSL/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_p5-Net-SSLeay
+mkdir -p /var/db/ports/security_p5-Net-SSLeay
 cat <<'EOF' > /var/db/ports/security_p5-Net-SSLeay/options
 --8<-- "freebsd/ports/security_p5-Net-SSLeay/options"
 EOF
 
-install -d -m 0755 /var/db/ports/textproc_xmlto
+mkdir -p /var/db/ports/textproc_xmlto
 cat <<'EOF' > /var/db/ports/textproc_xmlto/options
 --8<-- "freebsd/ports/textproc_xmlto/options"
 EOF
 
-install -d -m 0755 /var/db/ports/misc_getopt
+mkdir -p /var/db/ports/misc_getopt
 cat <<'EOF' > /var/db/ports/misc_getopt/options
 --8<-- "freebsd/ports/misc_getopt/options"
 EOF
 
-install -d -m 0755 /var/db/ports/textproc_xmlcatmgr
+mkdir -p /var/db/ports/textproc_xmlcatmgr
 cat <<'EOF' > /var/db/ports/textproc_xmlcatmgr/options
 --8<-- "freebsd/ports/textproc_xmlcatmgr/options"
 EOF
 
-install -d -m 0755 /var/db/ports/textproc_docbook-xsl
+mkdir -p /var/db/ports/textproc_docbook-xsl
 cat <<'EOF' > /var/db/ports/textproc_docbook-xsl/options
 --8<-- "freebsd/ports/textproc_docbook-xsl/options"
 EOF
 
-install -d -m 0755 /var/db/ports/textproc_libxml2
+mkdir -p /var/db/ports/textproc_libxml2
 cat <<'EOF' > /var/db/ports/textproc_libxml2/options
 --8<-- "freebsd/ports/textproc_libxml2/options"
 EOF
 
-install -d -m 0755 /var/db/ports/textproc_libxslt
+mkdir -p /var/db/ports/textproc_libxslt
 cat <<'EOF' > /var/db/ports/textproc_libxslt/options
 --8<-- "freebsd/ports/textproc_libxslt/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_libgcrypt
+mkdir -p /var/db/ports/security_libgcrypt
 cat <<'EOF' > /var/db/ports/security_libgcrypt/options
 --8<-- "freebsd/ports/security_libgcrypt/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_libgpg-error
+mkdir -p /var/db/ports/security_libgpg-error
 cat <<'EOF' > /var/db/ports/security_libgpg-error/options
 --8<-- "freebsd/ports/security_libgpg-error/options"
 EOF
 
-install -d -m 0755 /var/db/ports/www_w3m
+mkdir -p /var/db/ports/www_w3m
 cat <<'EOF' > /var/db/ports/www_w3m/options
 --8<-- "freebsd/ports/www_w3m/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_boehm-gc
+mkdir -p /var/db/ports/devel_boehm-gc
 cat <<'EOF' > /var/db/ports/devel_boehm-gc/options
 --8<-- "freebsd/ports/devel_boehm-gc/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_libatomic_ops
+mkdir -p /var/db/ports/devel_libatomic_ops
 cat <<'EOF' > /var/db/ports/devel_libatomic_ops/options
 --8<-- "freebsd/ports/devel_libatomic_ops/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_git
+mkdir -p /var/db/ports/devel_git
 cat <<'EOF' > /var/db/ports/devel_git/options
 --8<-- "freebsd/ports/devel_git/options"
 EOF
@@ -374,17 +374,17 @@ portmaster -w -B -g -U --force-config devel/git  -n
 ### Wir installieren `security/gnupg` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/security_pinentry
+mkdir -p /var/db/ports/security_pinentry
 cat <<'EOF' > /var/db/ports/security_pinentry/options
 --8<-- "freebsd/ports/security_pinentry/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_pinentry-tty
+mkdir -p /var/db/ports/security_pinentry-tty
 cat <<'EOF' > /var/db/ports/security_pinentry-tty/options
 --8<-- "freebsd/ports/security_pinentry-tty/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_gnupg
+mkdir -p /var/db/ports/security_gnupg
 cat <<'EOF' > /var/db/ports/security_gnupg/options
 --8<-- "freebsd/ports/security_gnupg/options"
 EOF
@@ -395,27 +395,27 @@ portmaster -w -B -g -U --force-config security/gnupg  -n
 ### Wir installieren `devel/subversion` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/archivers_liblz4
+mkdir -p /var/db/ports/archivers_liblz4
 cat <<'EOF' > /var/db/ports/archivers_liblz4/options
 --8<-- "freebsd/ports/archivers_liblz4/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_apr1
+mkdir -p /var/db/ports/devel_apr1
 cat <<'EOF' > /var/db/ports/devel_apr1/options
 --8<-- "freebsd/ports/devel_apr1/options"
 EOF
 
-install -d -m 0755 /var/db/ports/textproc_utf8proc
+mkdir -p /var/db/ports/textproc_utf8proc
 cat <<'EOF' > /var/db/ports/textproc_utf8proc/options
 --8<-- "freebsd/ports/textproc_utf8proc/options"
 EOF
 
-install -d -m 0755 /var/db/ports/www_serf
+mkdir -p /var/db/ports/www_serf
 cat <<'EOF' > /var/db/ports/www_serf/options
 --8<-- "freebsd/ports/www_serf/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_subversion
+mkdir -p /var/db/ports/devel_subversion
 cat <<'EOF' > /var/db/ports/devel_subversion/options
 --8<-- "freebsd/ports/devel_subversion/options"
 EOF
@@ -426,7 +426,7 @@ portmaster -w -B -g -U --force-config devel/subversion  -n
 ### Wir installieren `editors/nano` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/editors_nano
+mkdir -p /var/db/ports/editors_nano
 cat <<'EOF' > /var/db/ports/editors_nano/options
 --8<-- "freebsd/ports/editors_nano/options"
 EOF
@@ -452,7 +452,7 @@ cat <<'EOF' > /usr/local/sbin/update-ports
 --8<-- "freebsd/configs/usr/local/sbin/update-ports"
 EOF
 
-chmod 0755 /usr/local/sbin/update-ports
+chmod 755 /usr/local/sbin/update-ports
 ```
 
 ## Wie geht es weiter?

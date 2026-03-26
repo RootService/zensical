@@ -55,17 +55,17 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../requir
 
 Für dieses HowTo sind keine zusätzlichen DNS-Records erforderlich.
 
-### Verzeichnisse / Dateien
-
-Vor der Installation müssen keine zusätzlichen Verzeichnisse oder Dateien manuell angelegt werden.
-
-Die benötigten Verzeichnisse für Daten, Backups und Passwortdateien werden in den folgenden Schritten eingerichtet.
-
 ### Gruppen / Benutzer / Passwörter
 
 Für dieses HowTo müssen keine zusätzlichen Systemgruppen oder Systembenutzer manuell angelegt werden.
 
 Der Ports-Tree arbeitet hier mit dem Systembenutzer `postgres`.
+
+### Verzeichnisse / Dateien
+
+Vor der Installation müssen keine zusätzlichen Verzeichnisse oder Dateien manuell angelegt werden.
+
+Die benötigten Verzeichnisse für Daten, Backups und Passwortdateien werden in den folgenden Schritten eingerichtet.
 
 ---
 
@@ -74,12 +74,12 @@ Der Ports-Tree arbeitet hier mit dem Systembenutzer `postgres`.
 ### Wir installieren `databases/postgresql18-server` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/databases_postgresql18-client
+mkdir -p /var/db/ports/databases_postgresql18-client
 cat <<'EOF' > /var/db/ports/databases_postgresql18-client/options
 --8<-- "freebsd/ports/databases_postgresql18-client/options"
 EOF
 
-install -d -m 0755 /var/db/ports/databases_postgresql18-server
+mkdir -p /var/db/ports/databases_postgresql18-server
 cat <<'EOF' > /var/db/ports/databases_postgresql18-server/options
 --8<-- "freebsd/ports/databases_postgresql18-server/options"
 EOF
@@ -122,7 +122,6 @@ cap_mkdb /etc/login.conf
 ### Verzeichnisse für Backups und Passwortdateien anlegen
 
 ``` sh
-install -d -m 0700 -o postgres -g postgres /var/db/passwords
 install -d -m 0750 -o postgres -g postgres /var/db/backups/postgresql
 ```
 
@@ -277,6 +276,27 @@ Für Point-in-Time-Recovery brauchst du zusätzlich eine funktionierende und get
 Minor-Updates innerhalb derselben Major-Version sind normale PostgreSQL-Update-Releases.
 
 Major-Upgrades, zum Beispiel von 17 auf 18, brauchen ein eigenes Verfahren wie `pg_upgrade`, Dump/Restore oder einen Replikationsweg. Im FreeBSD-Ports-Tree wurde die Default-Version auf PostgreSQL 18 umgestellt. Bei produktiven Systemen sollte dafür immer der dokumentierte Upgrade-Pfad aus `UPDATING` und den PostgreSQL-Upgrade-Dokumenten verwendet werden.
+
+``` sh
+service postgresql stop
+
+pkg create postgresql17-client postgresql17-server postgresql17-contrib
+
+mkdir /tmp/pg-upgrade
+
+tar xf postgresql17-client-17.*.pkg -C /tmp/pg-upgrade
+tar xf postgresql17-server-17.*.pkg -C /tmp/pg-upgrade
+tar xf postgresql17-contrib-17.*.pkg -C /tmp/pg-upgrade
+
+pkg delete -f databases/postgresql17-client databases/postgresql17-server databases/postgresql17-contrib
+
+portmaster -w -B -g -U --force-config databases/postgresql18-client databases/postgresql18-server databases/postgresql18-contrib  -n
+
+su -l postgres -c "/usr/local/bin/initdb --locale=C.UTF-8 --encoding=UTF8 --auth=scram-sha-256 --auth-local=peer --auth-host=scram-sha-256 --data-checksums -D /var/db/postgres/data18 -U postgres"
+su -l postgres -c "pg_upgrade -b /tmp/pg-upgrade/usr/local/bin/ -d /var/db/postgres/data17/ -B /usr/local/bin/ -D /var/db/postgres/data18/ -U postgres"
+
+service postgresql start
+```
 
 ---
 

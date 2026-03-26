@@ -63,15 +63,15 @@ Für dieses HowTo sind **keine DNS-Records** erforderlich.
 
 Unbound arbeitet hier als rekursiver Resolver und nicht als autoritativer Nameserver für eine eigene Zone.
 
+### Gruppen / Benutzer / Passwörter
+
+Für dieses HowTo müssen **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter manuell angelegt** werden.
+
 ### Verzeichnisse / Dateien
 
 Für dieses HowTo müssen vor der Installation **keine zusätzlichen Verzeichnisse oder Dateien manuell angelegt** werden.
 
 Die Ports-Installation bringt das Konfigurationsverzeichnis `/usr/local/etc/unbound` sowie den Dienst `unbound` selbst mit. ([FreshPorts][2])
-
-### Gruppen / Benutzer / Passwörter
-
-Für dieses HowTo müssen **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter manuell angelegt** werden.
 
 ---
 
@@ -80,12 +80,12 @@ Für dieses HowTo müssen **keine zusätzlichen Systemgruppen, Systembenutzer od
 ### Wir installieren `dns/unbound` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/security_libsodium
+mkdir -p /var/db/ports/security_libsodium
 cat <<'EOF' > /var/db/ports/security_libsodium/options
 --8<-- "freebsd/ports/security_libsodium/options"
 EOF
 
-install -d -m 0755 /var/db/ports/dns_unbound
+mkdir -p /var/db/ports/dns_unbound
 cat <<'EOF' > /var/db/ports/dns_unbound/options
 --8<-- "freebsd/ports/dns_unbound/options"
 EOF
@@ -112,7 +112,6 @@ sysrc unbound_config="/usr/local/etc/unbound/unbound.conf"
 Die Konfigurationsdatei wird unter `/usr/local/etc/unbound/unbound.conf` abgelegt.
 
 ``` sh
-install -b -m 0644 /dev/null /usr/local/etc/unbound/unbound.conf
 cat <<'EOF' > /usr/local/etc/unbound/unbound.conf
 --8<-- "freebsd/configs/usr/local/etc/unbound/unbound.conf"
 EOF
@@ -127,7 +126,7 @@ Wenn deine `unbound.conf` eine Root-Hints-Datei verwendet:
 ``` sh
 fetch -o "/usr/local/etc/unbound/root.hints" "https://www.internic.net/domain/named.root"
 chown root:wheel /usr/local/etc/unbound/root.hints
-chmod 0644 /usr/local/etc/unbound/root.hints
+chmod 644 /usr/local/etc/unbound/root.hints
 ```
 
 ### DNSSEC Trust Anchor

@@ -68,36 +68,19 @@ Für Dovecot-SASL und Dovecot-LMTP ist genau dieser Aufbau üblich: Postfix grei
 Für dieses HowTo müssen zuvor folgende DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
 ``` dns-zone
-example.com.            IN  MX      10 mail.example.com.
-mail.example.com.       IN  A       __IPADDR4__
-mail.example.com.       IN  AAAA    __IPADDR6__
-```
+example.com.                     IN  MX      10 mail.example.com.
 
-### Verzeichnisse / Dateien
+mail.example.com.                IN  A       __IPADDR4__
+mail.example.com.                IN  AAAA    __IPADDR6__
 
-Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
+_imap._tcp.example.com.          IN  SRV     0 0 0 .
+_imaps._tcp.example.com.         IN  SRV     0 1 993 mail.example.com.
+_pop3._tcp.example.com.          IN  SRV     0 0 0 .
+_pop3s._tcp.example.com.         IN  SRV     0 0 0 .
+_submission._tcp.example.com.    IN  SRV     0 1 587 mail.example.com.
+_submissions._tcp.example.com.   IN  SRV     0 1 465 mail.example.com.
 
-``` sh
-install -d -m 0755 /usr/local/etc/mail
-install -d -m 0755 -g postfix /usr/local/etc/postfix/pgsql
-```
-
-Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
-
-``` sh
-install -b -m 0640 -g postfix /etc/mail/aliases /usr/local/etc/postfix/aliases
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/postscreen_access.cidr
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/postscreen_whitelist.cidr
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/body_checks.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/header_checks.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/command_filter.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/helo_access.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/recipient_checks.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/sender_access.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/submission_header_checks.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/postscreen_dnsbl_reply
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/dnsbl_reply_map
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/mx_access
+example.com.                     IN  TXT     "v=spf1 mx -all"
 ```
 
 ### Gruppen / Benutzer / Passwörter
@@ -111,6 +94,10 @@ Für dieses HowTo muss jedoch das Passwort für den PostgreSQL-Benutzer `postfix
 cat /var/db/passwords/user_postgresql_postfix
 ```
 
+### Verzeichnisse / Dateien
+
+Für dieses HowTo sind keine zusätzlichen Verzeichnisse oder Dateien erforderlich.
+
 ---
 
 ## Installation
@@ -118,12 +105,14 @@ cat /var/db/passwords/user_postgresql_postfix
 ### Wir installieren `mail/postfix@pgsql` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/mail_postfix
+mkdir -p /var/db/ports/mail_postfix
 cat <<'EOF' > /var/db/ports/mail_postfix/options
 --8<-- "freebsd/ports/mail_postfix/options"
 EOF
 
 portmaster -w -B -g -U --force-config mail/postfix@pgsql -n
+
+pw groupmod mail -m postfix
 ```
 
 ### Dienst in `rc.conf` eintragen
@@ -137,7 +126,7 @@ sysrc postfix_enable=YES
 ### Mailwrapper auf Postfix umstellen
 
 ``` sh
-install -d -m 0755 /usr/local/etc/mail
+mkdir -p /usr/local/etc/mail
 install -b -m 0644 /usr/local/share/postfix/mailer.conf.postfix /usr/local/etc/mail/mailer.conf
 ```
 
@@ -150,7 +139,6 @@ Das FreeBSD-Handbook beschreibt für Postfix genau diesen Schritt mit `/usr/loca
 ### Konfigurationsdatei `main.cf`
 
 ``` sh
-install -b -m 0644 -g postfix /dev/null /usr/local/etc/postfix/main.cf
 cat <<'EOF' > /usr/local/etc/postfix/main.cf
 --8<-- "freebsd/configs/usr/local/etc/postfix/main.cf"
 EOF
@@ -170,7 +158,6 @@ IP6="$(ifconfig "$DEF_IF" inet6 | awk '/inet6 / && $2 !~ /^fe80:/ && $2 !~ /^::1
 ### Konfigurationsdatei `master.cf`
 
 ``` sh
-install -b -m 0644 -g postfix /dev/null /usr/local/etc/postfix/master.cf
 cat <<'EOF' > /usr/local/etc/postfix/master.cf
 --8<-- "freebsd/configs/usr/local/etc/postfix/master.cf"
 EOF
@@ -179,21 +166,7 @@ EOF
 ### PostgreSQL-Lookup-Dateien `pgsql/*.cf`
 
 ``` sh
-install -d -m 0755 -g postfix /usr/local/etc/postfix/pgsql
-
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/recipient_bcc_maps.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/relay_domains.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/sender_bcc_maps.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/sender_dependent_relayhost_maps.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/sender_login_maps.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/transport_maps.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/virtual_alias_maps.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/virtual_alias_domains_maps.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/virtual_alias_domains_catchall_maps.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/virtual_alias_domains_mailbox_maps.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/virtual_mailbox_domains.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/virtual_mailbox_limits.cf
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/pgsql/virtual_mailbox_maps.cf
+mkdir -p /usr/local/etc/postfix/pgsql
 
 cat <<'EOF' > /usr/local/etc/postfix/pgsql/recipient_bcc_maps.cf
 --8<-- "freebsd/configs/usr/local/etc/postfix/pgsql/recipient_bcc_maps.cf"
@@ -250,6 +223,11 @@ EOF
 cat /var/db/passwords/user_postgresql_postfix | xargs -I % \
   sed -e "s|__PASSWORD_POSTFIX__|%|g" -i '' /usr/local/etc/postfix/pgsql/*.cf
 
+chown -R root:postfix /usr/local/etc/postfix/pgsql
+chmod 640 /usr/local/etc/postfix/pgsql/*
+chmod 750 /usr/local/etc/postfix/pgsql
+
+
 cat /var/db/passwords/user_postgresql_postfix
 ```
 
@@ -258,19 +236,7 @@ Postfix beschreibt `pgsql:`-Maps offiziell als passenden Weg, Postfix mit Postgr
 ### Restriktionen und Lookup-Dateien
 
 ``` sh
-install -b -m 0640 -g postfix /etc/mail/aliases /usr/local/etc/postfix/aliases
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/postscreen_access.cidr
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/postscreen_whitelist.cidr
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/body_checks.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/header_checks.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/command_filter.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/helo_access.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/recipient_checks.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/sender_access.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/submission_header_checks.pcre
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/postscreen_dnsbl_reply
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/dnsbl_reply_map
-install -b -m 0640 -g postfix /dev/null /usr/local/etc/postfix/mx_access
+cp /etc/mail/aliases /usr/local/etc/postfix/aliases
 
 cat <<'EOF' > /usr/local/etc/postfix/postscreen_access.cidr
 --8<-- "freebsd/configs/usr/local/etc/postfix/postscreen_access.cidr"
@@ -372,10 +338,10 @@ portmaster -w -B -g -U --force-config net/rubygem-ipaddress -n
 portmaster -w -B -g -U --force-config devel/rubygem-optparse -n
 portmaster -w -B -g -U --force-config devel/rubygem-pp -n
 
-install -b -m 0755 /dev/null /usr/local/etc/postfix/postscreen_whitelist.rb
 cat <<'EOF' > /usr/local/etc/postfix/postscreen_whitelist.rb
 --8<-- "freebsd/configs/usr/local/etc/postfix/postscreen_whitelist.rb"
 EOF
+chmod 755 /usr/local/etc/postfix/postscreen_whitelist.rb
 
 /usr/local/etc/postfix/postscreen_whitelist.rb -f
 ```
@@ -385,7 +351,7 @@ EOF
 `mail/py-pymilter`, das von `mail/py-spf-engine` verwendet wird, hängt auf FreeBSD standardmäßig an `mail/libmilter`. Daher ist diese Installation in deinem Aufbau fachlich konsistent. ([FreshPorts][8])
 
 ``` sh
-install -d -m 0755 /var/db/ports/mail_libmilter
+mkdir -p /var/db/ports/mail_libmilter
 cat <<'EOF' > /var/db/ports/mail_libmilter/options
 --8<-- "freebsd/ports/mail_libmilter/options"
 EOF
@@ -399,42 +365,48 @@ portmaster -w -B -g -U --force-config mail/libmilter -n
 den **Policy-Service** `policyd-spf` und den **Milter** `pyspf-milter`. Auf FreeBSD installiert der Port ein rc.d-Skript für **`pyspf-milter`**; der Policy-Service wird laut pkg-message typischerweise direkt aus `master.cf` heraus von Postfix gespawnt. ([FreshPorts][2])
 
 ``` sh
-install -d -m 0755 /var/db/ports/mail_py-pymilter
+mkdir -p /var/db/ports/mail_py-pymilter
 cat <<'EOF' > /var/db/ports/mail_py-pymilter/options
 --8<-- "freebsd/ports/mail_py-pymilter/options"
 EOF
 
-install -d -m 0755 /var/db/ports/dns_py-dnspython
+mkdir -p /var/db/ports/dns_py-dnspython
 cat <<'EOF' > /var/db/ports/dns_py-dnspython/options
 --8<-- "freebsd/ports/dns_py-dnspython/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_py-pyasn1-modules
+mkdir -p /var/db/ports/devel_py-pyasn1-modules
 cat <<'EOF' > /var/db/ports/devel_py-pyasn1-modules/options
 --8<-- "freebsd/ports/devel_py-pyasn1-modules/options"
 EOF
 
-install -d -m 0755 /var/db/ports/www_py-httpcore
+mkdir -p /var/db/ports/www_py-httpcore
 cat <<'EOF' > /var/db/ports/www_py-httpcore/options
 --8<-- "freebsd/ports/www_py-httpcore/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_py-anyio
+mkdir -p /var/db/ports/devel_py-anyio
 cat <<'EOF' > /var/db/ports/devel_py-anyio/options
 --8<-- "freebsd/ports/devel_py-anyio/options"
 EOF
 
-install -d -m 0755 /var/db/ports/www_py-httpx
+mkdir -p /var/db/ports/www_py-httpx
 cat <<'EOF' > /var/db/ports/www_py-httpx/options
 --8<-- "freebsd/ports/www_py-httpx/options"
 EOF
 
-install -d -m 0755 /var/db/ports/mail_py-spf-engine
+mkdir -p /var/db/ports/mail_py-spf-engine
 cat <<'EOF' > /var/db/ports/mail_py-spf-engine/options
 --8<-- "freebsd/ports/mail_py-spf-engine/options"
 EOF
 
 portmaster -w -B -g -U --force-config mail/py-spf-engine -n
+
+pw groupmod pyspf-milter -m postfix
+
+mkdir /var/spool/postfix/pyspf-milter
+chown pyspf-milter:pyspf-milter /var/spool/postfix/pyspf-milter
+chmod 770 /var/spool/postfix/pyspf-milter
 ```
 
 ### Dienst in `rc.conf` eintragen
@@ -446,15 +418,10 @@ sysrc pyspf_milter_enable=YES
 ### Konfigurationsdateien für SPF einrichten
 
 ``` sh
-install -d -m 0755 /usr/local/etc/pyspf-milter
-install -d -m 0755 /usr/local/etc/python-policyd-spf
-
-install -b -m 0644 /dev/null /usr/local/etc/pyspf-milter/pyspf-milter.conf
 cat <<'EOF' > /usr/local/etc/pyspf-milter/pyspf-milter.conf
 --8<-- "freebsd/configs/usr/local/etc/pyspf-milter/pyspf-milter.conf"
 EOF
 
-install -b -m 0644 /dev/null /usr/local/etc/python-policyd-spf/policyd-spf.conf
 cat <<'EOF' > /usr/local/etc/python-policyd-spf/policyd-spf.conf
 --8<-- "freebsd/configs/usr/local/etc/python-policyd-spf/policyd-spf.conf"
 EOF

@@ -72,8 +72,7 @@ Wir deaktivieren also zuerst das Default-Repository von `pkg`, um versehentliche
 ``` sh
 sed -e "s|quarterly|latest|g" -i '' /etc/pkg/FreeBSD.conf
 
-install -d -m 0755 /usr/local/etc/pkg
-install -d -m 0755 /usr/local/etc/pkg/repos
+mkdir -p /usr/local/etc/pkg/repos
 cat <<'EOF' > /usr/local/etc/pkg/repos/FreeBSD.conf
 FreeBSD: {
   enabled: no
@@ -96,7 +95,7 @@ EOF
 ### Wir installieren `ports-mgmt/pkg` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/ports-mgmt_pkg
+mkdir -p /var/db/ports/ports-mgmt_pkg
 cat <<'EOF' > /var/db/ports/ports-mgmt_pkg/options
 --8<-- "freebsd/ports/ports-mgmt_pkg/options"
 EOF
@@ -107,7 +106,7 @@ make -C /usr/ports/ports-mgmt/pkg all install clean-depends clean
 ### Wir installieren `ports-mgmt/portmaster` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/ports-mgmt_portmaster
+mkdir -p /var/db/ports/ports-mgmt_portmaster
 cat <<'EOF' > /var/db/ports/ports-mgmt_portmaster/options
 --8<-- "freebsd/ports/ports-mgmt_portmaster/options"
 EOF
@@ -130,7 +129,7 @@ portmaster -w -B -g -U --force-config ports-mgmt/portmaster  -n
 ### Wir installieren `lang/perl5.42` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/lang_perl5.42
+mkdir -p /var/db/ports/lang_perl5.42
 cat <<'EOF' > /var/db/ports/lang_perl5.42/options
 --8<-- "freebsd/ports/lang_perl5.42/options"
 EOF
@@ -145,7 +144,7 @@ cat <<'EOF' >> /etc/make.conf
 DEFAULT_VERSIONS+=ssl=openssl35
 EOF
 
-install -d -m 0755 /var/db/ports/security_openssl35
+mkdir -p /var/db/ports/security_openssl35
 cat <<'EOF' > /var/db/ports/security_openssl35/options
 --8<-- "freebsd/ports/security_openssl35/options"
 EOF
@@ -156,11 +155,10 @@ portmaster -w -B -g -U --force-config security/openssl35  -n
 ### Wir installieren `security/ca_root_nss` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/security_ca_root_nss
+mkdir -p /var/db/ports/security_ca_root_nss
 cat <<'EOF' > /var/db/ports/security_ca_root_nss/options
 --8<-- "freebsd/ports/security_ca_root_nss/options"
 EOF
-
 
 portmaster -w -B -g -U --force-config security/ca_root_nss  -n
 ```
@@ -168,47 +166,47 @@ portmaster -w -B -g -U --force-config security/ca_root_nss  -n
 ### Wir installieren `lang/python` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_cmake-core
+mkdir -p /var/db/ports/devel_cmake-core
 cat <<'EOF' > /var/db/ports/devel_cmake-core/options
 --8<-- "freebsd/ports/devel_cmake-core/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_gettext-runtime
+mkdir -p /var/db/ports/devel_gettext-runtime
 cat <<'EOF' > /var/db/ports/devel_gettext-runtime/options
 --8<-- "freebsd/ports/devel_gettext-runtime/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_gettext-tools
+mkdir -p /var/db/ports/devel_gettext-tools
 cat <<'EOF' > /var/db/ports/devel_gettext-tools/options
 --8<-- "freebsd/ports/devel_gettext-tools/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_libtextstyle
+mkdir -p /var/db/ports/devel_libtextstyle
 cat <<'EOF' > /var/db/ports/devel_libtextstyle/options
 --8<-- "freebsd/ports/devel_libtextstyle/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_pkgconf
+mkdir -p /var/db/ports/devel_pkgconf
 cat <<'EOF' > /var/db/ports/devel_pkgconf/options
 --8<-- "freebsd/ports/devel_pkgconf/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_readline
+mkdir -p /var/db/ports/devel_readline
 cat <<'EOF' > /var/db/ports/devel_readline/options
 --8<-- "freebsd/ports/devel_readline/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_gmake
+mkdir -p /var/db/ports/devel_gmake
 cat <<'EOF' > /var/db/ports/devel_gmake/options
 --8<-- "freebsd/ports/devel_gmake/options"
 EOF
 
-install -d -m 0755 /var/db/ports/math_mpdecimal
+mkdir -p /var/db/ports/math_mpdecimal
 cat <<'EOF' > /var/db/ports/math_mpdecimal/options
 --8<-- "freebsd/ports/math_mpdecimal/options"
 EOF
 
-install -d -m 0755 /var/db/ports/lang_python311
+mkdir -p /var/db/ports/lang_python311
 cat <<'EOF' > /var/db/ports/lang_python311/options
 --8<-- "freebsd/ports/lang_python311/options"
 EOF
@@ -219,7 +217,7 @@ portmaster -w -B -g -U --force-config lang/python  -n
 ### Wir installieren `devel/py-pip` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_py-pip
+mkdir -p /var/db/ports/devel_py-pip
 cat <<'EOF' > /var/db/ports/devel_py-pip/options
 --8<-- "freebsd/ports/devel_py-pip/options"
 EOF
@@ -230,47 +228,47 @@ portmaster -w -B -g -U --force-config devel/py-pip  -n
 ### Wir installieren `devel/pcre2` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_ninja
+mkdir -p /var/db/ports/devel_ninja
 cat <<'EOF' > /var/db/ports/devel_ninja/options
 --8<-- "freebsd/ports/devel_ninja/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_libunistring
+mkdir -p /var/db/ports/devel_libunistring
 cat <<'EOF' > /var/db/ports/devel_libunistring/options
 --8<-- "freebsd/ports/devel_libunistring/options"
 EOF
 
-install -d -m 0755 /var/db/ports/misc_help2man
+mkdir -p /var/db/ports/misc_help2man
 cat <<'EOF' > /var/db/ports/misc_help2man/options
 --8<-- "freebsd/ports/misc_help2man/options"
 EOF
 
-install -d -m 0755 /var/db/ports/print_texinfo
+mkdir -p /var/db/ports/print_texinfo
 cat <<'EOF' > /var/db/ports/print_texinfo/options
 --8<-- "freebsd/ports/print_texinfo/options"
 EOF
 
-install -d -m 0755 /var/db/ports/converters_libiconv
+mkdir -p /var/db/ports/converters_libiconv
 cat <<'EOF' > /var/db/ports/converters_libiconv/options
 --8<-- "freebsd/ports/converters_libiconv/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_p5-Locale-libintl
+mkdir -p /var/db/ports/devel_p5-Locale-libintl
 cat <<'EOF' > /var/db/ports/devel_p5-Locale-libintl/options
 --8<-- "freebsd/ports/devel_p5-Locale-libintl/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_rhash
+mkdir -p /var/db/ports/security_rhash
 cat <<'EOF' > /var/db/ports/security_rhash/options
 --8<-- "freebsd/ports/security_rhash/options"
 EOF
 
-install -d -m 0755 /var/db/ports/textproc_expat2
+mkdir -p /var/db/ports/textproc_expat2
 cat <<'EOF' > /var/db/ports/textproc_expat2/options
 --8<-- "freebsd/ports/textproc_expat2/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_pcre2
+mkdir -p /var/db/ports/devel_pcre2
 cat <<'EOF' > /var/db/ports/devel_pcre2/options
 --8<-- "freebsd/ports/devel_pcre2/options"
 EOF
@@ -281,32 +279,32 @@ portmaster -w -B -g -U --force-config devel/pcre2  -n
 ### Wir installieren `devel/llvm` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_binutils
+mkdir -p /var/db/ports/devel_binutils
 cat <<'EOF' > /var/db/ports/devel_binutils/options
 --8<-- "freebsd/ports/devel_binutils/options"
 EOF
 
-install -d -m 0755 /var/db/ports/math_mpfr
+mkdir -p /var/db/ports/math_mpfr
 cat <<'EOF' > /var/db/ports/math_mpfr/options
 --8<-- "freebsd/ports/math_mpfr/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_swig
+mkdir -p /var/db/ports/devel_swig
 cat <<'EOF' > /var/db/ports/devel_swig/options
 --8<-- "freebsd/ports/devel_swig/options"
 EOF
 
-install -d -m 0755 /var/db/ports/lang_lua53
+mkdir -p /var/db/ports/lang_lua53
 cat <<'EOF' > /var/db/ports/lang_lua53/options
 --8<-- "freebsd/ports/lang_lua53/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_llvm19
+mkdir -p /var/db/ports/devel_llvm19
 cat <<'EOF' > /var/db/ports/devel_llvm19/options
 --8<-- "freebsd/ports/devel_llvm19/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_llvm
+mkdir -p /var/db/ports/devel_llvm
 cat <<'EOF' > /var/db/ports/devel_llvm/options
 --8<-- "freebsd/ports/devel_llvm/options"
 EOF
@@ -317,7 +315,7 @@ portmaster -w -B -g -U --force-config devel/llvm  -n
 ### Wir installieren `lang/lua54` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/lang_lua54
+mkdir -p /var/db/ports/lang_lua54
 cat <<'EOF' > /var/db/ports/lang_lua54/options
 --8<-- "freebsd/ports/lang_lua54/options"
 EOF
@@ -328,7 +326,7 @@ portmaster -w -B -g -U --force-config lang/lua54  -n
 ### Wir installieren `lang/tcl86` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/lang_tcl86
+mkdir -p /var/db/ports/lang_tcl86
 cat <<'EOF' > /var/db/ports/lang_tcl86/options
 --8<-- "freebsd/ports/lang_tcl86/options"
 EOF
@@ -339,7 +337,7 @@ portmaster -w -B -g -U --force-config lang/tcl86  -n
 ### Wir installieren `devel/re2c` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_re2c
+mkdir -p /var/db/ports/devel_re2c
 cat <<'EOF' > /var/db/ports/devel_re2c/options
 --8<-- "freebsd/ports/devel_re2c/options"
 EOF
@@ -350,17 +348,17 @@ portmaster -w -B -g -U --force-config devel/re2c  -n
 ### Wir installieren `shells/bash` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_bison
+mkdir -p /var/db/ports/devel_bison
 cat <<'EOF' > /var/db/ports/devel_bison/options
 --8<-- "freebsd/ports/devel_bison/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_m4
+mkdir -p /var/db/ports/devel_m4
 cat <<'EOF' > /var/db/ports/devel_m4/options
 --8<-- "freebsd/ports/devel_m4/options"
 EOF
 
-install -d -m 0755 /var/db/ports/shells_bash
+mkdir -p /var/db/ports/shells_bash
 cat <<'EOF' > /var/db/ports/shells_bash/options
 --8<-- "freebsd/ports/shells_bash/options"
 EOF
@@ -371,22 +369,22 @@ portmaster -w -B -g -U --force-config shells/bash  -n
 ### Wir installieren `ftp/curl` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/archivers_brotli
+mkdir -p /var/db/ports/archivers_brotli
 cat <<'EOF' > /var/db/ports/archivers_brotli/options
 --8<-- "freebsd/ports/archivers_brotli/options"
 EOF
 
-install -d -m 0755 /var/db/ports/archivers_zstd
+mkdir -p /var/db/ports/archivers_zstd
 cat <<'EOF' > /var/db/ports/archivers_zstd/options
 --8<-- "freebsd/ports/archivers_zstd/options"
 EOF
 
-install -d -m 0755 /var/db/ports/dns_libpsl
+mkdir -p /var/db/ports/dns_libpsl
 cat <<'EOF' > /var/db/ports/dns_libpsl/options
 --8<-- "freebsd/ports/dns_libpsl/options"
 EOF
 
-install -d -m 0755 /var/db/ports/ftp_curl
+mkdir -p /var/db/ports/ftp_curl
 cat <<'EOF' > /var/db/ports/ftp_curl/options
 --8<-- "freebsd/ports/ftp_curl/options"
 EOF
@@ -397,12 +395,12 @@ portmaster -w -B -g -U --force-config ftp/curl  -n
 ### Wir installieren `lang/rust` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/math_gmp
+mkdir -p /var/db/ports/math_gmp
 cat <<'EOF' > /var/db/ports/math_gmp/options
 --8<-- "freebsd/ports/math_gmp/options"
 EOF
 
-install -d -m 0755 /var/db/ports/lang_rust
+mkdir -p /var/db/ports/lang_rust
 cat <<'EOF' > /var/db/ports/lang_rust/options
 --8<-- "freebsd/ports/lang_rust/options"
 EOF
@@ -413,22 +411,22 @@ portmaster -w -B -g -U --force-config lang/rust  -n
 ### Wir installieren `lang/ruby33` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_autoconf
+mkdir -p /var/db/ports/devel_autoconf
 cat <<'EOF' > /var/db/ports/devel_autoconf/options
 --8<-- "freebsd/ports/devel_autoconf/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_automake
+mkdir -p /var/db/ports/devel_automake
 cat <<'EOF' > /var/db/ports/devel_automake/options
 --8<-- "freebsd/ports/devel_automake/options"
 EOF
 
-install -d -m 0755 /var/db/ports/math_gmp
+mkdir -p /var/db/ports/math_gmp
 cat <<'EOF' > /var/db/ports/math_gmp/options
 --8<-- "freebsd/ports/math_gmp/options"
 EOF
 
-install -d -m 0755 /var/db/ports/lang_ruby33
+mkdir -p /var/db/ports/lang_ruby33
 cat <<'EOF' > /var/db/ports/lang_ruby33/options
 --8<-- "snippets/ports/lang_ruby33/options"
 EOF
@@ -439,7 +437,7 @@ portmaster -w -B -g -U --force-config lang/ruby33  -n
 ### Wir installieren `devel/ruby-gems` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_ruby-gems
+mkdir -p /var/db/ports/devel_ruby-gems
 cat <<'EOF' > /var/db/ports/devel_ruby-gems/options
 --8<-- "snippets/ports/devel_ruby-gems/options"
 EOF
@@ -456,7 +454,7 @@ portmaster -w -B -g -U --force-config sysutils/rubygem-bundler  -n
 ### Wir installieren `lang/go` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/lang_go125
+mkdir -p /var/db/ports/lang_go125
 cat <<'EOF' > /var/db/ports/lang_go125/options
 --8<-- "snippets/ports/lang_go125/options"
 EOF
@@ -467,7 +465,7 @@ portmaster -w -B -g -U --force-config lang/go  -n
 ### Wir installieren `sysutils/cpu-microcode` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/sysutils_cpu-microcode-intel
+mkdir -p /var/db/ports/sysutils_cpu-microcode-intel
 cat <<'EOF' > /var/db/ports/sysutils_cpu-microcode-intel/options
 --8<-- "snippets/ports/sysutils_cpu-microcode-intel/options"
 EOF

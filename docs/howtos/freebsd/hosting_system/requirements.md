@@ -96,8 +96,7 @@ Wenn das offizielle FreeBSD-Repository bewusst deaktiviert werden soll, reicht d
 ``` sh
 sed -e "s|quarterly|latest|g" -i '' /etc/pkg/FreeBSD.conf
 
-install -d -m 0755 /usr/local/etc/pkg
-install -d -m 0755 /usr/local/etc/pkg/repos
+mkdir -p /usr/local/etc/pkg/repos
 cat <<'EOF' > /usr/local/etc/pkg/repos/FreeBSD.conf
 FreeBSD: {
   enabled: no
@@ -118,8 +117,8 @@ pkg audit -F
 Da die Nutzdaten in den folgenden HowTos weitgehend unter `/var/db` abgelegt werden, werden die Basisverzeichnisse vorbereitet. Für wiederholbare Anleitungen ist `install -d` sauberer als eine Mischung aus `mkdir`, `chmod` und `chown`.
 
 ``` sh
-install -d -m 0755 /var/db/backups
-install -d -m 0755 /var/db/passwords
+mkdir -p /var/db/backups
+mkdir -p /var/db/passwords
 ```
 
 ---
@@ -163,9 +162,7 @@ www.example.com.                 IN  AAAA    __IPADDR6__
 ```
 
 ``` sh
-install -d -m 0755 /usr/local/www
-install -d -m 0755 /usr/local/www/apps
-
+mkdir -p /usr/local/www/apps
 ```
 
 ---
@@ -216,6 +213,16 @@ Für die Maildaten werden eigene Systemkonten angelegt. Die Anlage sollte idempo
 pw groupshow vmail >/dev/null 2>&1 || pw groupadd -n vmail -g 5000
 id -u vmail >/dev/null 2>&1 || \
   pw useradd -n vmail -u 5000 -g vmail -c 'Virtual Mailuser' -d /nonexistent -s /usr/sbin/nologin -w no
+
+pw groupshow opendkim >/dev/null 2>&1 || pw groupadd -n opendkim -g 5118
+id -u opendkim >/dev/null 2>&1 || \
+  pw useradd -n opendkim -u 5118 -i 5118 -g opendkim -c 'OpenDKIM User' -d /var/run/opendkim -s /usr/sbin/nologin -w no
+pw groupmod opendkim -m postfix
+
+pw groupshow opendmarc >/dev/null 2>&1 || pw groupadd -n opendmarc -g 5119
+id -u opendmarc >/dev/null 2>&1 || \
+  pw useradd -n opendmarc -u 5119 -i 5119 -g opendmarc -c 'OpenDMARC User' -d /var/run/opendmarc -s /usr/sbin/nologin -w no
+pw groupmod opendmarc -m postfix
 
 pw groupshow vacation >/dev/null 2>&1 || pw groupadd -n vacation -g 65501
 id -u vacation >/dev/null 2>&1 || \

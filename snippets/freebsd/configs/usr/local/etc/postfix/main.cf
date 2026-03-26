@@ -1,12 +1,12 @@
 # =========================================================================
 # SYSTEM & PATHS
 # =========================================================================
-compatibility_level = 3.10
+compatibility_level = 3.11
 myhostname = mail.$mydomain
 mydomain = example.com
 myorigin = $mydomain
 mydestination = $myhostname localhost.$mydomain localhost localhost.localdomain
-mail_spool_directory = /data/vmail
+mail_spool_directory = /var/vmail
 home_mailbox = .maildir/
 openssl_path = /usr/local/bin/openssl
 recipient_delimiter = +
@@ -27,6 +27,7 @@ smtpd_client_connection_count_limit = 50
 smtpd_client_connection_rate_limit = 30
 smtpd_client_message_rate_limit = 100
 smtpd_client_recipient_rate_limit = 200
+smtpd_proxy_options = speed_adjust
 policyd-spf_time_limit = 3600
 
 # =========================================================================
@@ -35,7 +36,7 @@ policyd-spf_time_limit = 3600
 virtual_transport = lmtp:unix:private/dovecot-lmtp
 mailbox_transport = lmtp:unix:private/dovecot-lmtp
 local_transport = virtual
-virtual_mailbox_base = /data/vmail
+virtual_mailbox_base = /var/vmail
 virtual_minimum_uid = 5000
 virtual_uid_maps = static:5000
 virtual_gid_maps = static:5000
@@ -154,6 +155,10 @@ smtpd_recipient_restrictions =
 smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated reject_unauth_destination
 smtpd_data_restrictions = reject_unauth_pipelining reject_multi_recipient_bounce
 smtpd_etrn_restrictions = reject
+receive_override_options = no_address_mappings
+#recipient_bcc_maps = proxy:pgsql:${config_directory}/pgsql/recipient_bcc_maps.cf
+#sender_bcc_maps = proxy:pgsql:${config_directory}/pgsql/sender_bcc_maps.cf
+#sender_dependent_relayhost_maps = proxy:pgsql:${config_directory}/pgsql/sender_dependent_relayhost_maps.cf
 
 # =========================================================================
 # GENERAL & MILTERS
@@ -162,7 +167,7 @@ milter_default_action = accept
 milter_protocol = 6
 milter_connect_macros = j {client_name} {daemon_name} v
 non_smtpd_milters = $smtpd_milters
-smtpd_milters = unix:/var/run/pyspf-milter/pyspf-milter.sock unix:/var/run/milteropendkim/opendkim.sock unix:/var/run/opendmarc/opendmarc.sock unix:/var/run/amavis/amavisd-milter.sock
+smtpd_milters = unix:pyspf-milter/pyspf-milter.sock unix:opendkim/opendkim.sock unix:opendmarc/opendmarc.sock
 alias_database = hash:${config_directory}/aliases
 alias_maps = hash:${config_directory}/aliases
 biff = no
@@ -175,6 +180,7 @@ qmgr_message_recipient_limit = 10000
 qmgr_message_active_limit = 20000
 maximal_queue_lifetime = 5d
 bounce_queue_lifetime = 1d
+internal_mail_filter_classes = bounce
 enable_original_recipient = no
 mailbox_size_limit = 0
 message_size_limit = 104857600
@@ -189,6 +195,8 @@ strict_rfc821_envelopes = yes
 swap_bangpath = no
 header_checks = pcre:${config_directory}/header_checks.pcre
 body_checks = pcre:${config_directory}/body_checks.pcre
+#mime_header_checks = pcre:${config_directory}/mime_header_checks.pcre
+#nested_header_checks = pcre:${config_directory}/nested_header_checks.pcre
 smtpd_command_filter = pcre:${config_directory}/command_filter.pcre
 internal_mail_filter_classes = bounce
 rbl_reply_maps = hash:${config_directory}/dnsbl_reply_map

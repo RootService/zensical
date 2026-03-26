@@ -4,19 +4,18 @@
 # ==========================================================================
 smtp      inet  n       -       n       -       1       postscreen
 smtpd     pass  -       -       n       -       -       smtpd
-#  -o content_filter=amavisfeed:[127.0.0.1]:10024
+  -o content_filter=amavisfeed:[127.0.0.1]:10024
   -o milter_macro_daemon_name=VERIFYING
   -o receive_override_options=no_address_mappings
   -o smtp_send_xforward_command=yes
-  -o smtpd_milters=inet:127.0.0.1:8895
 dnsblog   unix  -       -       n       -       0       dnsblog
 tlsproxy  unix  -       -       n       -       0       tlsproxy
 submission inet n       -       n       -       -       smtpd
   -o syslog_name=postfix/submission
-#  -o content_filter=amavisfeed:[127.0.0.1]:10026
+  -o content_filter=amavisfeed:[127.0.0.1]:10026
   -o local_header_rewrite_clients=static:all
   -o milter_macro_daemon_name=ORIGINATING
-  -o receive_override_options=no_header_body_checks
+  -o receive_override_options=no_header_body_checks,no_milters
   -o smtp_send_xforward_command=yes
   -o smtpd_forbid_unauth_pipelining=no
   -o smtpd_hide_client_session=yes
@@ -26,10 +25,10 @@ submission inet n       -       n       -       -       smtpd
   -o smtpd_tls_security_level=encrypt
 submissions inet n      -       n       -       -       smtpd
   -o syslog_name=postfix/submissions
-#  -o content_filter=amavisfeed:[127.0.0.1]:10026
+  -o content_filter=amavisfeed:[127.0.0.1]:10026
   -o local_header_rewrite_clients=static:all
   -o milter_macro_daemon_name=ORIGINATING
-  -o receive_override_options=no_header_body_checks
+  -o receive_override_options=no_header_body_checks,no_milters
   -o smtp_send_xforward_command=yes
   -o smtpd_forbid_unauth_pipelining=no
   -o smtpd_hide_client_session=yes
@@ -142,7 +141,7 @@ amavisfeed  unix  -     -       n       -       10      smtp
   -o smtpd_error_sleep_time=0
   -o smtpd_hard_error_limit=1000
   -o smtpd_helo_restrictions=permit_mynetworks,reject
-  -o smtpd_milters=unix:/var/run/milteropendkim/opendkim.sock
+  -o smtpd_milters=unix:opendkim/opendkim.sock
   -o smtpd_recipient_restrictions=permit_mynetworks,reject
   -o smtpd_relay_restrictions=permit_mynetworks,reject
   -o smtpd_restriction_classes=

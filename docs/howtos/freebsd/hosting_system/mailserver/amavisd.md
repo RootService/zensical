@@ -81,26 +81,23 @@ Für dieses HowTo sind zunächst keine zusätzlichen DNS-Records zwingend erford
 
 Für die **optionale DKIM-Signierung** wird später jedoch ein TXT-Record für den verwendeten Selector benötigt. Amavis kann diesen Record nach der Schlüsselerzeugung selbst mit `showkeys` ausgeben. ([Amavis][3])
 
+### Gruppen / Benutzer / Passwörter
+
+Für dieses HowTo müssen keine zusätzlichen Systemgruppen oder Systembenutzer angelegt werden.
+
+Der Amavisd-Port verwendet auf FreeBSD die bestehenden Amavis-Benutzer- und Gruppenpfade unter `/var/amavis`; das rc.d-Skript erwartet standardmäßig die Konfigurationsdatei `/usr/local/etc/amavisd.conf` und die PID-Datei unter `/var/amavis/amavisd.pid`. ([FreeBSD Git][4])
+
 ### Verzeichnisse / Dateien
 
 Für diese HowTos müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
 ``` sh
-install -d -m 0700 /var/db/passwords
-install -d -m 0750 -o vscan -g vscan /var/amavis/tmp
 ```
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
 ``` sh
-install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_vscan
 ```
-
-### Gruppen / Benutzer / Passwörter
-
-Für dieses HowTo müssen keine zusätzlichen Systemgruppen oder Systembenutzer angelegt werden.
-
-Der Amavisd-Port verwendet auf FreeBSD die bestehenden Amavis-Benutzer- und Gruppenpfade unter `/var/amavis`; das rc.d-Skript erwartet standardmäßig die Konfigurationsdatei `/usr/local/etc/amavisd.conf` und die PID-Datei unter `/var/amavis/var/amavisd.pid`. ([FreeBSD Git][4])
 
 ---
 
@@ -109,42 +106,42 @@ Der Amavisd-Port verwendet auf FreeBSD die bestehenden Amavis-Benutzer- und Grup
 ### Wir installieren `security/amavisd-new` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/archivers_7-zip
+mkdir -p /var/db/ports/archivers_7-zip
 cat <<'EOF' > /var/db/ports/archivers_7-zip/options
 --8<-- "freebsd/ports/archivers_7-zip/options"
 EOF
 
-install -d -m 0755 /var/db/ports/archivers_arc
+mkdir -p /var/db/ports/archivers_arc
 cat <<'EOF' > /var/db/ports/archivers_arc/options
 --8<-- "freebsd/ports/archivers_arc/options"
 EOF
 
-install -d -m 0755 /var/db/ports/archivers_arj
+mkdir -p /var/db/ports/archivers_arj
 cat <<'EOF' > /var/db/ports/archivers_arj/options
 --8<-- "freebsd/ports/archivers_arj/options"
 EOF
 
-install -d -m 0755 /var/db/ports/archivers_cabextract
+mkdir -p /var/db/ports/archivers_cabextract
 cat <<'EOF' > /var/db/ports/archivers_cabextract/options
 --8<-- "freebsd/ports/archivers_cabextract/options"
 EOF
 
-install -d -m 0755 /var/db/ports/archivers_lzop
+mkdir -p /var/db/ports/archivers_lzop
 cat <<'EOF' > /var/db/ports/archivers_lzop/options
 --8<-- "freebsd/ports/archivers_lzop/options"
 EOF
 
-install -d -m 0755 /var/db/ports/archivers_lzo2
+mkdir -p /var/db/ports/archivers_lzo2
 cat <<'EOF' > /var/db/ports/archivers_lzo2/options
 --8<-- "freebsd/ports/archivers_lzo2/options"
 EOF
 
-install -d -m 0755 /var/db/ports/archivers_unrar
+mkdir -p /var/db/ports/archivers_unrar
 cat <<'EOF' > /var/db/ports/archivers_unrar/options
 --8<-- "freebsd/ports/archivers_unrar/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_amavisd-new
+mkdir -p /var/db/ports/security_amavisd-new
 cat <<'EOF' > /var/db/ports/security_amavisd-new/options
 --8<-- "freebsd/ports/security_amavisd-new/options"
 EOF
@@ -157,12 +154,17 @@ Seit dem Port-Update 2022 verwendet Amavis auf FreeBSD **`archivers/7-zip`** und
 ### Wir installieren `security/amavisd-milter` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/security_amavisd-milter
+mkdir -p /var/db/ports/security_amavisd-milter
 cat <<'EOF' > /var/db/ports/security_amavisd-milter/options
 --8<-- "freebsd/ports/security_amavisd-milter/options"
 EOF
 
 portmaster -w -B -g -U --force-config security/amavisd-milter -n
+
+mkdir -p /var/spool/postfix/amavis
+chown vscan:vscan /var/spool/postfix/amavis
+chmod 770 /var/spool/postfix/amavis
+pw groupmod vscan -m postfix
 ```
 
 ### Dienst in `rc.conf` eintragen
@@ -171,18 +173,18 @@ Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Sy
 
 ``` sh
 sysrc amavisd_enable="YES"
-sysrc amavisd_pidfile="/var/amavis/var/amavisd.pid"
+sysrc amavisd_pidfile="/var/amavis/amavisd.pid"
+sysrc amavisd_ram="512m"
 ```
 
 ---
 
-Das FreeBSD-rc-Skript heißt **`amavisd-milter`**, die `rc.conf`-Variable dazu heißt aber **`amavisd_milter_enable`**. Zusätzlich kennt das Skript unter anderem die Variablen `amavisd_milter_socket`, `amavisd_milter_socket_perm`, `amavisd_am_pdp_socket` und optional `amavisd_milter_pidfile`. Die Standardwerte sind `/var/run/amavis/amavisd-milter.sock`, `0666`, `/var/amavis/var/amavisd.sock` und `/var/run/amavis/amavisd-milter.pid`. ([GitHub][15])
+Das FreeBSD-rc-Skript heißt **`amavisd-milter`**, die `rc.conf`-Variable dazu heißt aber **`amavisd_milter_enable`**. Zusätzlich kennt das Skript unter anderem die Variablen `amavisd_milter_socket`, `amavisd_milter_socket_perm`, `amavisd_am_pdp_socket` und optional `amavisd_milter_pidfile`. Die Standardwerte sind `/var/run/amavis/amavisd-milter.sock`, `0666`, `/var/amavis/amavisd.sock` und `/var/run/amavis/amavisd-milter.pid`. ([GitHub][15])
 
 ``` sh
 sysrc amavisd_milter_enable="YES"
-sysrc amavisd_milter_socket="local:/var/run/amavis/amavisd-milter.sock"
-sysrc amavisd_milter_socket_perm="0666"
-sysrc amavisd_am_pdp_socket="local:/var/amavis/var/amavisd.sock"
+sysrc amavisd_milter_socket="/var/spool/postfix/amavis/amavisd-milter.sock"
+sysrc amavisd_am_pdp_socket="/var/spool/postfix/amavis/amavisd.sock"
 ```
 
 ---
@@ -194,7 +196,6 @@ sysrc amavisd_am_pdp_socket="local:/var/amavis/var/amavisd.sock"
 Der Port installiert die Vorlagen `amavisd.conf.sample`, `amavisd.conf-default` und `amavisd-custom.conf.sample` unter `/usr/local/etc`. Für dieses Setup verwenden wir die produktive Konfigurationsdatei `/usr/local/etc/amavisd.conf`. ([FreeBSD Git][6])
 
 ``` sh
-install -b -m 0644 /usr/local/etc/amavisd.conf.sample /usr/local/etc/amavisd.conf
 cat <<'EOF' > /usr/local/etc/amavisd.conf
 --8<-- "freebsd/configs/usr/local/etc/amavisd.conf"
 EOF
@@ -212,6 +213,11 @@ IP6="$(ifconfig "$DEF_IF" inet6 | awk '/inet6 / && $2 !~ /^fe80:/ && $2 !~ /^::1
 
 cat /var/db/passwords/postgresql_user_vscan | xargs -I % \
   sed -e "s|__PASSWORD_VSCAN__|%|g" -i '' /usr/local/etc/amavisd.conf
+
+mkdir -p /var/amavis/tmp
+chown vscan:vscan /var/amavis/tmp
+
+echo 'tmpfs   /var/amavis/tmp tmpfs   rw,noexec,nosuid,size=512m,mode=1750,uid=vscan,gid=vscan 0 0' >> /etc/fstab
 ```
 
 ### Optionale DKIM-Signierung
@@ -219,8 +225,11 @@ cat /var/db/passwords/postgresql_user_vscan | xargs -I % \
 Amavis kann selbst DKIM-Schlüssel erzeugen, öffentliche Schlüssel für DNS ausgeben und veröffentlichte Schlüssel testen. Upstream empfiehlt für DKIM-Signing mindestens **1024 Bit**; 2048 Bit ist heute der saubere Standard. `genrsa` erzeugt den privaten Schlüssel, `showkeys` erzeugt den DNS-geeigneten Public-Key-Output, und `testkeys` prüft die Veröffentlichung gegen DNS. ([Amavis][3])
 
 ``` sh
-install -d -m 0755 -o vscan -g vscan /var/amavis/db/keys
-install -d -m 0755 -o vscan -g vscan /var/amavis/db/keys/example.com
+mkdir -p /var/amavis/db/keys
+chown vscan:vscan /var/amavis/db/keys
+
+mkdir -p /var/amavis/db/keys/example.com
+chown vscan:vscan /var/amavis/db/keys/example.com
 
 su -m vscan -c 'amavisd genrsa /var/amavis/db/keys/example.com/20260321.pem 2048'
 

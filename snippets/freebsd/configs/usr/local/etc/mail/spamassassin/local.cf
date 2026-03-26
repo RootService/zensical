@@ -10,7 +10,7 @@
 # CORE SETTINGS
 # ----------------------------------------------------------------------------
 lock_method             flock
-required_score          7.0                     # Conservative for multi-user (default: 5.0)
+required_score          7.0
 report_safe             0
 skip_rbl_checks         1
 skip_uribl_checks       1
@@ -45,7 +45,7 @@ bayes_expiry_max_db_size 150000
 bayes_sql_override_username 0
 
 bayes_store_module      Mail::SpamAssassin::BayesStore::PgSQL
-bayes_sql_dsn           DBI:Pg:dbname=spamass_bayes;host=/tmp
+bayes_sql_dsn           DBI:Pg:dbname=mail_bayes;host=localhost
 bayes_sql_username      spamass
 bayes_sql_password      __PASSWORD_SPAMASS__
 
@@ -58,7 +58,7 @@ bayes_ignore_header     X-Spam-Status
 # ----------------------------------------------------------------------------
 use_txrep               1
 txrep_factory           Mail::SpamAssassin::SQLBasedAddrList
-user_awl_dsn            DBI:Pg:dbname=spamass_txrep;host=/tmp
+user_awl_dsn            DBI:Pg:dbname=mail_txrep;host=localhost
 user_awl_sql_username   spamass
 user_awl_sql_password   __PASSWORD_SPAMASS__
 
@@ -125,4 +125,7 @@ header   AUTHENTICATED_SENDER  Received =~ /Authenticated\s+sender:.*by\s+mail\.
 describe AUTHENTICATED_SENDER  Header 'Received:' contains 'Authenticated sender:'
 score    AUTHENTICATED_SENDER  -3.0
 
-score    RP_MATCHES_RCVD       0
+score RP_MATCHES_RCVD   0
+
+# USER RULES ENABLED
+allow_user_rules        1

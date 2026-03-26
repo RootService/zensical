@@ -59,17 +59,17 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](../requir
 
 Für dieses HowTo sind **keine zusätzlichen DNS-Records** erforderlich.
 
-### Verzeichnisse / Dateien
-
-Für dieses HowTo müssen vor der Installation **keine zusätzlichen Verzeichnisse oder Dateien manuell angelegt** werden.
-
-Der Port bringt bereits die Beispieldatei `my.cnf.sample` unter `/usr/local/etc/mysql/` sowie das FreeBSD-Service-Skript `mysql-server` mit. ([freshports.org][1])
-
 ### Gruppen / Benutzer / Passwörter
 
 Für dieses HowTo müssen **keine zusätzlichen Systemgruppen oder Systembenutzer** manuell angelegt werden.
 
 Der Dienst verwendet den Systembenutzer `mysql`. ([GitHub][4])
+
+### Verzeichnisse / Dateien
+
+Für dieses HowTo müssen vor der Installation **keine zusätzlichen Verzeichnisse oder Dateien manuell angelegt** werden.
+
+Der Port bringt bereits die Beispieldatei `my.cnf.sample` unter `/usr/local/etc/mysql/` sowie das FreeBSD-Service-Skript `mysql-server` mit. ([freshports.org][1])
 
 ---
 
@@ -78,32 +78,32 @@ Der Dienst verwendet den Systembenutzer `mysql`. ([GitHub][4])
 ### Wir installieren `databases/mysql80-server` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/comms_hidapi
+mkdir -p /var/db/ports/comms_hidapi
 cat <<'EOF' > /var/db/ports/comms_hidapi/options
 --8<-- "freebsd/ports/comms_hidapi/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_libfido2
+mkdir -p /var/db/ports/security_libfido2
 cat <<'EOF' > /var/db/ports/security_libfido2/options
 --8<-- "freebsd/ports/security_libfido2/options"
 EOF
 
-install -d -m 0755 /var/db/ports/textproc_groff
+mkdir -p /var/db/ports/textproc_groff
 cat <<'EOF' > /var/db/ports/textproc_groff/options
 --8<-- "freebsd/ports/textproc_groff/options"
 EOF
 
-install -d -m 0755 /var/db/ports/print_gsfonts
+mkdir -p /var/db/ports/print_gsfonts
 cat <<'EOF' > /var/db/ports/print_gsfonts/options
 --8<-- "freebsd/ports/print_gsfonts/options"
 EOF
 
-install -d -m 0755 /var/db/ports/databases_mysql80-client
+mkdir -p /var/db/ports/databases_mysql80-client
 cat <<'EOF' > /var/db/ports/databases_mysql80-client/options
 --8<-- "freebsd/ports/databases_mysql80-client/options"
 EOF
 
-install -d -m 0755 /var/db/ports/databases_mysql80-server
+mkdir -p /var/db/ports/databases_mysql80-server
 cat <<'EOF' > /var/db/ports/databases_mysql80-server/options
 --8<-- "freebsd/ports/databases_mysql80-server/options"
 EOF
@@ -119,8 +119,6 @@ Das FreeBSD-rc-Skript unterstützt hier unter anderem `mysql_enable`, `mysql_dbd
 
 ``` sh
 sysrc mysql_enable=YES
-sysrc mysql_dbdir="/var/db/mysql"
-sysrc mysql_optfile="/usr/local/etc/mysql/my.cnf"
 ```
 
 ---
@@ -132,7 +130,6 @@ sysrc mysql_optfile="/usr/local/etc/mysql/my.cnf"
 Für Passwortdateien und Backups legen wir die benötigten Verzeichnisse jetzt an.
 
 ``` sh
-install -d -m 0700 -o mysql -g mysql /var/db/passwords
 install -d -m 0750 -o mysql -g mysql /var/db/backups/mysql
 ```
 
@@ -141,7 +138,6 @@ install -d -m 0750 -o mysql -g mysql /var/db/backups/mysql
 MySQL sollte dauerhaft über eine Option-Datei konfiguriert werden. Das rc-Skript verwendet standardmäßig `/usr/local/etc/mysql/my.cnf`, wenn dort eine Datei vorhanden ist; alternativ sucht es im Datenverzeichnis. Der Port liefert dafür bereits `my.cnf.sample` mit. ([GitHub][4])
 
 ``` sh
-install -b -m 0644 /usr/local/etc/mysql/my.cnf.sample /usr/local/etc/mysql/my.cnf
 cat <<'EOF' > /usr/local/etc/mysql/my.cnf
 --8<-- "freebsd/configs/usr/local/etc/mysql/my.cnf"
 EOF

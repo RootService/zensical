@@ -66,20 +66,6 @@ Zusätzlich gilt für dieses HowTo:
 
 Für dieses HowTo sind **keine zusätzlichen DNS-Records** erforderlich.
 
-### Verzeichnisse / Dateien
-
-Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
-
-``` sh
-install -d -m 0700 /var/db/passwords
-```
-
-Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
-
-``` sh
-install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_spamass
-```
-
 ### Gruppen / Benutzer / Passwörter
 
 Für dieses HowTo müssen **keine zusätzlichen Systemgruppen oder Systembenutzer manuell angelegt** werden.
@@ -89,8 +75,13 @@ Der Port bringt den Systembenutzer **`spamd`** selbst mit; im Paketinhalt ist au
 Für dieses HowTo muss zuvor folgendes Passwort angelegt werden, sofern es noch nicht existiert, oder entsprechend geändert werden, sofern es bereits existiert.
 
 ``` sh
-# Passwortdatei für PostgreSQL-Benutzer "spamass"
-install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_spamass
+```
+
+### Verzeichnisse / Dateien
+
+Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
+
+``` sh
 ```
 
 ---
@@ -102,52 +93,52 @@ install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresq
 Für PostgreSQL-Bayes ist die Portoption **`PGSQL`** relevant. Der aktuelle Port bietet außerdem unter anderem die Optionen `SPF_QUERY`, `DKIM`, `DMARC` und `GNUPG2`. ([FreshPorts][1])
 
 ``` sh
-install -d -m 0755 /var/db/ports/databases_p5-DBD-SQLite
+mkdir -p /var/db/ports/databases_p5-DBD-SQLite
 cat <<'EOF' > /var/db/ports/databases_p5-DBD-SQLite/options
 --8<-- "freebsd/ports/databases_p5-DBD-SQLite/options"
 EOF
 
-install -d -m 0755 /var/db/ports/databases_p5-DBIx-Simple
+mkdir -p /var/db/ports/databases_p5-DBIx-Simple
 cat <<'EOF' > /var/db/ports/databases_p5-DBIx-Simple/options
 --8<-- "freebsd/ports/databases_p5-DBIx-Simple/options"
 EOF
 
-install -d -m 0755 /var/db/ports/dns_p5-Net-DNS
+mkdir -p /var/db/ports/dns_p5-Net-DNS
 cat <<'EOF' > /var/db/ports/dns_p5-Net-DNS/options
 --8<-- "freebsd/ports/dns_p5-Net-DNS/options"
 EOF
 
-install -d -m 0755 /var/db/ports/dns_libidn
+mkdir -p /var/db/ports/dns_libidn
 cat <<'EOF' > /var/db/ports/dns_libidn/options
 --8<-- "freebsd/ports/dns_libidn/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_p5-Parse-RecDescent
+mkdir -p /var/db/ports/devel_p5-Parse-RecDescent
 cat <<'EOF' > /var/db/ports/devel_p5-Parse-RecDescent/options
 --8<-- "freebsd/ports/devel_p5-Parse-RecDescent/options"
 EOF
 
-install -d -m 0755 /var/db/ports/net_p5-Net-Server
+mkdir -p /var/db/ports/net_p5-Net-Server
 cat <<'EOF' > /var/db/ports/net_p5-Net-Server/options
 --8<-- "freebsd/ports/net_p5-Net-Server/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_p5-Test-NoWarnings
+mkdir -p /var/db/ports/devel_p5-Test-NoWarnings
 cat <<'EOF' > /var/db/ports/devel_p5-Test-NoWarnings/options
 --8<-- "freebsd/ports/devel_p5-Test-NoWarnings/options"
 EOF
 
-install -d -m 0755 /var/db/ports/www_p5-CGI
+mkdir -p /var/db/ports/www_p5-CGI
 cat <<'EOF' > /var/db/ports/www_p5-CGI/options
 --8<-- "freebsd/ports/www_p5-CGI/options"
 EOF
 
-install -d -m 0755 /var/db/ports/www_p5-HTTP-Tiny
+mkdir -p /var/db/ports/www_p5-HTTP-Tiny
 cat <<'EOF' > /var/db/ports/www_p5-HTTP-Tiny/options
 --8<-- "freebsd/ports/www_p5-HTTP-Tiny/options"
 EOF
 
-install -d -m 0755 /var/db/ports/mail_spamassassin
+mkdir -p /var/db/ports/mail_spamassassin
 cat <<'EOF' > /var/db/ports/mail_spamassassin/options
 --8<-- "freebsd/ports/mail_spamassassin/options"
 EOF
@@ -163,7 +154,7 @@ Das rc.d-Skript heißt **`sa-spamd`**, die passende `rc.conf`-Variable bleibt ab
 
 ``` sh
 sysrc spamd_enable="YES"
-sysrc spamd_flags="-c -u spamd -H /var/spool/spamd"
+sysrc spamd_flags="--create-prefs --max-children 5 --helper-home-dir --nouser-config --virtual-config-dir=/var/vmail/%d/%l/spamassassin --username=vmail"
 ```
 
 ---
@@ -177,7 +168,6 @@ Der Port liefert die Sample-Dateien `local.cf.sample` und `init.pre.sample` bere
 #### `local.cf` einrichten
 
 ``` sh
-install -b -m 0644 /usr/local/etc/mail/spamassassin/local.cf.sample /usr/local/etc/mail/spamassassin/local.cf
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/local.cf
 --8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/local.cf"
 EOF
@@ -186,7 +176,6 @@ EOF
 #### `init.pre` einrichten
 
 ``` sh
-install -b -m 0644 /usr/local/etc/mail/spamassassin/init.pre.sample /usr/local/etc/mail/spamassassin/init.pre
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/init.pre
 --8<-- "freebsd/configs/usr/local/etc/mail/spamassassin/init.pre"
 EOF
@@ -227,10 +216,10 @@ Zusätzliche Drittanbieter-Regelkanäle sind möglich, gehören aber nicht in di
 ### Wartungsscript für Updates
 
 ``` sh
-install -b -m 0755 /dev/null /usr/local/sbin/update-spamassassin
 cat <<'EOF' > /usr/local/sbin/update-spamassassin
 --8<-- "freebsd/configs/usr/local/sbin/update-spamassassin"
 EOF
+chmod 755 /usr/local/sbin/update-spamassassin
 ```
 
 ### Konfiguration prüfen
@@ -510,12 +499,17 @@ Mögliche Zusatzsoftware wird hier installiert und konfiguriert.
 `mail/spamass-milter` bringt auf FreeBSD ein eigenes rc.d-Skript **`spamass-milter`** mit. Der aktuelle Portstand ist **0.4.0_5**. ([FreshPorts][6])
 
 ``` sh
-install -d -m 0755 /var/db/ports/mail_spamass-milter
+mkdir -p /var/db/ports/mail_spamass-milter
 cat <<'EOF' > /var/db/ports/mail_spamass-milter/options
 --8<-- "freebsd/ports/mail_spamass-milter/options"
 EOF
 
 portmaster -w -B -g -U --force-config mail/spamass-milter -n
+
+mkdir -p /var/spool/postfix/spamass
+chown spamd:wheel /var/spool/postfix/spamass
+chmod 770 /var/spool/postfix/spamass
+pw groupmod spamd -m postfix
 ```
 
 ### Dienst in `rc.conf` eintragen
@@ -524,17 +518,16 @@ portmaster -w -B -g -U --force-config mail/spamass-milter -n
 sysrc spamass_milter_enable="YES"
 sysrc spamass_milter_user="spamd"
 sysrc spamass_milter_group="spamd"
-sysrc spamass_milter_socket="/var/run/spamass-milter/spamass-milter.sock"
-sysrc spamass_milter_socket_owner="spamd"
-sysrc spamass_milter_socket_group="mail"
+sysrc spamass_milter_socket="/var/spool/postfix/spamass/spamass.sock"
+sysrc spamass_milter_socket_owner="postfix"
+sysrc spamass_milter_socket_group="postfix"
 sysrc spamass_milter_socket_mode="660"
-sysrc spamass_milter_localflags="-r 15 -f -u spamd -- -u spamd"
+sysrc spamass_milter_localflags="-e example.com -u spamd -i 127.0.0.1 -R REJECTED_AS_SPAM -r 10 -- --max-size=5120000"
 ```
 
 ### Zusatzsoftware Konfiguration prüfen
 
 ``` sh
-install -d -m 0755 -o spamd -g spamd /var/run/spamass-milter
 service spamass-milter start
 service spamass-milter status
 ```

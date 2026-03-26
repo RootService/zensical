@@ -61,15 +61,15 @@ Zusätzlich gilt für dieses HowTo:
 
 Für dieses HowTo sind **keine zusätzlichen DNS-Records** erforderlich.
 
+### Gruppen / Benutzer / Passwörter
+
+Für dieses HowTo müssen **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** manuell angelegt werden.
+
 ### Verzeichnisse / Dateien
 
 Für dieses HowTo müssen vor der Installation **keine zusätzlichen Verzeichnisse manuell angelegt** werden.
 
 Der Port legt die Laufzeitverzeichnisse `/var/db/clamav`, `/var/log/clamav` und `/var/run/clamav` bereits mit Eigentümer `clamav:clamav` an und installiert außerdem die Sample-Dateien `clamd.conf.sample`, `freshclam.conf.sample` und `clamav-milter.conf.sample`. ([FreshPorts][1])
-
-### Gruppen / Benutzer / Passwörter
-
-Für dieses HowTo müssen **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** manuell angelegt werden.
 
 ---
 
@@ -78,12 +78,14 @@ Für dieses HowTo müssen **keine zusätzlichen Systemgruppen, Systembenutzer od
 ### Wir installieren `security/clamav` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/security_clamav
+mkdir -p /var/db/ports/security_clamav
 cat <<'EOF' > /var/db/ports/security_clamav/options
 --8<-- "freebsd/ports/security_clamav/options"
 EOF
 
 portmaster -w -B -g -U --force-config security/clamav -n
+
+pw groupmod vscan -m clamav
 ```
 
 Der Port bietet aktuell unter anderem die Optionen **`MILTER=on`**, **`UNRAR=on`**, **`ARC=on`** und **`ARJ=on`**. Für dieses HowTo bleibt der Standard-Port `security/clamav` die Basis. ([FreshPorts][1])
@@ -108,7 +110,6 @@ Seit der Umstellung im Ports-Tree heißen die Dienste auf FreeBSD **mit Unterstr
 ClamAV liefert die Beispielkonfiguration bereits mit. Laut offizieller Dokumentation kannst du entweder die Sample-Datei kopieren oder `clamconf -g` zum Erzeugen verwenden. ([ClamAV Documentation][3])
 
 ``` sh
-install -b -m 0644 /usr/local/etc/clamd.conf.sample /usr/local/etc/clamd.conf
 cat <<'EOF' > /usr/local/etc/clamd.conf
 --8<-- "freebsd/configs/usr/local/etc/clamd.conf"
 EOF
@@ -119,7 +120,6 @@ EOF
 `freshclam` liest seine Einstellungen aus `freshclam.conf`. Genau dafür liefert ClamAV ebenfalls eine Sample-Datei mit. ([FreeBSD Manual Pages][2])
 
 ``` sh
-install -b -m 0644 /usr/local/etc/freshclam.conf.sample /usr/local/etc/freshclam.conf
 cat <<'EOF' > /usr/local/etc/freshclam.conf
 --8<-- "freebsd/configs/usr/local/etc/freshclam.conf"
 EOF
@@ -151,7 +151,6 @@ Mögliche Zusatzsoftware wird hier installiert und konfiguriert.
 Der Port `security/clamav` bringt bei aktivierter Standardoption **`MILTER=on`** bereits **`clamav-milter`**, die zugehörige Manpage sowie die Sample-Datei `clamav-milter.conf.sample` mit. `clamav-milter` arbeitet direkt mit `clamd` zusammen und setzt deshalb einen funktionierenden `clamd`-Dienst voraus. ([FreshPorts][1])
 
 ``` sh
-install -b -m 0644 /usr/local/etc/clamav-milter.conf.sample /usr/local/etc/clamav-milter.conf
 cat <<'EOF' > /usr/local/etc/clamav-milter.conf
 --8<-- "freebsd/configs/usr/local/etc/clamav-milter.conf"
 EOF

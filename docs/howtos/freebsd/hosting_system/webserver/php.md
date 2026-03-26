@@ -65,15 +65,15 @@ PHP-FPM ist dafür ausdrücklich gedacht: Es läuft als Daemon im Hintergrund un
 
 Für dieses HowTo sind **keine zusätzlichen DNS-Records** erforderlich.
 
+### Gruppen / Benutzer / Passwörter
+
+Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** erforderlich.
+
 ### Verzeichnisse / Dateien
 
 Für dieses HowTo müssen vor der Installation **keine zusätzlichen Verzeichnisse oder Dateien manuell angelegt** werden.
 
 Die benötigten Beispielkonfigurationsdateien werden bereits durch `lang/php84` installiert. Dazu gehören unter anderem `php.ini-production`, `php-fpm.conf.default` und `php-fpm.d/www.conf.default`. ([FreshPorts][1])
-
-### Gruppen / Benutzer / Passwörter
-
-Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** erforderlich.
 
 ---
 
@@ -82,7 +82,7 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 ### Wir installieren `lang/php84` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/lang_php84
+mkdir -p /var/db/ports/lang_php84
 cat <<'EOF' > /var/db/ports/lang_php84/options
 --8<-- "freebsd/ports/lang_php84/options"
 EOF
@@ -111,8 +111,6 @@ sysrc php_fpm_enable=YES
 #### `php.ini` einrichten
 
 ``` sh
-install -b -m 0644 /usr/local/etc/php.ini-production /usr/local/etc/php.ini
-
 cat <<'EOF' > /usr/local/etc/php.ini
 --8<-- "freebsd/configs/usr/local/etc/php.ini"
 EOF
@@ -121,7 +119,9 @@ EOF
 #### `php-fpm.conf` einrichten
 
 ``` sh
-install -b -m 0644 /usr/local/etc/php-fpm.conf.default /usr/local/etc/php-fpm.conf
+cat <<'EOF' > /usr/local/etc/php-fpm.conf
+--8<-- "freebsd/configs/usr/local/etc/php-fpm.conf"
+EOF
 ```
 
 #### `php-fpm.d/www.conf` einrichten
@@ -129,8 +129,6 @@ install -b -m 0644 /usr/local/etc/php-fpm.conf.default /usr/local/etc/php-fpm.co
 Für Unix-Sockets sind `listen.owner`, `listen.group` und `listen.mode` die richtigen Parameter. Genau diese Direktiven sind in der PHP-Dokumentation für Socket-Rechte vorgesehen. Außerdem ist `pm.max_requests` sinnvoll, wenn du Worker nach einer bestimmten Anzahl Requests neu starten willst, um Speicherlecks in Drittbibliotheken abzufangen. ([PHP][4])
 
 ``` sh
-install -b -m 0644 /usr/local/etc/php-fpm.d/www.conf.default /usr/local/etc/php-fpm.d/www.conf
-
 cat <<'EOF' > /usr/local/etc/php-fpm.d/www.conf
 --8<-- "freebsd/configs/usr/local/etc/php-fpm.d/www.conf"
 EOF
@@ -172,134 +170,134 @@ Mögliche Zusatzsoftware wird hier installiert und konfiguriert.
 `lang/php84-extensions` ist ein **Meta-Port**. Er installiert standardmäßig nur einen Kernsatz an Erweiterungen. Zusätzliche Module wie `mbstring`, `gd`, `pdo_mysql` oder anwendungsspezifische Module müssen bewusst über Portoptionen oder eigene Slave-Ports ergänzt werden. ([FreshPorts][5])
 
 ``` sh
-install -d -m 0755 /var/db/ports/converters_php84-mbstring
+mkdir -p /var/db/ports/converters_php84-mbstring
 cat <<'EOF' > /var/db/ports/converters_php84-mbstring/options
 --8<-- "freebsd/ports/converters_php84-mbstring/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_oniguruma
+mkdir -p /var/db/ports/devel_oniguruma
 cat <<'EOF' > /var/db/ports/devel_oniguruma/options
 --8<-- "freebsd/ports/devel_oniguruma/options"
 EOF
 
-install -d -m 0755 /var/db/ports/databases_php84-dba
+mkdir -p /var/db/ports/databases_php84-dba
 cat <<'EOF' > /var/db/ports/databases_php84-dba/options
 --8<-- "freebsd/ports/databases_php84-dba/options"
 EOF
 
-install -d -m 0755 /var/db/ports/databases_php84-pdo_mysql
+mkdir -p /var/db/ports/databases_php84-pdo_mysql
 cat <<'EOF' > /var/db/ports/databases_php84-pdo_mysql/options
 --8<-- "freebsd/ports/databases_php84-pdo_mysql/options"
 EOF
 
-install -d -m 0755 /var/db/ports/graphics_php84-gd
+mkdir -p /var/db/ports/graphics_php84-gd
 cat <<'EOF' > /var/db/ports/graphics_php84-gd/options
 --8<-- "freebsd/ports/graphics_php84-gd/options"
 EOF
 
-install -d -m 0755 /var/db/ports/graphics_gd
+mkdir -p /var/db/ports/graphics_gd
 cat <<'EOF' > /var/db/ports/graphics_gd/options
 --8<-- "freebsd/ports/graphics_gd/options"
 EOF
 
-install -d -m 0755 /var/db/ports/graphics_jpeg-turbo
+mkdir -p /var/db/ports/graphics_jpeg-turbo
 cat <<'EOF' > /var/db/ports/graphics_jpeg-turbo/options
 --8<-- "freebsd/ports/graphics_jpeg-turbo/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_nasm
+mkdir -p /var/db/ports/devel_nasm
 cat <<'EOF' > /var/db/ports/devel_nasm/options
 --8<-- "freebsd/ports/devel_nasm/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_libgit2
+mkdir -p /var/db/ports/devel_libgit2
 cat <<'EOF' > /var/db/ports/devel_libgit2/options
 --8<-- "freebsd/ports/devel_libgit2/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_libssh2
+mkdir -p /var/db/ports/security_libssh2
 cat <<'EOF' > /var/db/ports/security_libssh2/options
 --8<-- "freebsd/ports/security_libssh2/options"
 EOF
 
-install -d -m 0755 /var/db/ports/www_libhttp
+mkdir -p /var/db/ports/www_libhttp
 cat <<'EOF' > /var/db/ports/www_libhttp/options
 --8<-- "freebsd/ports/www_libhttp/options"
 EOF
 
-install -d -m 0755 /var/db/ports/graphics_png
+mkdir -p /var/db/ports/graphics_png
 cat <<'EOF' > /var/db/ports/graphics_png/options
 --8<-- "freebsd/ports/graphics_png/options"
 EOF
 
-install -d -m 0755 /var/db/ports/graphics_tiff
+mkdir -p /var/db/ports/graphics_tiff
 cat <<'EOF' > /var/db/ports/graphics_tiff/options
 --8<-- "freebsd/ports/graphics_tiff/options"
 EOF
 
-install -d -m 0755 /var/db/ports/archivers_libdeflate
+mkdir -p /var/db/ports/archivers_libdeflate
 cat <<'EOF' > /var/db/ports/archivers_libdeflate/options
 --8<-- "freebsd/ports/archivers_libdeflate/options"
 EOF
 
-install -d -m 0755 /var/db/ports/graphics_jbigkit
+mkdir -p /var/db/ports/graphics_jbigkit
 cat <<'EOF' > /var/db/ports/graphics_jbigkit/options
 --8<-- "freebsd/ports/graphics_jbigkit/options"
 EOF
 
-install -d -m 0755 /var/db/ports/graphics_webp
+mkdir -p /var/db/ports/graphics_webp
 cat <<'EOF' > /var/db/ports/graphics_webp/options
 --8<-- "freebsd/ports/graphics_webp/options"
 EOF
 
-install -d -m 0755 /var/db/ports/graphics_giflib
+mkdir -p /var/db/ports/graphics_giflib
 cat <<'EOF' > /var/db/ports/graphics_giflib/options
 --8<-- "freebsd/ports/graphics_giflib/options"
 EOF
 
-install -d -m 0755 /var/db/ports/print_freetype2
+mkdir -p /var/db/ports/print_freetype2
 cat <<'EOF' > /var/db/ports/print_freetype2/options
 --8<-- "freebsd/ports/print_freetype2/options"
 EOF
 
-install -d -m 0755 /var/db/ports/print_libraqm
+mkdir -p /var/db/ports/print_libraqm
 cat <<'EOF' > /var/db/ports/print_libraqm/options
 --8<-- "freebsd/ports/print_libraqm/options"
 EOF
 
-install -d -m 0755 /var/db/ports/converters_fribidi
+mkdir -p /var/db/ports/converters_fribidi
 cat <<'EOF' > /var/db/ports/converters_fribidi/options
 --8<-- "freebsd/ports/converters_fribidi/options"
 EOF
 
-install -d -m 0755 /var/db/ports/print_harfbuzz
+mkdir -p /var/db/ports/print_harfbuzz
 cat <<'EOF' > /var/db/ports/print_harfbuzz/options
 --8<-- "freebsd/ports/print_harfbuzz/options"
 EOF
 
-install -d -m 0755 /var/db/ports/devel_gobject-introspection
+mkdir -p /var/db/ports/devel_gobject-introspection
 cat <<'EOF' > /var/db/ports/devel_gobject-introspection/options
 --8<-- "freebsd/ports/devel_gobject-introspection/options"
 EOF
 
-install -d -m 0755 /var/db/ports/x11-fonts_fontconfig
+mkdir -p /var/db/ports/x11-fonts_fontconfig
 cat <<'EOF' > /var/db/ports/x11-fonts_fontconfig/options
 --8<-- "freebsd/ports/x11-fonts_fontconfig/options"
 EOF
 
-install -d -m 0755 /var/db/ports/textproc_enchant2
+mkdir -p /var/db/ports/textproc_enchant2
 cat <<'EOF' > /var/db/ports/textproc_enchant2/options
 --8<-- "freebsd/ports/textproc_enchant2/options"
 EOF
 
-install -d -m 0755 /var/db/ports/lang_php84-extensions
+mkdir -p /var/db/ports/lang_php84-extensions
 cat <<'EOF' > /var/db/ports/lang_php84-extensions/options
 --8<-- "freebsd/ports/lang_php84-extensions/options"
 EOF
 
 portmaster -w -B -g -U --force-config lang/php84-extensions -n
 
-install -d -m 0755 /var/db/ports/mail_panda-cclient
+mkdir -p /var/db/ports/mail_panda-cclient
 cat <<'EOF' > /var/db/ports/mail_panda-cclient/options
 --8<-- "freebsd/ports/mail_panda-cclient/options"
 EOF
@@ -314,7 +312,7 @@ Die IMAP-Erweiterung ist auf FreeBSD als eigener Port `mail/pecl-imap` verfügba
 Composer ist ein **Dependency-Manager für PHP** und damit nützlich, aber **kein Pflichtbestandteil** von PHP-FPM selbst. ([PHP][7])
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_php-composer
+mkdir -p /var/db/ports/devel_php-composer
 cat <<'EOF' > /var/db/ports/devel_php-composer/options
 --8<-- "freebsd/ports/devel_php-composer/options"
 EOF
@@ -327,7 +325,7 @@ portmaster -w -B -g -U --force-config devel/php-composer -n
 PEAR ist das klassische **PHP Extension and Application Repository** und bleibt vor allem für ältere oder legacy-lastige Workflows relevant. Für moderne Anwendungen ist es meist optional. ([FreshPorts][8])
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_pear
+mkdir -p /var/db/ports/devel_pear
 cat <<'EOF' > /var/db/ports/devel_pear/options
 --8<-- "freebsd/ports/devel_pear/options"
 EOF

@@ -76,25 +76,24 @@ mail.example.com.        IN  A       __IPADDR4__
 mail.example.com.        IN  AAAA    __IPADDR6__
 ```
 
+### Gruppen / Benutzer / Passwörter
+
+Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** erforderlich.
+
 ### Verzeichnisse / Dateien
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
 ``` sh
-install -d -m 0750 /usr/local/etc/letsencrypt/certs
+mkdir -p /usr/local/etc/letsencrypt/certs
 ```
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
 ``` sh
-install -b -m 0640 /dev/null /usr/local/etc/letsencrypt/certs/crt-list.txt
 ```
 
 HAProxy kann Zertifikate direkt per `crt` oder über eine `crt-list` laden. Eine `crt-list` ist genau dafür gedacht, mehrere Zertifikatsdateien mit optionalen SSL- oder SNI-Filtern zu verwalten. Für dieses Setup ist das die saubere Basis. ([docs.haproxy.org][2])
-
-### Gruppen / Benutzer / Passwörter
-
-Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** erforderlich.
 
 ---
 
@@ -103,7 +102,7 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 ### Wir installieren `net/haproxy` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/net_haproxy
+mkdir -p /var/db/ports/net_haproxy
 cat <<'EOF' > /var/db/ports/net_haproxy/options
 --8<-- "freebsd/ports/net_haproxy/options"
 EOF
@@ -131,7 +130,6 @@ Das FreeBSD-rc-Skript verwendet den Dienstnamen `haproxy`. Standardmäßig erwar
 HAProxy braucht im Kern nur das Binary und eine Konfigurationsdatei. Die Konfiguration wird vor dem Start vollständig eingelesen; fehlerhafte Konfigurationen oder nicht bindbare Listener verhindern den Start. Genau deshalb gehört ein sauberer Konfigurationstest vor jeden Start oder Reload. ([FreeBSD Git][3])
 
 ``` sh
-install -b -m 0644 /dev/null /usr/local/etc/haproxy.conf
 cat <<'EOF' > /usr/local/etc/haproxy.conf
 --8<-- "freebsd/configs/usr/local/etc/haproxy.conf"
 EOF
@@ -154,7 +152,7 @@ cat /usr/local/etc/letsencrypt/live/mail.example.com/fullchain.pem \
     /usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem \
     > /usr/local/etc/letsencrypt/certs/mail.example.com.pem
 
-chmod 0640 /usr/local/etc/letsencrypt/certs/*.pem
+chmod 640 /usr/local/etc/letsencrypt/certs/*.pem
 
 cat <<'EOF' > /usr/local/etc/letsencrypt/certs/crt-list.txt
 /usr/local/etc/letsencrypt/certs/devnull.example.com.pem
@@ -162,7 +160,7 @@ cat <<'EOF' > /usr/local/etc/letsencrypt/certs/crt-list.txt
 /usr/local/etc/letsencrypt/certs/mail.example.com.pem
 EOF
 
-chmod 0640 /usr/local/etc/letsencrypt/certs/crt-list.txt
+chmod 640 /usr/local/etc/letsencrypt/certs/crt-list.txt
 ```
 
 Die `crt-list` arbeitet mit PEM-Dateien. Pro Zeile können zusätzlich Bind-Optionen und Filter hinterlegt werden; für dieses Basis-Setup reicht eine einfache Liste der Zertifikatsdateien. ([docs.haproxy.org][2])

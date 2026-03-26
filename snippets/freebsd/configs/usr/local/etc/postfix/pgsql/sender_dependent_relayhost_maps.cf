@@ -1,4 +1,4 @@
-hosts    = /tmp
+hosts    = localhost
 user     = postfix
 password = __PASSWORD_POSTFIX__
 dbname   = postfixadmin

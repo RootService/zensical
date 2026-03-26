@@ -78,52 +78,46 @@ mail.example.com.       IN  AAAA    __IPADDR6__
 
 Namensbasierte VirtualHosts sind hier die richtige Basis: Apache unterscheidet sie über den Hostnamen der Anfrage, deshalb müssen die Hostnamen sauber auf den Webserver zeigen. `ServerName` und `DocumentRoot` gehören pro VirtualHost explizit gesetzt. ([httpd.apache.org][5])
 
-### Verzeichnisse / Dateien
-
-Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
-
-``` sh
-install -d -m 0755 /usr/local/www
-install -d -m 0755 /usr/local/www/.well-known
-install -d -m 0755 /usr/local/www/.well-known/acme-challenge
-
-install -d -m 1777 -o www -g www /usr/local/www/cache
-install -d -m 1777 -o www -g www /usr/local/www/tmp
-
-install -d -m 0755 /usr/local/www/vhosts/0default0/conf
-install -d -m 0755 /usr/local/www/vhosts/0default0/cron
-install -d -m 0755 /usr/local/www/vhosts/0default0/logs
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/0default0/data
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/0default0/data/.well-known
-
-install -d -m 0755 /usr/local/www/vhosts/mail.example.com/conf
-install -d -m 0755 /usr/local/www/vhosts/mail.example.com/cron
-install -d -m 0755 /usr/local/www/vhosts/mail.example.com/logs
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/mail.example.com/data
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/mail.example.com/data/.well-known
-
-install -d -m 0755 /usr/local/www/vhosts/www.example.com/conf
-install -d -m 0755 /usr/local/www/vhosts/www.example.com/cron
-install -d -m 0755 /usr/local/www/vhosts/www.example.com/logs
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/www.example.com/data
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/www.example.com/data/.well-known
-
-install -d -m 0755 /usr/local/etc/newsyslog.conf.d
-```
-
-Für dieses HowTo müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
-
-``` sh
-install -b -m 0644 /dev/null /usr/local/etc/newsyslog.conf.d/apache24.conf
-```
-
-Der eigene Baum unter `/usr/local/www` ist hier die saubere Basis. Apache kann zusätzliche Konfigurationsdateien per `Include` oder `IncludeOptional` einlesen; Änderungen daran werden aber erst nach Start, Reload oder Restart wirksam. `IncludeOptional` ist dabei robuster, wenn optionale Dateien oder Wildcards zeitweise nicht existieren. ([httpd.apache.org][8])
-
 ### Gruppen / Benutzer / Passwörter
 
 Für dieses HowTo müssen zuvor **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** angelegt werden.
 
 Die Verzeichnisse für Webinhalte und Caches werden in diesem Setup mit dem vorhandenen Systembenutzer `www` betrieben.
+
+### Verzeichnisse / Dateien
+
+Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
+
+``` sh
+mkdir -p /usr/local/www/.well-known/acme-challenge
+
+install -d -m 1777 -o www -g www /usr/local/www/cache
+install -d -m 1777 -o www -g www /usr/local/www/tmp
+
+mkdir -p /usr/local/www/vhosts/0default0/conf
+mkdir -p /usr/local/www/vhosts/0default0/cron
+mkdir -p /usr/local/www/vhosts/0default0/logs
+mkdir -p /usr/local/www/vhosts/0default0/data/.well-known
+
+mkdir -p /usr/local/www/vhosts/mail.example.com/conf
+mkdir -p /usr/local/www/vhosts/mail.example.com/cron
+mkdir -p /usr/local/www/vhosts/mail.example.com/logs
+mkdir -p /usr/local/www/vhosts/mail.example.com/data/.well-known
+
+mkdir -p /usr/local/www/vhosts/www.example.com/conf
+mkdir -p /usr/local/www/vhosts/www.example.com/cron
+mkdir -p /usr/local/www/vhosts/www.example.com/logs
+mkdir -p /usr/local/www/vhosts/www.example.com/data/.well-known
+
+mkdir -p /usr/local/etc/newsyslog.conf.d
+```
+
+Für dieses HowTo müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
+
+``` sh
+```
+
+Der eigene Baum unter `/usr/local/www` ist hier die saubere Basis. Apache kann zusätzliche Konfigurationsdateien per `Include` oder `IncludeOptional` einlesen; Änderungen daran werden aber erst nach Start, Reload oder Restart wirksam. `IncludeOptional` ist dabei robuster, wenn optionale Dateien oder Wildcards zeitweise nicht existieren. ([httpd.apache.org][8])
 
 ---
 
@@ -132,7 +126,7 @@ Die Verzeichnisse für Webinhalte und Caches werden in diesem Setup mit dem vorh
 ### Wir installieren `www/apache24` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/www_apache24
+mkdir -p /var/db/ports/www_apache24
 cat <<'EOF' > /var/db/ports/www_apache24/options
 --8<-- "freebsd/ports/www_apache24/options"
 EOF
@@ -168,17 +162,14 @@ Der FreeBSD-Port verwendet den Dienstnamen `apache24`. Zusätzlich weist der Por
 Apache wird über Textdateien konfiguriert. Die Hauptkonfiguration liegt in `httpd.conf`; weitere Dateien können per `Include` oder `IncludeOptional` eingebunden werden. Änderungen an diesen Dateien werden erst wirksam, wenn Apache neu geladen oder neu gestartet wird. Für namensbasierte VirtualHosts sollten `ServerName` und `DocumentRoot` pro Host immer explizit gesetzt werden. ([httpd.apache.org][8])
 
 ``` sh
-install -b -m 0644 /dev/null /usr/local/etc/apache24/httpd.conf
 cat <<'EOF' > /usr/local/etc/apache24/httpd.conf
 --8<-- "freebsd/configs/usr/local/etc/apache24/httpd.conf"
 EOF
 
-install -b -m 0644 /dev/null /usr/local/etc/apache24/vhosts.conf
 cat <<'EOF' > /usr/local/etc/apache24/vhosts.conf
 --8<-- "freebsd/configs/usr/local/etc/apache24/vhosts.conf"
 EOF
 
-install -b -m 0644 /dev/null /usr/local/etc/apache24/vhosts-ssl.conf
 cat <<'EOF' > /usr/local/etc/apache24/vhosts-ssl.conf
 --8<-- "freebsd/configs/usr/local/etc/apache24/vhosts-ssl.conf"
 EOF
@@ -203,7 +194,7 @@ Apache verlangt für HTTP/2 die Aktivierung per `Protocols`; für TLS-VHosts ist
 Für einen ersten Funktionstest reicht eine statische Datei im Webroot völlig aus.
 
 ``` sh
-install -b -m 0644 /dev/null /usr/local/www/vhosts/www.example.com/data/index.html
+touch /usr/local/www/vhosts/www.example.com/data/index.html
 cat <<'EOF' > /usr/local/www/vhosts/www.example.com/data/index.html
 <!doctype html>
 <html lang="de">
@@ -222,20 +213,20 @@ EOF
 ### `fixperms.sh` einrichten
 
 ``` sh
-install -b -m 0750 /dev/null /usr/local/www/vhosts/0default0/cron/fixperms.sh
 cat <<'EOF' > /usr/local/www/vhosts/0default0/cron/fixperms.sh
 --8<-- "freebsd/configs/usr/local/www/vhosts/0default0/cron/fixperms.sh"
 EOF
+chmod 750 /usr/local/www/vhosts/0default0/cron/fixperms.sh
 
-install -b -m 0750 /dev/null /usr/local/www/vhosts/mail.example.com/cron/fixperms.sh
 cat <<'EOF' > /usr/local/www/vhosts/mail.example.com/cron/fixperms.sh
 --8<-- "freebsd/configs/usr/local/www/vhosts/mail.example.com/cron/fixperms.sh"
 EOF
+chmod 750 /usr/local/www/vhosts/mail.example.com/cron/fixperms.sh
 
-install -b -m 0750 /dev/null /usr/local/www/vhosts/www.example.com/cron/fixperms.sh
 cat <<'EOF' > /usr/local/www/vhosts/www.example.com/cron/fixperms.sh
 --8<-- "freebsd/configs/usr/local/www/vhosts/www.example.com/cron/fixperms.sh"
 EOF
+chmod 750 /usr/local/www/vhosts/www.example.com/cron/fixperms.sh
 ```
 
 ### Konfiguration prüfen

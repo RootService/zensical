@@ -67,22 +67,6 @@ mail.example.com.       IN  A       __IPADDR4__
 mail.example.com.       IN  AAAA    __IPADDR6__
 ```
 
-### Verzeichnisse / Dateien
-
-Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
-
-``` sh
-install -d -m 0755 -o vmail /var/log/dovecot
-```
-
-Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
-
-``` sh
-install -b -m 0640 -o vmail -g vmail /dev/null /var/log/dovecot/quota-warnings.log
-install -b -m 0750 -g vmail /dev/null /usr/local/bin/dovecot-quota-warning.sh
-install -b -m 0640 /dev/null /usr/local/etc/dovecot/dovecot-master-users
-```
-
 ### Gruppen / Benutzer / Passwörter
 
 Für dieses HowTo müssen **keine zusätzlichen** Systemgruppen oder Systembenutzer angelegt werden.
@@ -100,6 +84,18 @@ Für dieses HowTo wird zusätzlich ein Passwort für den Dovecot-Master-User erz
 install -b -m 0640 /dev/null /var/db/passwords/user_dovecot_superuser
 ```
 
+### Verzeichnisse / Dateien
+
+Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
+
+``` sh
+```
+
+Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
+
+``` sh
+```
+
 ---
 
 ## Installation
@@ -107,23 +103,26 @@ install -b -m 0640 /dev/null /var/db/passwords/user_dovecot_superuser
 ### Wir installieren `mail/dovecot@pgsql` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/textproc_libexttextcat
+mkdir -p /var/db/ports/textproc_libexttextcat
 cat <<'EOF' > /var/db/ports/textproc_libexttextcat/options
 --8<-- "freebsd/ports/textproc_libexttextcat/options"
 EOF
 
-install -d -m 0755 /var/db/ports/mail_dovecot
+mkdir -p /var/db/ports/mail_dovecot
 cat <<'EOF' > /var/db/ports/mail_dovecot/options
 --8<-- "freebsd/ports/mail_dovecot/options"
 EOF
 
 portmaster -w -B -g -U --force-config mail/dovecot@pgsql -n
+
+pw groupmod dovecot -m www
+pw groupmod mail -m dovecot
 ```
 
 ### Wir installieren `mail/dovecot-pigeonhole@pgsql` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/mail_dovecot-pigeonhole
+mkdir -p /var/db/ports/mail_dovecot-pigeonhole
 cat <<'EOF' > /var/db/ports/mail_dovecot-pigeonhole/options
 --8<-- "freebsd/ports/mail_dovecot-pigeonhole/options"
 EOF
@@ -148,35 +147,45 @@ sysrc dovecot_enable=YES
 ### Konfigurationsdateien
 
 ``` sh
-install -b -m 0644 /dev/null /usr/local/etc/dovecot/dovecot.conf
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot.conf
 --8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot.conf"
 EOF
 
-install -b -m 0640 /dev/null /usr/local/etc/dovecot/dovecot-pgsql.conf
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-pgsql.conf
 --8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-pgsql.conf"
 EOF
 
-install -b -m 0640 /dev/null /usr/local/etc/dovecot/dovecot-dict-quota.conf
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-dict-quota.conf
 --8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-dict-quota.conf"
 EOF
 
-install -b -m 0640 /dev/null /usr/local/etc/dovecot/dovecot-last-login.conf
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-last-login.conf
 --8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-last-login.conf"
 EOF
 
-install -b -m 0640 /dev/null /usr/local/etc/dovecot/dovecot-share-folder.conf
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-share-folder.conf
 --8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-share-folder.conf"
 EOF
 
-install -b -m 0640 /dev/null /usr/local/etc/dovecot/dovecot-used-quota.conf
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-used-quota.conf
 --8<-- "freebsd/configs/usr/local/etc/dovecot/dovecot-used-quota.conf"
 EOF
+
+chown www:www /var/run/dovecot/stats-reader /var/run/dovecot/stats-writer
+chmod 660 /var/run/dovecot/stats-reader /var/run/dovecot/stats-writer
+
+mkdir -p /usr/local/etc/dovecot/sieve
+
+cat <<'EOF' > /usr/local/etc/dovecot/sieve/before-global.sieve
+require "fileinto";
+
+if header :contains "X-Spam-Flag" "YES"
+{
+  fileinto "Junk";
+  stop;
+}
+EOF
+sievec /usr/local/etc/dovecot/sieve/before-global.sieve
 ```
 
 Dovecot liest seine Konfiguration aus `dovecot.conf`; für virtuelle Benutzer sind SQL-basierte `passdb`- und `userdb`-Lookups ein üblicher Aufbau. `doveconf` ist das vorgesehene Werkzeug, um die tatsächlich geparste Konfiguration auszugeben. ([Dovecot Pro][2])
@@ -209,9 +218,10 @@ cat /var/db/passwords/user_postgresql_postfix
 cat <<'EOF' > /usr/local/bin/dovecot-quota-warning.sh
 --8<-- "freebsd/configs/usr/local/bin/dovecot-quota-warning.sh"
 EOF
+chown root:vmail /usr/local/bin/dovecot-quota-warning.sh
+chmod 750 /usr/local/bin/dovecot-quota-warning.sh
 
-install -d -m 0755 -o vmail /var/log/dovecot
-install -b -m 0640 -o vmail -g vmail /dev/null /var/log/dovecot/quota-warnings.log
+mkdir -p /var/log/dovecot
 ```
 
 ### Master User einrichten
@@ -249,10 +259,10 @@ sockstat -4 -6 -l | egrep 'dovecot|imap|lmtp|sieve'
 Bei virtuellen Benutzern sind SQL-Backends üblich. Dovecot nutzt dabei typischerweise SQL für `passdb` und `userdb`; die Datenbank liefert dabei unter anderem Benutzername, Passwort, UID, GID und Mailpfad. Genau dafür ist das folgende Hilfsscript in diesem Setup vorgesehen. ([Dovecot][3])
 
 ``` sh
-install -b -m 0755 /dev/null /usr/local/etc/dovecot/create_mailuser.sh
 cat <<'EOF' > /usr/local/etc/dovecot/create_mailuser.sh
 --8<-- "freebsd/configs/usr/local/etc/dovecot/create_mailuser.sh"
 EOF
+chmod 755 /usr/local/etc/dovecot/create_mailuser.sh
 ```
 
 Beispiel zum Anlegen eines neuen Mailusers:

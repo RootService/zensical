@@ -63,13 +63,13 @@ Zusätzlich gilt für dieses HowTo:
 
 Für dieses HowTo sind **keine DNS-Records** erforderlich.
 
-### Verzeichnisse / Dateien
-
-Für dieses HowTo müssen vor der Installation **keine zusätzlichen Verzeichnisse oder Dateien** angelegt werden.
-
 ### Gruppen / Benutzer / Passwörter
 
 Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** erforderlich.
+
+### Verzeichnisse / Dateien
+
+Für dieses HowTo müssen vor der Installation **keine zusätzlichen Verzeichnisse oder Dateien** angelegt werden.
 
 ---
 
@@ -78,7 +78,7 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 ### Wir installieren `www/node24` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/www_node24
+mkdir -p /var/db/ports/www_node24
 cat <<'EOF' > /var/db/ports/www_node24/options
 --8<-- "freebsd/ports/www_node24/options"
 EOF
@@ -147,7 +147,7 @@ portmaster -w -B -g -U --force-config www/npm -n
 Falls im Projekt **bewusst Yarn Classic 1.x** benötigt wird, installieren wir **`www/yarn`**. Aktuell steht dieser Port auf **1.22.19**. Yarn selbst empfiehlt heute für neue projektbezogene Setups eher **Corepack** statt einer globalen Yarn-Installation. ([FreshPorts][6])
 
 ``` sh
-install -d -m 0755 /var/db/ports/www_yarn-node24
+mkdir -p /var/db/ports/www_yarn-node24
 cat <<'EOF' > /var/db/ports/www_yarn-node24/options
 --8<-- "freebsd/ports/www_yarn-node24/options"
 EOF

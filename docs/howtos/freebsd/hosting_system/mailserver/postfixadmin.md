@@ -69,15 +69,6 @@ mail.example.com.       IN  A       __IPADDR4__
 mail.example.com.       IN  AAAA    __IPADDR6__
 ```
 
-### Verzeichnisse / Dateien
-
-Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
-
-``` sh
-install -d -m 0755 /usr/local/www/apps
-install -d -m 0700 /var/db/passwords
-```
-
 ### Gruppen / Benutzer / Passwörter
 
 Für dieses HowTo müssen **keine zusätzlichen** Systemgruppen oder Systembenutzer angelegt werden.
@@ -85,11 +76,14 @@ Für dieses HowTo müssen **keine zusätzlichen** Systemgruppen oder Systembenut
 Für dieses HowTo müssen zuvor folgende Passwörter angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
 ``` sh
-# Passwortdatei für PostgreSQL-Benutzer "postfix"
-install -b -m 0600 -o postgres -g postgres /dev/null /var/db/passwords/postgresql_user_postfix
+```
 
-# Passwortdatei für PostfixAdmin-Setup-Hash
-install -b -m 0600 /dev/null /var/db/passwords/postfixadmin_setup_hash
+### Verzeichnisse / Dateien
+
+Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
+
+``` sh
+mkdir -p /usr/local/www/apps
 ```
 
 ---
@@ -101,7 +95,7 @@ install -b -m 0600 /dev/null /var/db/passwords/postfixadmin_setup_hash
 Der FreeBSD-Port ist aktuell PHP-geflavored. Für dein PHP-8.4-Setup ist deshalb `mail/postfixadmin@php84` die saubere Portangabe. In den Portoptionen ist **PGSQL** die relevante Datenbankoption. ([FreshPorts][4])
 
 ``` sh
-install -d -m 0755 /var/db/ports/mail_postfixadmin
+mkdir -p /var/db/ports/mail_postfixadmin
 cat <<'EOF' > /var/db/ports/mail_postfixadmin/options
 --8<-- "freebsd/ports/mail_postfixadmin/options"
 EOF
@@ -141,7 +135,7 @@ sed -e 's|\(/bin/bash.*\)$|/usr/local\1|' \
 Laut offizieller Installationsanleitung soll der Webserver **nicht** auf das Projektwurzelverzeichnis zeigen, sondern auf `public/`. Schreibzugriff braucht PostfixAdmin im Normalfall nur auf `templates_c`; die übrigen Dateien können lesbar bleiben. ([GitHub][3])
 
 ``` sh
-chmod 0750 /usr/local/www/apps/postfixadmin/templates_c
+chmod 750 /usr/local/www/apps/postfixadmin/templates_c
 chown www:www /usr/local/www/apps/postfixadmin/templates_c
 
 chown -R www:www /usr/local/www/apps/postfixadmin/public
@@ -152,10 +146,11 @@ chown -R www:www /usr/local/www/apps/postfixadmin/public
 Die offizielle Konfiguration sagt klar: **`config.inc.php` nicht direkt ändern**. Eigene Einstellungen gehören in **`config.local.php`** im PostfixAdmin-Webroot. ([GitHub][5])
 
 ``` sh
-install -b -m 0640 -o www -g www /dev/null /usr/local/www/apps/postfixadmin/config.local.php
 cat <<'EOF' > /usr/local/www/apps/postfixadmin/config.local.php
 --8<-- "freebsd/configs/usr/local/www/apps/postfixadmin/config.local.php"
 EOF
+chown www:www /usr/local/www/apps/postfixadmin/config.local.php
+chmod 640 /usr/local/www/apps/postfixadmin/config.local.php
 ```
 
 ### Setup-Hash erzeugen und eintragen

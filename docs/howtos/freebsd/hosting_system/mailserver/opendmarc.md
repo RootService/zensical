@@ -66,25 +66,33 @@ Für dieses HowTo sind **keine zusätzlichen DNS-Records** zwingend erforderlich
 
 Wenn du für deine eigene Domain zusätzlich eine DMARC-Policy veröffentlichen willst, geschieht das separat über einen TXT-Record unter `_dmarc.example.com`. Dieses HowTo richtet aber zunächst nur den **Prüfdienst** auf dem empfangenden Server ein.
 
+### Gruppen / Benutzer / Passwörter
+
+Für dieses HowTo müssen **keine zusätzlichen** Systemgruppen, Systembenutzer oder Passwörter angelegt werden.
+
+``` sh
+pw groupshow opendmarc >/dev/null 2>&1 || pw groupadd -n opendmarc -g 5119
+id -u opendmarc >/dev/null 2>&1 || \
+  pw useradd -n opendmarc -u 5119 -i 5119 -g opendkim -c 'OpenDMARC User' -d /nonexistent -s /usr/sbin/nologin -w no
+pw groupmod opendmarc -m postfix
+```
+
+Das FreeBSD-rc-Skript verwendet standardmäßig den Benutzer und die Gruppe **`mailnull`**. ([GitHub][3])
+
 ### Verzeichnisse / Dateien
 
 Für diese HowTos müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
 ``` sh
-install -d -m 0755 -o mailnull -g mailnull /var/run/opendmarc
-install -d -m 0755 -o mailnull -g mailnull /var/db/opendmarc
+mkdir /var/spool/postfix/opendmarc
+chown opendmarc:opendmarc /var/spool/postfix/opendmarc
+chmod 770 /var/spool/postfix/opendmarc
 ```
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
 ``` sh
-install -b -m 0644 /dev/null /usr/local/etc/mail/opendmarc.conf
-install -b -m 0644 /dev/null /var/db/opendmarc/ignorehosts
 ```
-
-### Gruppen / Benutzer / Passwörter
-
-Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** erforderlich.
 
 ---
 
@@ -93,12 +101,12 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 ### Wir installieren `mail/opendmarc` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/databases_p5-DBI
+mkdir -p /var/db/ports/databases_p5-DBI
 cat <<'EOF' > /var/db/ports/databases_p5-DBI/options
 --8<-- "freebsd/ports/databases_p5-DBI/options"
 EOF
 
-install -d -m 0755 /var/db/ports/mail_opendmarc
+mkdir -p /var/db/ports/mail_opendmarc
 cat <<'EOF' > /var/db/ports/mail_opendmarc/options
 --8<-- "freebsd/ports/mail_opendmarc/options"
 EOF
@@ -113,9 +121,10 @@ Der Port hat aktuell keine Flavors. Relevante Portoptionen sind vor allem `DOCS`
 Der Dienst wird mittels `sysrc` in der `rc.conf` eingetragen und dadurch beim Systemstart automatisch gestartet.
 
 ``` sh
-sysrc opendmarc_enable=YES
-sysrc opendmarc_socketspec="local:/var/run/opendmarc/opendmarc.sock"
-sysrc opendmarc_pidfile="/var/run/opendmarc/opendmarc.pid"
+sysrc opendmarc_enable="YES"
+sysrc opendmarc_runas="opendmarc:opendmarc"
+sysrc opendmarc_socketspec="unix:/var/spool/postfix/opendmarc/opendmarc.sock"
+sysrc opendmarc_socketperms="0700"
 ```
 
 ---
@@ -137,11 +146,10 @@ EOF
 `IgnoreHosts` ist in OpenDMARC der richtige Mechanismus, um lokale oder vertrauenswürdige Quellhosts von der DMARC-Prüfung auszunehmen. Laut `opendmarc.conf(5)` akzeptiert die Datei Hostnamen, IP-Adressen und CIDR-Ausdrücke. Wenn nichts gesetzt ist, wird standardmäßig nur `127.0.0.1` ignoriert. ([FreeBSD Manual Pages][2])
 
 ``` sh
-cat <<'EOF' > /var/db/opendmarc/ignorehosts
+cat <<'EOF' > /usr/local/etc/mail/ignorehosts
 ::1
 127.0.0.1
 fe80::/10
-ff02::/16
 10.0.0.0/8
 __IPADDR4__/32
 __IPADDR6__/64
@@ -155,17 +163,11 @@ DEF_IF="$(route -n get -inet default | awk '/interface:/ {print $2}')"
 
 # 2. Get IPv4 IP
 IP4="$(ifconfig "$DEF_IF" inet | awk '/inet / && $2 !~ /^127\./ {print $2}' | head -n 1)"
-[ -n "$IP4" ] && sed -e "s|__IPADDR4__|$IP4|g" -i '' /var/db/opendmarc/ignorehosts
+[ -n "$IP4" ] && sed -e "s|__IPADDR4__|$IP4|g" -i '' /usr/local/etc/mail/ignorehosts
 
 # 3. Get IPv6 IP
 IP6="$(ifconfig "$DEF_IF" inet6 | awk '/inet6 / && $2 !~ /^fe80:/ && $2 !~ /^::1/ {print $2}' | head -n 1)"
-[ -n "$IP6" ] && sed -e "s|__IPADDR6__|$IP6|g" -i '' /var/db/opendmarc/ignorehosts
-```
-
-### Rechte setzen
-
-``` sh
-chown -R mailnull:mailnull /var/db/opendmarc
+[ -n "$IP6" ] && sed -e "s|__IPADDR6__|$IP6|g" -i '' /usr/local/etc/mail/ignorehosts
 ```
 
 ### Konfiguration prüfen

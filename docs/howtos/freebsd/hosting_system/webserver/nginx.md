@@ -77,6 +77,10 @@ mail.example.com.       IN  A       __IPADDR4__
 mail.example.com.       IN  AAAA    __IPADDR6__
 ```
 
+### Gruppen / Benutzer / Passwörter
+
+Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** erforderlich.
+
 ### Verzeichnisse / Dateien
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
@@ -85,36 +89,28 @@ Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern s
 install -d -m 1777 -o www -g www /usr/local/www/cache
 install -d -m 1777 -o www -g www /usr/local/www/tmp
 
-install -d -m 0755 /usr/local/www/vhosts/0default0/conf
-install -d -m 0755 /usr/local/www/vhosts/0default0/cron
-install -d -m 0755 /usr/local/www/vhosts/0default0/logs
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/0default0/data
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/0default0/data/.well-known
+mkdir -p /usr/local/www/vhosts/0default0/conf
+mkdir -p /usr/local/www/vhosts/0default0/cron
+mkdir -p /usr/local/www/vhosts/0default0/logs
+mkdir -p /usr/local/www/vhosts/0default0/data/.well-known
 
-install -d -m 0755 /usr/local/www/vhosts/mail.example.com/conf
-install -d -m 0755 /usr/local/www/vhosts/mail.example.com/cron
-install -d -m 0755 /usr/local/www/vhosts/mail.example.com/logs
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/mail.example.com/data
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/mail.example.com/data/.well-known
+mkdir -p /usr/local/www/vhosts/mail.example.com/conf
+mkdir -p /usr/local/www/vhosts/mail.example.com/cron
+mkdir -p /usr/local/www/vhosts/mail.example.com/logs
+mkdir -p /usr/local/www/vhosts/mail.example.com/data/.well-known
 
-install -d -m 0755 /usr/local/www/vhosts/www.example.com/conf
-install -d -m 0755 /usr/local/www/vhosts/www.example.com/cron
-install -d -m 0755 /usr/local/www/vhosts/www.example.com/logs
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/www.example.com/data
-install -d -m 0750 -o www -g www /usr/local/www/vhosts/www.example.com/data/.well-known
+mkdir -p /usr/local/www/vhosts/www.example.com/conf
+mkdir -p /usr/local/www/vhosts/www.example.com/cron
+mkdir -p /usr/local/www/vhosts/www.example.com/logs
+mkdir -p /usr/local/www/vhosts/www.example.com/data/.well-known
 
-install -d -m 0755 /usr/local/etc/newsyslog.conf.d
+mkdir -p /usr/local/etc/newsyslog.conf.d
 ```
 
 Für diese HowTos müssen zuvor folgende Dateien angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
 ``` sh
-install -b -m 0644 /dev/null /usr/local/etc/newsyslog.conf.d/nginx.conf
 ```
-
-### Gruppen / Benutzer / Passwörter
-
-Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder Passwörter** erforderlich.
 
 ---
 
@@ -123,12 +119,12 @@ Für dieses HowTo sind **keine zusätzlichen Systemgruppen, Systembenutzer oder 
 ### Wir installieren `www/nginx` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/devel_google-perftools
+mkdir -p /var/db/ports/devel_google-perftools
 cat <<'EOF' > /var/db/ports/devel_google-perftools/options
 --8<-- "freebsd/ports/devel_google-perftools/options"
 EOF
 
-install -d -m 0755 /var/db/ports/www_nginx
+mkdir -p /var/db/ports/www_nginx
 cat <<'EOF' > /var/db/ports/www_nginx/options
 --8<-- "freebsd/ports/www_nginx/options"
 EOF
@@ -162,17 +158,14 @@ EOF
 Der Port liefert bereits Beispielkonfigurationen mit. Die zentrale Konfiguration liegt unter `/usr/local/etc/nginx/nginx.conf`; zusätzliche Dateien wie `vhosts.conf` und `vhosts-ssl.conf` können über `include` eingebunden werden. Änderungen werden erst nach `reload` oder `restart` wirksam. ([freshports.org][1])
 
 ``` sh
-install -b -m 0644 /usr/local/etc/nginx/nginx.conf-dist /usr/local/etc/nginx/nginx.conf
 cat <<'EOF' > /usr/local/etc/nginx/nginx.conf
 --8<-- "freebsd/configs/usr/local/etc/nginx/nginx.conf"
 EOF
 
-install -b -m 0644 /dev/null /usr/local/etc/nginx/vhosts.conf
 cat <<'EOF' > /usr/local/etc/nginx/vhosts.conf
 --8<-- "freebsd/configs/usr/local/etc/nginx/vhosts.conf"
 EOF
 
-install -b -m 0644 /dev/null /usr/local/etc/nginx/vhosts-ssl.conf
 cat <<'EOF' > /usr/local/etc/nginx/vhosts-ssl.conf
 --8<-- "freebsd/configs/usr/local/etc/nginx/vhosts-ssl.conf"
 EOF
@@ -195,20 +188,20 @@ Für PHP-FPM ist die FastCGI-Anbindung per Unix-Socket fachlich korrekt. Nginx u
 ### `fixperms.sh` einrichten
 
 ``` sh
-install -b -m 0750 /dev/null /usr/local/www/vhosts/0default0/cron/fixperms.sh
 cat <<'EOF' > /usr/local/www/vhosts/0default0/cron/fixperms.sh
 --8<-- "freebsd/configs/usr/local/www/vhosts/0default0/cron/fixperms.sh"
 EOF
+chmod 750 /usr/local/www/vhosts/0default0/cron/fixperms.sh
 
-install -b -m 0750 /dev/null /usr/local/www/vhosts/mail.example.com/cron/fixperms.sh
 cat <<'EOF' > /usr/local/www/vhosts/mail.example.com/cron/fixperms.sh
 --8<-- "freebsd/configs/usr/local/www/vhosts/mail.example.com/cron/fixperms.sh"
 EOF
+chmod 750 /usr/local/www/vhosts/mail.example.com/cron/fixperms.sh
 
-install -b -m 0750 /dev/null /usr/local/www/vhosts/www.example.com/cron/fixperms.sh
 cat <<'EOF' > /usr/local/www/vhosts/www.example.com/cron/fixperms.sh
 --8<-- "freebsd/configs/usr/local/www/vhosts/www.example.com/cron/fixperms.sh"
 EOF
+chmod 750 /usr/local/www/vhosts/www.example.com/cron/fixperms.sh
 ```
 
 ### Konfiguration prüfen

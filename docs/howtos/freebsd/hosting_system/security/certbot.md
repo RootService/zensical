@@ -80,32 +80,29 @@ devnull.example.com.     IN  A       __IPADDR4__
 devnull.example.com.     IN  AAAA    __IPADDR6__
 ```
 
+### Gruppen / Benutzer / Passwörter
+
+Für dieses HowTo sind **keine** zusätzlichen Systemgruppen, Systembenutzer oder separaten Passwörter erforderlich.
+
 ### Verzeichnisse / Dateien
 
 Für dieses HowTo müssen zuvor folgende Verzeichnisse angelegt werden, sofern sie noch nicht existieren.
 
 ``` sh
-install -d -m 0755 /var/db/letsencrypt
+mkdir -p /var/db/letsencrypt
 install -d -m 0700 /var/log/letsencrypt
 
-install -d -m 0755 /usr/local/etc/letsencrypt
-install -d -m 0755 /usr/local/etc/letsencrypt/renewal-hooks
-install -d -m 0755 /usr/local/etc/letsencrypt/renewal-hooks/pre
-install -d -m 0755 /usr/local/etc/letsencrypt/renewal-hooks/post
-install -d -m 0755 /usr/local/etc/letsencrypt/renewal-hooks/deploy
+mkdir -p /usr/local/etc/letsencrypt
+mkdir -p /usr/local/etc/letsencrypt/certs
+mkdir -p /usr/local/etc/letsencrypt/renewal-hooks
+mkdir -p /usr/local/etc/letsencrypt/renewal-hooks/pre
+mkdir -p /usr/local/etc/letsencrypt/renewal-hooks/post
+mkdir -p /usr/local/etc/letsencrypt/renewal-hooks/deploy
 
-install -d -m 0755 /usr/local/www
-install -d -m 0755 /usr/local/www/.well-known
-install -d -m 0755 /usr/local/www/.well-known/acme-challenge
-
-install -d -m 0755 /usr/local/etc/certs
+mkdir -p /usr/local/www/.well-known/acme-challenge
 ```
 
 Zusätzliche Dateien müssen vor der Installation noch nicht vorbereitet werden. Die eigentlichen Konfigurationsdateien werden im Abschnitt **Konfiguration** angelegt.
-
-### Gruppen / Benutzer / Passwörter
-
-Für dieses HowTo sind **keine** zusätzlichen Systemgruppen, Systembenutzer oder separaten Passwörter erforderlich.
 
 ---
 
@@ -114,12 +111,12 @@ Für dieses HowTo sind **keine** zusätzlichen Systemgruppen, Systembenutzer ode
 ### Wir installieren `security/py-certbot` und dessen Abhängigkeiten.
 
 ``` sh
-install -d -m 0755 /var/db/ports/textproc_py-snowballstemmer
+mkdir -p /var/db/ports/textproc_py-snowballstemmer
 cat <<'EOF' > /var/db/ports/textproc_py-snowballstemmer/options
 --8<-- "freebsd/ports/textproc_py-snowballstemmer/options"
 EOF
 
-install -d -m 0755 /var/db/ports/security_py-certbot
+mkdir -p /var/db/ports/security_py-certbot
 cat <<'EOF' > /var/db/ports/security_py-certbot/options
 --8<-- "freebsd/ports/security_py-certbot/options"
 EOF
@@ -142,7 +139,6 @@ Certbot ist kein dauerhaft laufender Dienst mit eigenem `rc.d`-Service. Die auto
 Die zentrale Certbot-Konfiguration liegt unter `/usr/local/etc/letsencrypt/cli.ini`. Für dieses Setup ist **Webroot** die richtige Standardwahl.
 
 ``` sh
-install -b -m 0644 /dev/null /usr/local/etc/letsencrypt/cli.ini
 cat <<'EOF' > /usr/local/etc/letsencrypt/cli.ini
 --8<-- "freebsd/configs/usr/local/etc/letsencrypt/cli.ini"
 EOF
@@ -155,10 +151,10 @@ ECDSA ist für dieses Setup die sinnvolle Standardwahl, solange keine bewusst se
 Der Deploy-Hook wird nur nach erfolgreicher Zertifikatserneuerung ausgeführt. In diesem HowTo übernimmt er das Neubauen der benötigten PEM-Dateien und das anschließende Neuladen der betroffenen TLS-Dienste.
 
 ``` sh
-install -b -m 0750 /dev/null /usr/local/etc/letsencrypt/renewal-hooks/deploy/hook.sh
 cat <<'EOF' > /usr/local/etc/letsencrypt/renewal-hooks/deploy/hook.sh
 --8<-- "freebsd/configs/usr/local/etc/letsencrypt/renewal-hooks/deploy/hook.sh"
 EOF
+chmod 750 /usr/local/etc/letsencrypt/renewal-hooks/deploy/hook.sh
 ```
 
 ### FreeBSD-Periodic konfigurieren

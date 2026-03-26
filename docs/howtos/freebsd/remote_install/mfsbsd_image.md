@@ -153,12 +153,11 @@ Unser System soll natürlich auch von der Festplatte booten können, weshalb wir
 ``` sh
 newfs_msdos /dev/gpt/efiesp
 
-install -d -m 0755 /mnt/boot/efi
+mkdir -p /mnt/boot/efi
 
 mount -t msdosfs /dev/gpt/efiesp /mnt/boot/efi
 
-install -d -m 0755 /mnt/boot/efi/EFI
-install -d -m 0755 /mnt/boot/efi/EFI/BOOT
+mkdir -p /mnt/boot/efi/EFI/BOOT
 install /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi
 
 efibootmgr -a -c -l vtbd0p2:/EFI/BOOT/BOOTX64.efi -L FreeBSD
@@ -209,7 +208,7 @@ pw useradd -D -g '' -M 0700 -s sh -w no
 Das Home-Verzeichnis des Users root ist standardmässig leider nicht ausreichend restriktiv in seinen Zugriffsrechten, was wir mit einem entsprechenden Aufruf von `chmod` schnell ändern. Bevor wir es vergessen, setzen wir bei dieser Gelegenheit gleich ein sicheres Passwort für root.
 
 ``` sh
-install -d -m 0755 /var/db/backups
+mkdir -p /var/db/backups
 install -d -m 0750 /var/db/passwords
 
 # Passwort erzeugen und speichern für den Systembenutzer "root"
@@ -220,7 +219,7 @@ openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | \
 
 cat /var/db/passwords/system_user_root
 
-chmod 0700 /root
+chmod 700 /root
 ```
 
 Da dies lediglich ein lokales temporäres System zum Erzeugen unseres mfsBSD-Images wird, können wir den OpenSSH-Dienst bedenkenlos etwas komfortabler aber dadurch zwangsläufig auch etwas unsicherer konfigurieren, indem wir den Login per Passwort zulassen.
@@ -239,7 +238,7 @@ ssh-keygen -q -t ed25519 -f "/etc/ssh/ssh_host_ed25519_key" -N ""
 ssh-keygen -l -f "/etc/ssh/ssh_host_ed25519_key.pub"
 
 mkdir -p /root/.ssh
-chmod 0700 /root/.ssh
+chmod 700 /root/.ssh
 ssh-keygen -t ed25519 -O clear -O permit-pty -f "/root/.ssh/id_ed25519" -N ""
 cat /root/.ssh/id_ed25519.pub >> /root/.ssh/authorized_keys
 ssh-keygen -t ecdsa -b 384 -O clear -O permit-pty -f "/root/.ssh/id_ecdsa" -N ""
@@ -296,7 +295,7 @@ pkg bootstrap -y
 Wir werden nun unser mfsBSD-Image erzeugen, um damit später unser eigentliches dediziertes System booten und installieren zu können. Hierzu legen uns zunächst ein Arbeitsverzeichnis an.
 
 ``` sh
-install -d -m 0755 /usr/local/mfsbsd
+mkdir -p /usr/local/mfsbsd
 ```
 
 Nun fehlt noch das mfsBSD-Buildscript, welches wir jetzt mittels `fetch` in unserem Arbeitsverzeichnis downloaden und dann entpacken.

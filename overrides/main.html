@@ -48,12 +48,12 @@
         <meta name="date" content="{{ page.meta.lastmod }}T12:00:00+02:00" />
       {% elif page.meta and page.meta.date %}
         <meta name="date" content="{{ page.meta.date }}T12:00:00+02:00" />
-      {% else %}
-{#-
-        <meta name="date" content="{{ build_date_utc.date() }}T12:00:00+02:00" />
--#}
       {% endif %}
+      {% if page.meta and page.meta.license and page.meta.license.url %}
+        <link rel="license" href="{{ page.meta.license.url | url }}" />
+      {% elif config.extra.site_license.url %}
         <link rel="license" href="{{ config.extra.site_license.url | url }}" />
+      {% endif %}
       {% if page.canonical_url %}
         <link rel="canonical" href="{{ page.canonical_url }}" />
       {% endif %}
@@ -102,9 +102,9 @@
 
 {% block styles %}
       {% if config.theme.variant == "modern" %}
-        {% set href = 'assets/stylesheets/modern/main.1e989742.min.css' | url %}
+        {% set href = 'assets/stylesheets/modern/main.6f2fbb28.min.css' | url %}
       {% else %}
-        {% set href = 'assets/stylesheets/classic/main.d9d44b50.min.css' | url %}
+        {% set href = 'assets/stylesheets/classic/main.5b14e6eb.min.css' | url %}
       {% endif %}
         <link rel="preload" as="style" href="{{ href }}" onload="this.onload=null;this.rel='stylesheet'" />
         <noscript><link rel="stylesheet" href="{{ href }}" /></noscript>
@@ -193,17 +193,9 @@
             {% endif %}
             {% if page.meta and page.meta.date %}
             "datePublished": "{{ page.meta.date }}T12:00:00+02:00",
-            {% else %}
-{#-
-            "datePublished": "{{ build_date_utc.date() }}T12:00:00+02:00",
--#}
             {% endif %}
             {% if page.meta and page.meta.lastmod %}
             "dateModified": "{{ page.meta.lastmod }}T12:00:00+02:00",
-            {% else %}
-{#-
-            "dateModified": "{{ build_date_utc.date() }}T12:00:00+02:00",
--#}
             {% endif %}
             {% if page.meta and page.meta.license and page.meta.license.url %}
             "license": "{{ page.meta.license.url }}",
@@ -218,7 +210,7 @@
 
 
 {% block scripts %}
-        <script defer="defer" src="{{ 'assets/javascripts/bundle.5fcf0de6.min.js' | url }}"></script>
+        <script defer="defer" src="{{ 'assets/javascripts/bundle.c2b142ea.min.js' | url }}"></script>
         {% for script in config.extra_javascript %}
         {% if script.path %}
         {{ script | script_tag }}

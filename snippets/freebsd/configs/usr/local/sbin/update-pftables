@@ -177,15 +177,18 @@ START_TS="$(date -j -v-24H '+%Y%m%d%H%M%S')"                      # Log scan win
 
 # Default sources (used when no config overrides SOURCES)
 DEFAULT_SOURCES='
-badhosts_priv|file:///etc/pf.badhosts_priv|30d|plain
-badhosts_http|file:///etc/pf.badhosts_http|7d|plain
-badhosts_mail|file:///var/log/maillog|2d|mail_awk
-badhosts_sshd|file:///var/log/auth.log|6h|sshd_awk
 badhosts_drop|https://www.spamhaus.org/drop/drop_v4.json|90d|json_cidr
 badhosts_drop|https://www.spamhaus.org/drop/drop_v6.json|90d|json_cidr
 badhosts_drop|https://www.spamhaus.org/drop/asndrop.json|90d|json_asn
 badhosts_torp|https://www.dan.me.uk/torlist/?full|2d|plain
 badhosts_misc|https://lists.blocklist.de/lists/all.txt|2d|plain
+badhosts_scan|file:///etc/pf.badhosts_scan|7d|plain
+badhosts_dns|file:///etc/pf.badhosts_dns|7d|plain
+badhosts_ntpd|file:///etc/pf.badhosts_ntpd|7d|plain
+badhosts_sshd|file:///var/log/auth.log|6h|sshd_awk
+badhosts_mail|file:///var/log/maillog|2d|mail_awk
+badhosts_http|file:///etc/pf.badhosts_http|7d|plain
+badhosts_priv|file:///etc/pf.badhosts_priv|30d|plain
 '                                                                  # Pipe-delimited: table|url|expire|processor
 
 # Pattern sets for log extraction
@@ -396,7 +399,7 @@ download_file() {
     attempt="1"                                                   # Attempt counter
     while [ "${attempt}" -le "${DOWNLOAD_RETRIES}" ]; do          # Retry loop
       if command -v curl >/dev/null 2>&1; then                    # Use curl
-        http_code="$(curl --silent --show-error --output "${tempfile}" --write-out "%{http_code}" --max-time "${DOWNLOAD_TIMEOUT}" --connect-timeout 10 --tlsv1.2 --http2 --location --compressed --ignore-content-length --user-agent "Mozilla/5.0 (FreeBSD 14.0; rv:143.0)" --header "Accept: */*" --header "Accept-Encoding: gzip, deflate, br, zstd" $( [ -f "${etag_file}" ] && printf -- '--etag-compare %s' "${etag_file}" ) $( [ -n "${etag_file}" ] && printf -- '--etag-save %s' "${etag_file}" ) $( [ -f "${cached_file}" ] && printf -- '-z %s' "${cached_file}" ) --remote-time "${url}" 2>&1 )" || http_code="000"  # Fetch
+        http_code="$(curl --silent --show-error --output "${tempfile}" --write-out "%{http_code}" --max-time "${DOWNLOAD_TIMEOUT}" --connect-timeout 10 --tlsv1.2 --http2 --location --compressed --ignore-content-length --user-agent "Mozilla/5.0 (FreeBSD 15.0; rv:148.0)" --header "Accept: */*" --header "Accept-Encoding: gzip, deflate, br, zstd" $( [ -f "${etag_file}" ] && printf -- '--etag-compare %s' "${etag_file}" ) $( [ -n "${etag_file}" ] && printf -- '--etag-save %s' "${etag_file}" ) $( [ -f "${cached_file}" ] && printf -- '-z %s' "${cached_file}" ) --remote-time "${url}" 2>&1 )" || http_code="000"  # Fetch
         case "${http_code}" in                                    # Handle code
           200|201|202|203|204)
             mv -f "${tempfile}" "${cached_file}" 2>/dev/null || cp -f "${tempfile}" "${cached_file}"  # Update cache

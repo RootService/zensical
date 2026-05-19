@@ -1,174 +1,266 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * default-endpoint.php
- * CSP violation report handler.
+ * CSP violation report handler for PHP 8.4
  *
- * Notes:
- * - Keep responses 204 on success *and* most errors to avoid browser retry storms.
- * - Protect against abuse (rate limiting) to avoid becoming a mail-bomb endpoint.
- * - Designed to be placed behind HTTPS.
+ * Features:
+ * - Strict typing
+ * - Hardened input handling
+ * - Rate limiting
+ * - CSP Reporting API + legacy CSP support
+ * - Safe mail header handling
+ * - 204 responses to prevent retry storms
  */
 
-// ---- Configuration ---------------------------------------------------------
-const RECIPIENT = "abuse@rootservice.org";
-const FROM      = "csp-reports@rootservice.org";
-const SUBJECT   = "CSP violation report";
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
 
-// Hard cap to avoid abuse
+const RECIPIENT = 'abuse@rootservice.org';
+const FROM      = 'csp-reports@rootservice.org';
+const SUBJECT   = 'CSP violation report';
+
 const MAX_BYTES = 65536;
 
-// Simple per-IP rate limit (best-effort). Keep low: CSP can be noisy.
 const RL_WINDOW_SECONDS = 60;
 const RL_MAX_PER_WINDOW = 30;
 
-// Truncate potentially large fields to keep email size sane
 const MAX_FIELD_CHARS = 4096;
 
-// ---- Helpers --------------------------------------------------------------
-function header_status(int ): void {
-    http_response_code();
-    header("Content-Type: text/plain; charset=utf-8");
+// -----------------------------------------------------------------------------
+// Helpers
+// -----------------------------------------------------------------------------
+
+function header_status(int $statusCode): void
+{
+    http_response_code($statusCode);
+    header('Content-Type: text/plain; charset=utf-8');
 }
 
-function safe_header_text(string ): string {
-    // Basic newline header injection guard
-    return str_replace(["\r", "\n"], " ", );
+function safe_header_text(string $value): string
+{
+    return str_replace(["\r", "\n"], ' ', $value);
 }
 
-function read_request_body(): string {
-     = file_get_contents("php://input", false, null, 0, MAX_BYTES + 1);
-    if ( === false) return "";
-    if (strlen() > MAX_BYTES) return "";
-    return ;
-}
+function read_request_body(): string
+{
+    $body = file_get_contents(
+        'php://input',
+        false,
+        null,
+        0,
+        MAX_BYTES + 1
+    );
 
-function truncate_text(string , int  = MAX_FIELD_CHARS): string {
-    if (strlen() <= ) return ;
-    return substr(, 0, ) . "…";
-}
-
-function fmt(mixed ): string {
-    if ( === null) return "—";
-    if (is_bool()) return  ? "true" : "false";
-    if (is_scalar()) {
-        return truncate_text((string));
+    if ($body === false) {
+        return '';
     }
-     = json_encode(, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-    return truncate_text( === false ? "" : );
+
+    if (strlen($body) > MAX_BYTES) {
+        return '';
+    }
+
+    return $body;
+}
+
+function truncate_text(string $text, int $max = MAX_FIELD_CHARS): string
+{
+    if (mb_strlen($text) <= $max) {
+        return $text;
+    }
+
+    return mb_substr($text, 0, $max) . '…';
+}
+
+function fmt(mixed $value): string
+{
+    if ($value === null) {
+        return '—';
+    }
+
+    if (is_bool($value)) {
+        return $value ? 'true' : 'false';
+    }
+
+    if (is_scalar($value)) {
+        return truncate_text((string) $value);
+    }
+
+    $json = json_encode(
+        $value,
+        JSON_UNESCAPED_SLASHES
+        | JSON_UNESCAPED_UNICODE
+        | JSON_PRETTY_PRINT
+    );
+
+    return truncate_text($json === false ? '' : $json);
 }
 
 /**
- * Simple file-based rate limiting keyed by IP.
- * Returns true if request is allowed; false if it should be dropped.
+ * Simple file-based rate limiter.
  */
-function rate_limit_allow(string ): bool {
-     = preg_replace('/[^0-9a-fA-F:\\.]/', '_', );
-    if ( === "")  = "unknown";
+function rate_limit_allow(string $ip): bool
+{
+    $safeIp = preg_replace('/[^0-9a-fA-F:\\.]/', '_', $ip);
 
-      = sprintf("csp_rl_%s", );
-     = sys_get_temp_dir() . DIRECTORY_SEPARATOR . ;
+    if ($safeIp === null || $safeIp === '') {
+        $safeIp = 'unknown';
+    }
 
-     = time();
+    $filename = sprintf('csp_rl_%s', $safeIp);
 
-    // Best-effort lock
-     = @fopen(, 'c+');
-    if (!) {
-        // If we can't rate limit, still accept to avoid breaking reporting.
+    $path = sys_get_temp_dir()
+        . DIRECTORY_SEPARATOR
+        . $filename;
+
+    $now = time();
+
+    $fp = @fopen($path, 'c+');
+
+    if ($fp === false) {
+        // Fail open to avoid breaking CSP reporting
         return true;
     }
 
-    @flock(, LOCK_EX);
+    @flock($fp, LOCK_EX);
 
-      = stream_get_contents();
-     =  ? json_decode(, true) : null;
-    if (!is_array())  = ["start" => , "count" => 0];
+    $raw = stream_get_contents($fp);
 
-     = (int)(["start"] ?? );
-     = (int)(["count"] ?? 0);
+    $data = is_string($raw)
+        ? json_decode($raw, true)
+        : null;
 
-    if ( -  >= RL_WINDOW_SECONDS) {
-         = ;
-         = 0;
+    if (!is_array($data)) {
+        $data = [
+            'start' => $now,
+            'count' => 0,
+        ];
     }
 
-    ++;
+    $start = (int) ($data['start'] ?? $now);
+    $count = (int) ($data['count'] ?? 0);
 
-    // rewind+truncate
-    ftruncate(, 0);
-    rewind();
-    fwrite(, json_encode(["start" => , "count" => ]));
+    if (($now - $start) >= RL_WINDOW_SECONDS) {
+        $start = $now;
+        $count = 0;
+    }
 
-    @flock(, LOCK_UN);
-    fclose();
+    $count++;
 
-    return  <= RL_MAX_PER_WINDOW;
+    ftruncate($fp, 0);
+    rewind($fp);
+
+    fwrite(
+        $fp,
+        json_encode(
+            [
+                'start' => $start,
+                'count' => $count,
+            ],
+            JSON_THROW_ON_ERROR
+        )
+    );
+
+    @flock($fp, LOCK_UN);
+    fclose($fp);
+
+    return $count <= RL_MAX_PER_WINDOW;
 }
 
 /**
- * Normalize incoming payloads to an array of CSP report bodies.
- * Supports:
- *  - Legacy: {"csp-report": {...}}
- *  - Reporting API: [{"type":"csp-violation", "body": {...}}, ...]
- *  - Chromium variants: {"reports":[{"body": {...}}, ...]}
+ * Extract CSP reports from supported formats.
  */
-function extract_reports(mixed ): array {
-     = [];
+function extract_reports(mixed $payload): array
+{
+    $reports = [];
 
-    if (is_array()) {
-        // Possibly an array of report objects (Reporting API)
-        foreach ( as ) {
-            if (is_array() && isset(['body']) && is_array(['body'])) {
-                [] = ['body'];
-            } elseif (is_object() && isset(->body) && is_object(->body)) {
-                [] = (array)->body;
+    if (is_array($payload)) {
+
+        // Reporting API array
+        foreach ($payload as $item) {
+
+            if (
+                is_array($item)
+                && isset($item['body'])
+                && is_array($item['body'])
+            ) {
+                $reports[] = $item['body'];
             }
         }
-    } elseif (is_object()) {
-         = (array);
 
-        // Legacy single report
-        if (isset(['csp-report']) && is_array(['csp-report'])) {
-            [] = ['csp-report'];
-        } elseif (isset(['csp-report']) && is_object(['csp-report'])) {
-            [] = (array)['csp-report'];
+        return $reports;
+    }
+
+    if (!is_object($payload) && !is_array($payload)) {
+        return [];
+    }
+
+    $data = (array) $payload;
+
+    // Legacy format
+    if (isset($data['csp-report'])) {
+
+        if (is_array($data['csp-report'])) {
+            $reports[] = $data['csp-report'];
+        } elseif (is_object($data['csp-report'])) {
+            $reports[] = (array) $data['csp-report'];
         }
+    }
 
-        // Chromium "reports" wrapper
-        if (isset(['reports']) && is_array(['reports'])) {
-            foreach (['reports'] as ) {
-                if (is_array() && isset(['body']) && is_array(['body'])) {
-                    [] = ['body'];
-                } elseif (is_object() && isset(->body) && is_object(->body)) {
-                    [] = (array)->body;
-                }
+    // Chromium wrapper
+    if (
+        isset($data['reports'])
+        && is_array($data['reports'])
+    ) {
+        foreach ($data['reports'] as $report) {
+
+            if (
+                is_array($report)
+                && isset($report['body'])
+                && is_array($report['body'])
+            ) {
+                $reports[] = $report['body'];
             }
         }
     }
 
-    return ;
+    return $reports;
 }
 
-function build_email(array ): string {
-     = [];
-     = [
-        'Received at'  => gmdate('Y-m-d\\TH:i:s\\Z'),
-        'Remote IP'    => ['REMOTE_ADDR'] ?? 'unknown',
-        'User-Agent'   => ['HTTP_USER_AGENT'] ?? 'unknown',
-        'Referer'      => ['HTTP_REFERER'] ?? 'none',
-        'Content-Type' => ['CONTENT_TYPE'] ?? (['HTTP_CONTENT_TYPE'] ?? 'unknown'),
-        'Report count' => count(),
+function build_email(array $reports): string
+{
+    $lines = [];
+
+    $meta = [
+        'Received at'  => gmdate('Y-m-d\TH:i:s\Z'),
+        'Remote IP'    => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+        'User-Agent'   => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+        'Referer'      => $_SERVER['HTTP_REFERER'] ?? 'none',
+        'Content-Type' => $_SERVER['CONTENT_TYPE']
+            ?? ($_SERVER['HTTP_CONTENT_TYPE'] ?? 'unknown'),
+        'Report count' => count($reports),
     ];
 
-    [] = '== Meta ==';
-    foreach ( as  => ) {
-        [] = sprintf('%-14s %s',  . ':', fmt());
+    $lines[] = '== Meta ==';
+
+    foreach ($meta as $key => $value) {
+        $lines[] = sprintf(
+            '%-14s %s',
+            $key . ':',
+            fmt($value)
+        );
     }
-    [] = '';
 
-    foreach ( as  => ) {
-        [] = '== Report #' . ( + 1) . ' ==';
+    $lines[] = '';
 
-         = [
+    foreach ($reports as $index => $report) {
+
+        $lines[] = '== Report #' . ($index + 1) . ' ==';
+
+        $fields = [
             'document-uri'        => 'Document URI',
             'referrer'            => 'Referrer',
             'violated-directive'  => 'Violated Directive',
@@ -183,104 +275,162 @@ function build_email(array ): string {
             'script-sample'       => 'Script Sample',
             'policy'              => 'Policy',
             'operation'           => 'Operation',
-            // some browsers
+
+            // Browser variants
             'violatedDirective'   => 'Violated Directive (camel)',
             'blockedURL'          => 'Blocked URL',
         ];
 
-        foreach ( as  => ) {
-            if (array_key_exists(, )) {
-                [] = sprintf('%-22s %s',  . ':', fmt([]));
+        foreach ($fields as $field => $label) {
+
+            if (array_key_exists($field, $report)) {
+
+                $lines[] = sprintf(
+                    '%-22s %s',
+                    $label . ':',
+                    fmt($report[$field])
+                );
             }
         }
 
-         = array_keys();
-        foreach ( as  => ) {
-            if (!in_array(, , true)) {
-                [] = sprintf('%-22s %s',  . ':', fmt());
+        // Unknown fields
+        foreach ($report as $field => $value) {
+
+            if (!array_key_exists($field, $fields)) {
+
+                $lines[] = sprintf(
+                    '%-22s %s',
+                    $field . ':',
+                    fmt($value)
+                );
             }
         }
 
-        [] = '';
+        $lines[] = '';
     }
 
-    return implode("\n", );
+    return implode("\n", $lines);
 }
 
-function log_note(string ): void {
-    // Best-effort logging into PHP/webserver logs
-    error_log('[csp-endpoint] ' . );
+function log_note(string $message): void
+{
+    error_log('[csp-endpoint] ' . $message);
 }
 
-// ---- Main ----------------------------------------------------------------
- = ['REQUEST_METHOD'] ?? 'GET';
+// -----------------------------------------------------------------------------
+// Main
+// -----------------------------------------------------------------------------
 
-if ( === 'GET' ||  === 'HEAD') {
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+if ($method === 'GET' || $method === 'HEAD') {
+
     header_status(200);
+
     echo "ok\n";
+
     exit;
 }
 
-if ( !== 'POST') {
+if ($method !== 'POST') {
+
     header('Allow: POST, GET, HEAD');
+
     header_status(405);
+
     echo "Use POST.\n";
+
     exit;
 }
 
- = ['REMOTE_ADDR'] ?? 'unknown';
-if (!rate_limit_allow()) {
-    // Drop silently to avoid being used as a mail-bomb and avoid retries.
-    log_note("rate-limited ip={}");
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
+if (!rate_limit_allow($ip)) {
+
+    log_note("rate-limited ip={$ip}");
+
     http_response_code(204);
+
     exit;
 }
 
- = read_request_body();
-if ( === '') {
-    // Keep 204 to avoid retries; log for debugging.
-    log_note("empty/oversized body ip={}");
+$raw = read_request_body();
+
+if ($raw === '') {
+
+    log_note("empty/oversized body ip={$ip}");
+
     http_response_code(204);
+
     exit;
 }
 
- = json_decode(, true);
-if ( === null && json_last_error() !== JSON_ERROR_NONE) {
-    log_note("malformed json ip={} err=" . json_last_error_msg());
+try {
+
+    $payload = json_decode(
+        $raw,
+        true,
+        512,
+        JSON_THROW_ON_ERROR
+    );
+
+} catch (JsonException $e) {
+
+    log_note(
+        "malformed json ip={$ip} err=" . $e->getMessage()
+    );
+
     http_response_code(204);
+
     exit;
 }
 
- = extract_reports();
-if (!) {
-    // Some user agents send the legacy object directly without wrappers
-    if (is_array())  = [];
+$reports = extract_reports($payload);
+
+if (
+    !$reports
+    && is_array($payload)
+) {
+    // Some browsers send the report directly
+    $reports = [$payload];
 }
 
-if (!) {
-    log_note("no reports found ip={}");
+if (!$reports) {
+
+    log_note("no reports found ip={$ip}");
+
     http_response_code(204);
+
     exit;
 }
 
- = build_email();
+$body = build_email($reports);
 
- = safe_header_text(FROM);
- = safe_header_text(SUBJECT . " (rootservice.org)");
- = safe_header_text(RECIPIENT);
+$from = safe_header_text(FROM);
+$subject = safe_header_text(SUBJECT . ' (rootservice.org)');
+$to = safe_header_text(RECIPIENT);
 
- = [];
-[] = "From: {}";
-[] = "Reply-To: {}";
-[] = "MIME-Version: 1.0";
-[] = "Content-Type: text/plain; charset=utf-8";
-[] = "X-CSP-Handler: v2";
- = implode("\r\n", );
+$headers = [
+    "From: {$from}",
+    "Reply-To: {$from}",
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset=utf-8',
+    'X-CSP-Handler: v3',
+];
 
- = @mail(, , , );
-if (!) {
-    log_note("mail delivery failed ip={}");
+$mailHeaders = implode("\r\n", $headers);
+
+$sent = @mail(
+    $to,
+    $subject,
+    $body,
+    $mailHeaders
+);
+
+if (!$sent) {
+    log_note("mail delivery failed ip={$ip}");
 }
 
-// Always respond 204 to avoid retry storms
+// Always 204 to prevent browser retries
 http_response_code(204);
+exit;

@@ -565,10 +565,10 @@ update_ports() {
     # Main port update operation
     if [ "$VERBOSE" = true ]; then
         log 2 "Running main port update with verbose output..."
-        measure_time portmaster --no-confirm --index-first -w -B -g -U -d -R -a "$@" -v
+        measure_time portmaster --no-confirm --index-first -w -B -g -a "$@" -v
     else
         log 2 "Running main port update..."
-        measure_time portmaster --no-confirm --index-first -w -B -g -U -d -R -a "$@" -y
+        measure_time portmaster --no-confirm --index-first -w -B -g -a "$@" -y
     fi
 
     # Clean distfiles and packages after update

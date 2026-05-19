@@ -27,8 +27,7 @@ search:
 
 ## Inhalt
 
-* MySQL 8.0 über `databases/mysql80-server`
-* aktueller Portstand: `8.0.44` auf `2026Q1`, `8.0.45` auf `latest`
+* MySQL 8.4.8 über `databases/mysql84-server`
 * InnoDB als primäre Engine
 * Basishärtung mit `mysql_secure_installation`
 * Zugangsdaten mit `mysql_config_editor`
@@ -40,8 +39,6 @@ search:
 ## Einleitung
 
 Dieses HowTo beschreibt die Installation und Konfiguration von MySQL auf FreeBSD 15+.
-
-Dieses HowTo verwendet bewusst **`databases/mysql80-server`** für bestehende 8.0-Bestandsumgebungen. Stand heute liegt der Port im FreeBSD-Quarterly-Zweig `2026Q1` bei **8.0.44** und im `latest`-Zweig bei **8.0.45**. Gleichzeitig ist wichtig: **MySQL 8.0 erreicht im April 2026 EoL**. Für neue Installationen solltest du deshalb prüfen, ob **MySQL 8.4 LTS** die bessere Wahl ist. ([freshports.org][1])
 
 Dieses HowTo konzentriert sich auf **InnoDB** als primäre Engine. **GTID** ist hier bewusst **nicht standardmäßig aktiv**, sondern wird weiter unten als optionale Produktionsfunktion getrennt behandelt. Das ist Absicht, weil GTID in MySQL explizit konfiguriert werden muss und **nicht** zur Standardinstallation gehört. ([dev.mysql.com][3])
 
@@ -75,7 +72,7 @@ Der Port bringt bereits die Beispieldatei `my.cnf.sample` unter `/usr/local/etc/
 
 ## Installation
 
-### Wir installieren `databases/mysql80-server` und dessen Abhängigkeiten.
+### Wir installieren `databases/mysql84-server` und dessen Abhängigkeiten.
 
 ``` sh
 mkdir -p /var/db/ports/comms_hidapi
@@ -98,17 +95,17 @@ cat <<'EOF' > /var/db/ports/print_gsfonts/options
 --8<-- "freebsd/ports/print_gsfonts/options"
 EOF
 
-mkdir -p /var/db/ports/databases_mysql80-client
-cat <<'EOF' > /var/db/ports/databases_mysql80-client/options
---8<-- "freebsd/ports/databases_mysql80-client/options"
+mkdir -p /var/db/ports/databases_mysql84-client
+cat <<'EOF' > /var/db/ports/databases_mysql84-client/options
+--8<-- "freebsd/ports/databases_mysql84-client/options"
 EOF
 
-mkdir -p /var/db/ports/databases_mysql80-server
-cat <<'EOF' > /var/db/ports/databases_mysql80-server/options
---8<-- "freebsd/ports/databases_mysql80-server/options"
+mkdir -p /var/db/ports/databases_mysql84-server
+cat <<'EOF' > /var/db/ports/databases_mysql84-server/options
+--8<-- "freebsd/ports/databases_mysql84-server/options"
 EOF
 
-portmaster -w -B -g -U --force-config databases/mysql80-server -n
+portmaster -w -B -g -U --force-config databases/mysql84-server -n
 ```
 
 ### Dienst in `rc.conf` eintragen
@@ -161,7 +158,7 @@ mysql --protocol=socket -u root --skip-password -e "SELECT VERSION();"
 
 ### Root-Passwort sauber setzen
 
-Nach einer Initialisierung mit `--initialize-insecure` setzt du das Root-Passwort sauber mit `ALTER USER`. Für MySQL 8.0 ist `caching_sha2_password` der moderne Standard-Mechanismus; Legacy-Authentifizierung mit `mysql_native_password` solltest du nur noch für nachweislich alte Clients überhaupt in Betracht ziehen. In MySQL 8.4 ist `mysql_native_password` bereits **nicht mehr standardmäßig aktiviert**. ([dev.mysql.com][5])
+Nach einer Initialisierung mit `--initialize-insecure` setzt du das Root-Passwort sauber mit `ALTER USER`.
 
 ``` sh
 # Passwort für den MySQL-Superuser "root" erzeugen und
@@ -420,7 +417,7 @@ Für Updates gilt: **erst Backup, dann Update**. Seit **MySQL 8.0.16** übernimm
 ## Referenzen
 
 * FreeBSD Handbook: Ports und Diensteverwaltung
-* FreshPorts: `databases/mysql80-server`
+* FreshPorts: `databases/mysql84-server`
 * MySQL Reference Manual: Initializing the Data Directory
 * MySQL Reference Manual: Securing the Initial MySQL Account
 * MySQL Reference Manual: `mysql_secure_installation`
@@ -430,14 +427,14 @@ Für Updates gilt: **erst Backup, dann Update**. Seit **MySQL 8.0.16** übernimm
 * MySQL Reference Manual: GTID / Replication
 * MySQL Product Support EOL Announcements
 
-[1]: https://www.freshports.org/databases/mysql80-server/?branch=2026Q1 "FreshPorts -- databases/mysql80-server: Multithreaded SQL database (server)"
+[1]: https://www.freshports.org/databases/mysql84-server/?branch=2026Q1 "FreshPorts -- databases/mysql84-server: Multithreaded SQL database (server)"
 [2]: https://dev.mysql.com/doc/refman/8.4/en/user-names.html "8.2.1 Account User Names and Passwords"
 [3]: https://dev.mysql.com/doc/refman/8.4/en/group-replication-requirements.html "20.3.1 Group Replication Requirements"
-[4]: https://raw.githubusercontent.com/freebsd/freebsd-ports/main/databases/mysql80-server/files/mysql-server.in "raw.githubusercontent.com"
+[4]: https://raw.githubusercontent.com/freebsd/freebsd-ports/main/databases/mysql84-server/files/mysql-server.in "raw.githubusercontent.com"
 [5]: https://dev.mysql.com/doc/refman/8.1/en/default-privileges.html "MySQL :: MySQL 8.4 Reference Manual :: 2.9.4 Securing the Initial MySQL Account"
 [6]: https://dev.mysql.com/doc/refman/8.2/en/mysql-config-editor.html "MySQL :: MySQL 8.4 Reference Manual :: 6.6.7 mysql_config_editor — MySQL Configuration Utility"
 [7]: https://dev.mysql.com/doc/refman/8.1/en/transport-protocols.html "MySQL :: MySQL 8.4 Reference Manual :: 6.2.7 Connection Transport Protocols"
 [8]: https://dev.mysql.com/doc/refman/8.4/en/my-print-defaults.html "6.7.2 my_print_defaults — Display Options from Option Files"
 [9]: https://dev.mysql.com/blog-archive/whats-new-in-mysql-8-0-generally-available/ "What's New in MySQL 8.0? (Generally Available)"
 [10]: https://dev.mysql.com/doc/refman/8.4/en/backup-policy.html "9.3.1 Establishing a Backup Policy"
-[11]: https://www.freshports.org/databases/mysql80-server "FreshPorts -- databases/mysql80-server: Multithreaded SQL database (server)"
+[11]: https://www.freshports.org/databases/mysql84-server "FreshPorts -- databases/mysql84-server: Multithreaded SQL database (server)"

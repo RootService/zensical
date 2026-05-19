@@ -1,7 +1,7 @@
 /* TEAM */
 Owner: RootService Team
 Developer: Markus Kohlmeyer
-Contact: info@rootservice.org
+Contact: team@rootservice.org
 GitHub: https://github.com/RootService/zensical
 Site: https://www.rootservice.org/
 
@@ -12,4 +12,4 @@ Tools: Zensical (static site generator)
 Standards: HTML5, CSS
 Software: Zensical
 Language: de
-Last update: 2026-02-14
+Last update: 2026-03-21

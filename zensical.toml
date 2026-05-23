@@ -1,4 +1,3 @@
-
 # ============================================================================
 #
 # The configuration produced by default is meant to highlight the features
@@ -51,6 +50,10 @@ Copyright &copy; 2002-2026 RootService Team
 # can be defined using TOML syntax.
 #
 # Read more: https://zensical.org/docs/setup/navigation/
+# nav = [
+#   { "Get started" = "index.md" },
+#   { "Markdown in 5min" = "markdown.md" },
+# ]
 nav = [
   { "Home" = "index.md" },
   { "HowTos" = [
@@ -110,7 +113,6 @@ nav = [
     { "Nutzungsbedingungen" = "about/terms.md" }
   ] }
 ]
-
 
 # With the "extra_css" option you can add your own CSS styling to customize
 # your Zensical project according to your needs. You can add any number of
@@ -313,8 +315,39 @@ features = [
 ]
 
 # ----------------------------------------------------------------------------
+# You can configure your own logo to be shown in the header using the "logo"
+# option in the "theme" subsection. The logo must be a relative path to a file
+# in your "docs_dir", e.g., to use `docs/assets/logo.png` you would set:
+# ----------------------------------------------------------------------------
+#logo = "assets/logo.png"
+
+# ----------------------------------------------------------------------------
+# If you don't have a dedicated project logo, you can use a built-in icon from
+# the icon sets shipped in Zensical. Please note that the setting lives in a
+# different subsection, and that the above take precedence over the icon.
+#
+# Read more:
+# - https://zensical.org/docs/setup/logo-and-icons
+# - https://github.com/zensical/ui/tree/master/dist/.icons
+# ----------------------------------------------------------------------------
+[project.theme.icon]
+#logo = "lucide/smile"
+logo = "rootservice"
+repo = "lucide/github"
+
+# ----------------------------------------------------------------------------
+# In the "font" subsection you can configure the fonts used. By default, fonts
+# are loaded from Google Fonts, giving you a wide range of choices from a set
+# of suitably licensed fonts. There are options for a normal text font and for
+# a monospaced font used in code blocks.
+# ----------------------------------------------------------------------------
+[project.theme.font]
+text = "Roboto Flex"
+code = "Roboto Mono"
+
+# ----------------------------------------------------------------------------
 # In the "palette" subsection you can configure options for the color scheme.
-# You can configure different color # schemes, e.g., to turn on dark mode,
+# You can configure different color schemes, e.g., to turn on dark mode,
 # that the user can switch between. Each color scheme can be further
 # customized.
 #
@@ -332,40 +365,11 @@ toggle.icon = "lucide/moon"
 toggle.name = "Switch to light mode"
 
 # ----------------------------------------------------------------------------
-# In the "font" subsection you can configure the fonts used. By default, fonts
-# are loaded from Google Fonts, giving you a wide range of choices from a set
-# of suitably licensed fonts. There are options for a normal text font and for
-# a monospaced font used in code blocks.
-# ----------------------------------------------------------------------------
-[project.theme.font]
-text = "Roboto Flex"
-code = "Roboto Mono"
-
-# ----------------------------------------------------------------------------
-# You can configure your own logo to be shown in the header using the "logo"
-# option in the "icons" subsection. The logo can be a path to a file in your
-# "docs_dir" or it can be a path to an icon.
-#
-# Likewise, you can customize the logo used for the repository section of the
-# header. Zensical derives the default logo for this from the repository URL.
-# See below...
-#
-# There are other icons you can customize. See the documentation for details.
-#
-# Read more:
-# - https://zensical.org/docs/setup/logo-and-icons
-# - https://zensical.org/docs/authoring/icons-emojis/#search
-# ----------------------------------------------------------------------------
-[project.theme.icon]
-logo = "rootservice"
-repo = "lucide/github"
-
-# ----------------------------------------------------------------------------
 # The "extra" section contains miscellaneous settings.
 # ----------------------------------------------------------------------------
 [project.extra]
 homepage = "https://www.rootservice.org/"
-view_url = "https://raw.githubusercontent.com/RootService/MKDocs/main/docs"
+view_url = "https://raw.githubusercontent.com/RootService/zensical/main/docs"
 paypal_url = "https://www.paypal.me/JoeUser"
 generator = false
 
@@ -425,6 +429,14 @@ icon = "material/email"
 link = "mailto:info@rootservice.org"
 name = "E-Mail"
 
+# ----------------------------------------------------------------------------
+# In this section you can configure the Markdown extensions that are used when
+# rendering your documentation. We enable the most useful extensions by default,
+# but you can customize this list to your needs.
+#
+# Read more:
+# - https://zensical.org/docs/setup/extensions/
+# ----------------------------------------------------------------------------
 [project.markdown_extensions.abbr]
 [project.markdown_extensions.admonition]
 [project.markdown_extensions.attr_list]
@@ -442,11 +454,14 @@ toc_depth = 3
 object = "pymdownx.slugs.slugify"
 kwds = { case = "lower" }
 
+[project.markdown_extensions.pymdownx.arithmatex]
+generic = true
+[project.markdown_extensions.pymdownx.betterem]
 [project.markdown_extensions.pymdownx.blocks.caption]
 [project.markdown_extensions.pymdownx.caret]
 [project.markdown_extensions.pymdownx.details]
 [project.markdown_extensions.pymdownx.emoji]
-emoji_index = "zensical.extensions.emoji.twemoji" 
+emoji_index = "zensical.extensions.emoji.twemoji"
 emoji_generator = "zensical.extensions.emoji.to_svg"
 options.custom_icons = ["overrides/.icons"]
 [project.markdown_extensions.pymdownx.highlight]
@@ -460,6 +475,7 @@ linenums_style = "pymdownx-inline"
 [project.markdown_extensions.pymdownx.keys]
 separator = "＋"
 strict = true
+[project.markdown_extensions.pymdownx.magiclink]
 [project.markdown_extensions.pymdownx.mark]
 [project.markdown_extensions.pymdownx.smartsymbols]
 [project.markdown_extensions.pymdownx.snippets]
@@ -467,6 +483,9 @@ base_path = "snippets"
 auto_append = ["includes/abbreviations.md"]
 [project.markdown_extensions.pymdownx.superfences]
 preserve_tabs = true
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" }
+]
 [project.markdown_extensions.pymdownx.tabbed]
 alternate_style = true
 combine_header_slug = true
@@ -477,4 +496,3 @@ kwds = { case = "lower" }
 custom_checkbox = true
 clickable_checkbox = true
 [project.markdown_extensions.pymdownx.tilde]
-

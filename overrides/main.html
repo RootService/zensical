@@ -102,9 +102,9 @@
 
 {% block styles %}
       {% if config.theme.variant == "modern" %}
-        {% set href = 'assets/stylesheets/modern/main.6f2fbb28.min.css' | url %}
+        {% set href = 'assets/stylesheets/modern/main.fba56155.min.css' | url %}
       {% else %}
-        {% set href = 'assets/stylesheets/classic/main.5b14e6eb.min.css' | url %}
+        {% set href = 'assets/stylesheets/classic/main.a2001754.min.css' | url %}
       {% endif %}
         <link rel="preload" as="style" href="{{ href }}" onload="this.onload=null;this.rel='stylesheet'" />
         <noscript><link rel="stylesheet" href="{{ href }}" /></noscript>
@@ -210,7 +210,7 @@
 
 
 {% block scripts %}
-        <script defer="defer" src="{{ 'assets/javascripts/bundle.c2b142ea.min.js' | url }}"></script>
+        <script defer="defer" src="{{ 'assets/javascripts/bundle.6e5f0216.min.js' | url }}"></script>
         {% for script in config.extra_javascript %}
         {% if script.path %}
         {{ script | script_tag }}
